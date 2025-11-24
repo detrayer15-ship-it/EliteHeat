@@ -1,0 +1,304 @@
+[
+    {
+        "id": 1,
+        "question": "Что такое Figma?",
+        "options": [
+            "Графический редактор",
+            "Облачный инструмент для дизайна интерфейсов",
+            "Редактор видео",
+            "3D-моделлер"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 2,
+        "question": "Что означает Frame в Figma?",
+        "options": [
+            "Слой текста",
+            "Контейнер/рабочая область",
+            "Тень",
+            "Комментарий"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 3,
+        "question": "Какой формат экспорта поддерживает Figma?",
+        "options": [
+            "PNG",
+            "JPG",
+            "SVG",
+            "Все перечисленные"
+        ],
+        "correctAnswer": 3
+    },
+    {
+        "id": 4,
+        "question": "Что делает Auto Layout?",
+        "options": [
+            "Сжимает изображения",
+            "Автоматически выстраивает элементы",
+            "Меняет цвет",
+            "Создаёт анимацию"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 5,
+        "question": "Можно ли работать в Figma в браузере?",
+        "options": [
+            "Да",
+            "Нет"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 6,
+        "question": "Для чего нужен компонент?",
+        "options": [
+            "Для хранения шрифтов",
+            "Чтобы копировать стили",
+            "Чтобы создавать повторяемые элементы",
+            "Чтобы экспортировать проект"
+        ],
+        "correctAnswer": 2
+    },
+    {
+        "id": 7,
+        "question": "Как называется инструмент для рисования фигур?",
+        "options": [
+            "Shape Tool",
+            "Pen Tool",
+            "Frame Tool",
+            "Move Tool"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 8,
+        "question": "Что делает инструмент Pen?",
+        "options": [
+            "Создаёт прямоугольники",
+            "Создаёт векторные кривые",
+            "Двигает объекты"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 9,
+        "question": "Можно ли работать в Figma офлайн?",
+        "options": [
+            "Да, только в Desktop версии",
+            "Нет",
+            "Да, всегда"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 10,
+        "question": "Что такое Prototype?",
+        "options": [
+            "Настройки аккаунта",
+            "Возможность создавать интерактивные переходы",
+            "Изменение цвета элементов"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 11,
+        "question": "Где можно посмотреть историю версий?",
+        "options": [
+            "File → Version history",
+            "View → Zoom",
+            "Help → Documentation"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 12,
+        "question": "Что делает инструмент Slice?",
+        "options": [
+            "Создаёт сетку",
+            "Делает вырезы для экспорта",
+            "Создаёт Auto Layout"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 13,
+        "question": "Можно ли добавлять плагины?",
+        "options": [
+            "Да",
+            "Нет"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 14,
+        "question": "Как применить стиль текста?",
+        "options": [
+            "В панели Design → Text Style",
+            "Через Export",
+            "Через Prototype"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 15,
+        "question": "Что такое Constraints?",
+        "options": [
+            "Ограничения поведения элементов при изменении размера Frame",
+            "Экспорт символов",
+            "Панель эффектов"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 16,
+        "question": "Что делает функция \"Mask\"?",
+        "options": [
+            "Меняет цвет",
+            "Обрезает объект формой",
+            "Применяет тень"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 17,
+        "question": "Что такое Grid?",
+        "options": [
+            "Анимация",
+            "Сетка для выравнивания",
+            "Экспортная область"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 18,
+        "question": "Как включить линейки (Rulers)?",
+        "options": [
+            "Shift + R",
+            "Shift + L",
+            "Shift + G"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 19,
+        "question": "Что означает \"Publish\" в Components?",
+        "options": [
+            "Отправить в библиотеку команды",
+            "Экспортировать PNG",
+            "Создать новый Frame"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 20,
+        "question": "Можно ли работать командой одновременно?",
+        "options": [
+            "Да",
+            "Нет"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 21,
+        "question": "Что такое Variants?",
+        "options": [
+            "Анимация",
+            "Разные состояния компонента",
+            "Цветовая схема"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 22,
+        "question": "Что делает функция \"Smart Animate\"?",
+        "options": [
+            "Меняет текст",
+            "Создаёт плавные анимации переходов",
+            "Увеличивает изображение"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 23,
+        "question": "Что означает \"Hug Contents\"?",
+        "options": [
+            "Фрейм растягивается по содержимому",
+            "Сжимает текст",
+            "Масштабирует слой"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 24,
+        "question": "Что делает инструмент Eyedropper?",
+        "options": [
+            "Рисует линии",
+            "Выбирает цвет",
+            "Создаёт компоненты"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 25,
+        "question": "Где включается Dark Mode?",
+        "options": [
+            "Preferences",
+            "Export",
+            "Prototype"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 26,
+        "question": "Можно ли импортировать изображения перетаскиванием?",
+        "options": [
+            "Да",
+            "Нет"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 27,
+        "question": "Что такое Library?",
+        "options": [
+            "Хранилище файлов",
+            "Общая библиотека компонентов",
+            "Функция экспорта"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 28,
+        "question": "Как создать компонент?",
+        "options": [
+            "Ctrl + Alt + K",
+            "Ctrl + E",
+            "Ctrl + Shift + P"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "id": 29,
+        "question": "Что делает Linear Gradient?",
+        "options": [
+            "Меняет размер",
+            "Создаёт плавный переход цвета",
+            "Удаляет объект"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "id": 30,
+        "question": "Что такое Boolean Operations?",
+        "options": [
+            "Операции над текстом",
+            "Объединение форм: Union, Subtract, Intersect, Exclude",
+            "Настройка сетки"
+        ],
+        "correctAnswer": 1
+    }
+]
