@@ -1,4 +1,4 @@
-export type ProjectStage = 'idea' | 'prototype' | 'presentation'
+export type ProjectStage = 'idea' | 'prototype' | 'presentation' | 'completed'
 
 export interface Task {
     id: string

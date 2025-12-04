@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useAuthStore } from '@/store/authStore'
 import { useNavigate } from 'react-router-dom'
 
 export const SettingsPage = () => {
@@ -9,12 +10,10 @@ export const SettingsPage = () => {
     const language = useSettingsStore((state) => state.language)
     const setTheme = useSettingsStore((state) => state.setTheme)
     const setLanguage = useSettingsStore((state) => state.setLanguage)
+    const user = useAuthStore((state) => state.user)
     const navigate = useNavigate()
 
     const [notifications, setNotifications] = useState(true)
-
-    // Временно: проверка авторизации (позже будет из userStore)
-    const isLoggedIn = false // Измените на true для тестирования авторизованного состояния
 
     const handleThemeChange = (newTheme: 'light' | 'dark') => {
         setTheme(newTheme)
@@ -31,14 +30,21 @@ export const SettingsPage = () => {
                 <p className="text-gray-600">Управление вашим профилем и предпочтениями</p>
             </div>
 
-            {/* Профиль / Авторизация */}
+            {/* Профиль */}
             <Card>
                 <h2 className="text-xl font-bold text-text mb-4">👤 Профиль</h2>
-                {isLoggedIn ? (
+                {user ? (
                     <div>
-                        <p className="text-gray-600 mb-4">
-                            Управляйте своим профилем, аватаром и личной информацией
-                        </p>
+                        <div className="flex items-center gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+                            <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center font-bold text-2xl">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div className="font-semibold text-lg text-text">{user.name}</div>
+                                <div className="text-sm text-gray-600">{user.email}</div>
+                                {user.bio && <div className="text-sm text-gray-500 mt-1">{user.bio}</div>}
+                            </div>
+                        </div>
                         <Button onClick={() => navigate('/profile/edit')}>
                             Редактировать профиль
                         </Button>

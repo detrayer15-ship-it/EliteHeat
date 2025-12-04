@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom'
 import { useProjectStore } from '@/store/projectStore'
 import { ProjectCard } from './ProjectCard'
 
 export const ProjectList = () => {
+    const navigate = useNavigate()
     const projects = useProjectStore((state) => state.projects)
     const deleteProject = useProjectStore((state) => state.deleteProject)
 
@@ -9,11 +11,9 @@ export const ProjectList = () => {
         deleteProject(id)
     }
 
-    const handleProjectClick = (project: any) => {
-        // If project has external URL (IDE link), open it
-        if (project.externalUrl) {
-            window.open(project.externalUrl, '_blank')
-        }
+    const handleProjectClick = (projectId: string) => {
+        // Navigate to project detail page
+        navigate(`/projects/${projectId}`)
     }
 
     if (projects.length === 0) {
@@ -32,7 +32,7 @@ export const ProjectList = () => {
                 <ProjectCard
                     key={project.id}
                     project={project}
-                    onClick={() => handleProjectClick(project)}
+                    onClick={() => handleProjectClick(project.id)}
                     onDelete={handleDelete}
                 />
             ))}

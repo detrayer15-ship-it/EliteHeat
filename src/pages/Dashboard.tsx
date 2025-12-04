@@ -9,8 +9,8 @@ export const Dashboard = () => {
 
     const stats = {
         total: projects.length,
-        inProgress: projects.filter((p) => p.stage !== 'presentation').length,
-        completed: projects.filter((p) => p.stage === 'presentation').length,
+        inProgress: projects.filter((p) => p.stage !== 'completed').length,
+        completed: projects.filter((p) => p.stage === 'completed').length,
     }
 
     const recentProjects = projects.slice(-3).reverse()

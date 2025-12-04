@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppLayout } from './components/layout/AppLayout'
+import { LandingPage } from './pages/LandingPage'
 import { Dashboard } from './pages/Dashboard'
 import { ProjectsPage } from './pages/ProjectsPage'
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
@@ -11,8 +12,10 @@ import { AIAssistantPage } from './pages/AIAssistantPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { ProfileEditPage } from './pages/ProfileEditPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
 import { PaymentPage } from './pages/PaymentPage'
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { useProjectStore } from './store/projectStore'
 import { useTaskStore } from './store/taskStore'
 import { useSettingsStore } from './store/settingsStore'
@@ -36,22 +39,124 @@ function App() {
 
     return (
         <BrowserRouter>
-            <AppLayout>
-                <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/projects" element={<ProjectsPage />} />
-                    <Route path="/projects/:id" element={<ProjectDetailPage />} />
-                    <Route path="/tasks" element={<TasksPage />} />
-                    <Route path="/progress" element={<ProgressTrackerPage />} />
-                    <Route path="/analyzer" element={<AnalyzerPage />} />
-                    <Route path="/ai-assistant" element={<AIAssistantPage />} />
-                    <Route path="/subscription" element={<SubscriptionPage />} />
-                    <Route path="/payment" element={<PaymentPage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                </Routes>
-            </AppLayout>
+            <Routes>
+                {/* Public routes - без AppLayout */}
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+
+                {/* Protected routes - с AppLayout */}
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <Dashboard />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ProjectsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects/:id"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ProjectDetailPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/tasks"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <TasksPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/progress"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ProgressTrackerPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/analyzer"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AnalyzerPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/ai-assistant"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AIAssistantPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/subscription"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <SubscriptionPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/payment"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <PaymentPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/settings"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <SettingsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile/edit"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ProfileEditPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+            </Routes>
         </BrowserRouter>
     )
 }
