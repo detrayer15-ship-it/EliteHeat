@@ -4,6 +4,7 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    darkMode: 'class',
     theme: {
         extend: {
             colors: {
@@ -14,6 +15,7 @@ export default {
                 'ai-blue': '#2F80ED',
                 success: '#28C76F',
                 error: '#EB5757',
+                warning: '#FFA500',
             },
         },
     },

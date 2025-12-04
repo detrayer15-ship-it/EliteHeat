@@ -29,6 +29,9 @@ export const FigmaTasksPage = () => {
     const [submittedTasks, setSubmittedTasks] = useState<Set<string>>(
         new Set(JSON.parse(localStorage.getItem('figma_submitted_tasks') || '[]'))
     )
+    const [submissionTimes, setSubmissionTimes] = useState<Record<string, number>>(
+        JSON.parse(localStorage.getItem('figma_submission_times') || '{}')
+    )
 
     // Test state
     const [showTest, setShowTest] = useState(false)
@@ -46,7 +49,42 @@ export const FigmaTasksPage = () => {
         fetch('/data/figma_test.json')
             .then((res) => res.json())
             .then((data) => setTestQuestions(data))
+
+        // Проверяем автоматическое принятие заданий каждую минуту
+        const interval = setInterval(() => {
+            checkAutoApproval()
+        }, 60000) // Каждую минуту
+
+        // Проверяем сразу при загрузке
+        checkAutoApproval()
+
+        return () => clearInterval(interval)
     }, [])
+
+    const checkAutoApproval = () => {
+        const now = Date.now()
+        const oneHour = 60 * 60 * 1000 // 1 час в миллисекундах
+        const progress = JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')
+        const times = JSON.parse(localStorage.getItem('figma_submission_times') || '{}')
+        let updated = false
+
+        Object.keys(times).forEach((taskId) => {
+            const submissionTime = times[taskId]
+            const timePassed = now - submissionTime
+
+            // Если прошёл 1 час и задание ещё не принято
+            if (timePassed >= oneHour && !progress[taskId]) {
+                progress[taskId] = true
+                updated = true
+            }
+        })
+
+        if (updated) {
+            localStorage.setItem('figma_lessons_progress', JSON.stringify(progress))
+            // Перезагружаем компонент для обновления UI
+            window.location.reload()
+        }
+    }
 
     const filteredTasks = tasks.filter((task) =>
         filter === 'all' ? true : task.difficulty === filter
@@ -76,17 +114,17 @@ export const FigmaTasksPage = () => {
             return
         }
 
-        // Сохраняем прогресс урока в localStorage
         if (selectedTask) {
-            const progress = JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')
-            progress[selectedTask.id] = true
-            localStorage.setItem('figma_lessons_progress', JSON.stringify(progress))
-
             // Сохраняем статус отправки
             const newSubmitted = new Set(submittedTasks)
             newSubmitted.add(selectedTask.id)
             setSubmittedTasks(newSubmitted)
             localStorage.setItem('figma_submitted_tasks', JSON.stringify([...newSubmitted]))
+
+            // Сохраняем время отправки для автоматического принятия через 1 час
+            const newTimes = { ...submissionTimes, [selectedTask.id]: Date.now() }
+            setSubmissionTimes(newTimes)
+            localStorage.setItem('figma_submission_times', JSON.stringify(newTimes))
         }
 
         alert('✅ Ваш ответ принят! Ожидайте проверки преподавателя.')
@@ -399,9 +437,24 @@ export const FigmaTasksPage = () => {
                 <div className="lg:sticky lg:top-24 lg:self-start">
                     {selectedTask ? (
                         <Card>
-                            <h2 className="text-2xl font-bold text-text mb-4">
-                                {selectedTask.title}
-                            </h2>
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-2xl font-bold text-text">
+                                    {selectedTask.title}
+                                </h2>
+                                {submittedTasks.has(selectedTask.id) && !JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')[selectedTask.id] && (
+                                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                                        В ожидании
+                                    </span>
+                                )}
+                                {JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')[selectedTask.id] && (
+                                    <span className="text-sm font-medium text-success bg-success/10 px-3 py-1 rounded-full flex items-center gap-1">
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                        Принято
+                                    </span>
+                                )}
+                            </div>
 
                             <div className="mb-4">
                                 <Badge variant={difficultyColors[selectedTask.difficulty]}>
@@ -497,6 +550,37 @@ export const FigmaTasksPage = () => {
                                             </label>
                                         </div>
                                     </div>
+
+                                    {/* Статус отправки */}
+                                    {selectedTask && submittedTasks.has(selectedTask.id) && !JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')[selectedTask.id] && (
+                                        <div className="p-4 bg-gray-100 border border-gray-300 rounded-lg">
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                <span className="font-medium">В ожидании проверки преподавателя...</span>
+                                            </div>
+                                            <p className="text-sm text-gray-500 mt-2">
+                                                Ваш ответ отправлен и будет автоматически принят в течение часа
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Статус принятия */}
+                                    {selectedTask && JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')[selectedTask.id] && (
+                                        <div className="p-4 bg-success/10 border border-success rounded-lg">
+                                            <div className="flex items-center gap-2 text-success">
+                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                                <span className="font-medium">Задание принято!</span>
+                                            </div>
+                                            <p className="text-sm text-success/80 mt-2">
+                                                Отличная работа! Урок отмечен как выполненный
+                                            </p>
+                                        </div>
+                                    )}
 
                                     <Button className="w-full" onClick={handleSubmit}>
                                         Отправить на проверку
