@@ -4,19 +4,40 @@ import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useMemo } from 'react'
 
 export const ProgressTrackerPage = () => {
     const projects = useProjectStore((state) => state.projects)
     const tasks = useTaskStore((state) => state.tasks)
     const navigate = useNavigate()
 
-    // Навыки
-    const [skills] = useState([
-        { name: 'Python', level: 75, icon: '🐍' },
-        { name: 'Figma', level: 60, icon: '🎨' },
-        { name: 'Работа с данными', level: 55, icon: '📊' },
-    ])
+    // Динамический расчёт навыков на основе выполненных заданий
+    const skills = useMemo(() => {
+        // Загружаем данные о выполненных уроках из localStorage
+        const pythonLessons = JSON.parse(localStorage.getItem('python_lessons_progress') || '{}')
+        const figmaLessons = JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')
+
+        // Считаем процент выполненных уроков Python (всего 15 уроков)
+        const pythonCompleted = Object.values(pythonLessons).filter(Boolean).length
+        const pythonProgress = Math.round((pythonCompleted / 15) * 100)
+
+        // Считаем процент выполненных уроков Figma (всего 17 уроков)
+        const figmaCompleted = Object.values(figmaLessons).filter(Boolean).length
+        const figmaProgress = Math.round((figmaCompleted / 17) * 100)
+
+        // Считаем прогресс работы с данными на основе выполненных задач проектов
+        const completedProjectTasks = tasks.filter(t => t.completed).length
+        const totalProjectTasks = tasks.length
+        const dataWorkProgress = totalProjectTasks > 0
+            ? Math.round((completedProjectTasks / totalProjectTasks) * 100)
+            : 0
+
+        return [
+            { name: 'Python', level: pythonProgress, icon: '🐍' },
+            { name: 'Figma', level: figmaProgress, icon: '🎨' },
+            { name: 'Работа с данными', level: dataWorkProgress, icon: '📊' },
+        ]
+    }, [tasks])
 
     // Статистика
     const totalProjects = projects.length
@@ -180,7 +201,7 @@ export const ProgressTrackerPage = () => {
                 </Card>
             )}
 
-            {/* Навыки */}
+            {/* Навыки - теперь динамические! */}
             <Card>
                 <h2 className="text-xl font-bold text-text mb-4">⭐ Мои навыки</h2>
                 <div className="space-y-4">
@@ -207,7 +228,7 @@ export const ProgressTrackerPage = () => {
                 </div>
                 <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
                     <p className="text-sm text-gray-600">
-                        💡 <strong>Совет:</strong> Продолжайте выполнять проекты и задачи, чтобы повысить свои навыки!
+                        💡 <strong>Совет:</strong> Продолжайте выполнять уроки и задачи, чтобы повысить свои навыки! Прогресс обновляется автоматически.
                     </p>
                 </div>
             </Card>

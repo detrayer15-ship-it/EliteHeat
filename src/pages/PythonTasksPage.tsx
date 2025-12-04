@@ -64,7 +64,14 @@ export const PythonTasksPage = () => {
             return
         }
 
-        alert('Решение отправлено на проверку!')
+        // Сохраняем прогресс урока в localStorage
+        if (selectedTask) {
+            const progress = JSON.parse(localStorage.getItem('python_lessons_progress') || '{}')
+            progress[selectedTask.id] = true
+            localStorage.setItem('python_lessons_progress', JSON.stringify(progress))
+        }
+
+        alert('✅ Решение отправлено! Урок отмечен как выполненный.')
         setAnswer('')
         setSelectedFile(null)
     }
@@ -232,8 +239,8 @@ export const PythonTasksPage = () => {
                                 key={index}
                                 onClick={() => handleTestAnswer(index)}
                                 className={`w-full text-left p-4 rounded-lg border-2 transition-all ${userAnswers[currentQuestion] === index
-                                        ? 'border-primary bg-primary/10'
-                                        : 'border-gray-200 hover:border-primary/50'
+                                    ? 'border-primary bg-primary/10'
+                                    : 'border-gray-200 hover:border-primary/50'
                                     }`}
                             >
                                 <span className="font-semibold mr-2">{String.fromCharCode(97 + index)})</span>

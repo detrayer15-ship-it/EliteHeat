@@ -73,7 +73,14 @@ export const FigmaTasksPage = () => {
             return
         }
 
-        alert('Решение отправлено на проверку!')
+        // Сохраняем прогресс урока в localStorage
+        if (selectedTask) {
+            const progress = JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')
+            progress[selectedTask.id] = true
+            localStorage.setItem('figma_lessons_progress', JSON.stringify(progress))
+        }
+
+        alert('✅ Решение отправлено! Урок отмечен как выполненный.')
         setAnswer('')
         setSelectedFile(null)
     }
