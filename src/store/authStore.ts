@@ -8,10 +8,11 @@ interface AuthStore {
     isAuthenticated: boolean
     users: User[] // Имитация базы данных пользователей
 
-    register: (email: string, password: string, name: string) => { success: boolean; message: string }
+    register: (email: string, password: string, name: string, role?: 'student' | 'admin') => { success: boolean; message: string }
     login: (email: string, password: string) => { success: boolean; message: string }
     logout: () => void
     updateProfile: (data: Partial<User>) => void
+    changeUserRole: (userId: string, newRole: 'student' | 'admin') => void
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -21,7 +22,7 @@ export const useAuthStore = create<AuthStore>()(
             isAuthenticated: false,
             users: [], // Хранилище всех зарегистрированных пользователей
 
-            register: (email: string, password: string, name: string) => {
+            register: (email: string, password: string, name: string, role?: 'student' | 'admin') => {
                 const { users } = get()
 
                 // Проверка: существует ли пользователь с таким email
@@ -45,6 +46,11 @@ export const useAuthStore = create<AuthStore>()(
                     email: email.toLowerCase(),
                     name,
                     password, // В реальном приложении должен быть хеш
+                    role: role || 'student', // Используем выбранную роль или student по умолчанию
+                    points: 0,
+                    level: 1,
+                    streak: 0,
+                    achievements: [],
                     createdAt: new Date().toISOString(),
                 }
 
@@ -99,6 +105,18 @@ export const useAuthStore = create<AuthStore>()(
                 set({
                     user: updatedUser,
                     users: updatedUsers,
+                })
+            },
+
+            changeUserRole: (userId: string, newRole: 'student' | 'admin') => {
+                const { users, user } = get()
+                const updatedUsers = users.map(u =>
+                    u.id === userId ? { ...u, role: newRole } : u
+                )
+
+                set({
+                    users: updatedUsers,
+                    user: user?.id === userId ? { ...user, role: newRole } : user,
                 })
             },
         }),

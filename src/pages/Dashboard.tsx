@@ -75,7 +75,7 @@ export const Dashboard = () => {
                         📁 Мои проекты
                     </Button>
                     <Button onClick={() => navigate('/tasks')}>
-                        ✓ Задачи
+                        ✓ Курсы
                     </Button>
                     <Button onClick={() => navigate('/progress')}>
                         📊 Трекер Прогресса

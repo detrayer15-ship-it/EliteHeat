@@ -72,8 +72,8 @@ export const ProjectProgressPage = () => {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-text mb-2">Задания проекта</h1>
-                <p className="text-gray-600">Список заданий для выполнения внутри проектов</p>
+                <h1 className="text-3xl font-bold text-text mb-2">Курсы</h1>
+                <p className="text-gray-600">Образовательные курсы и задания для развития навыков</p>
             </div>
 
             {/* Progress Bar */}

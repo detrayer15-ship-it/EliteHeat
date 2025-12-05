@@ -7,14 +7,14 @@ export const TasksPage = () => {
 
     return (
         <div>
-            <h1 className="text-3xl font-bold text-text mb-6">Задачи</h1>
+            <h1 className="text-3xl font-bold text-text mb-6">Курсы</h1>
 
             <div className="flex gap-2 mb-6 border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('python')}
                     className={`px-6 py-3 font-semibold transition-smooth ${activeTab === 'python'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-gray-600 hover:text-primary'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-gray-600 hover:text-primary'
                         }`}
                 >
                     🐍 Python
@@ -22,8 +22,8 @@ export const TasksPage = () => {
                 <button
                     onClick={() => setActiveTab('figma')}
                     className={`px-6 py-3 font-semibold transition-smooth ${activeTab === 'figma'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-gray-600 hover:text-primary'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-gray-600 hover:text-primary'
                         }`}
                 >
                     🎨 Figma

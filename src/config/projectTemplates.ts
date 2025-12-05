@@ -1,6 +1,6 @@
 import { Task } from '@/types/project'
 
-export type ProjectTemplateId = 'online-python' | 'replit' | 'programiz' | 'w3schools' | 'custom'
+export type ProjectTemplateId = 'fullstack-app' | 'online-python' | 'replit' | 'programiz' | 'w3schools' | 'custom'
 
 export interface ProjectTemplate {
     id: ProjectTemplateId
@@ -17,6 +17,133 @@ export interface ProjectTemplate {
 }
 
 export const projectTemplates: Record<ProjectTemplateId, ProjectTemplate> = {
+    'fullstack-app': {
+        id: 'fullstack-app',
+        title: '🚀 Полноценное приложение',
+        icon: '🚀',
+        description: 'Создание полноценного приложения с backend и frontend',
+        fields: {
+            problem: 'Создание реального веб-приложения',
+            solution: 'Полный стек разработки с базой данных и авторизацией',
+            audience: 'Разработчики, изучающие fullstack',
+        },
+        tasks: [
+            // Backend и авторизация
+            {
+                title: 'Сделай регистрацию и вход',
+                completed: false,
+                category: '🔧 Backend',
+            },
+            {
+                title: 'Сделай сохранение данных в базе',
+                completed: false,
+                category: '🔧 Backend',
+            },
+            {
+                title: 'Добавь проверку пользователя',
+                completed: false,
+                category: '🔧 Backend',
+            },
+            {
+                title: 'Добавь личный кабинет',
+                completed: false,
+                category: '🔧 Backend',
+            },
+            {
+                title: 'Добавь админ-доступ',
+                completed: false,
+                category: '🔧 Backend',
+            },
+            {
+                title: 'Добавь уникальную функцию',
+                completed: false,
+                category: '🔧 Backend',
+            },
+            {
+                title: 'Добавь монетизацию (платные функции)',
+                completed: false,
+                category: '🔧 Backend',
+            },
+            // UX/UI
+            {
+                title: 'Адаптив под телефон',
+                completed: false,
+                category: '✅ UX/UI',
+            },
+            {
+                title: 'Анимации кнопок',
+                completed: false,
+                category: '✅ UX/UI',
+            },
+            {
+                title: 'Загрузка (loader)',
+                completed: false,
+                category: '✅ UX/UI',
+            },
+            {
+                title: 'Ошибки: "Неверный пароль", "Нет интернета" и т.п.',
+                completed: false,
+                category: '✅ UX/UI',
+            },
+            {
+                title: 'Понятные подсказки',
+                completed: false,
+                category: '✅ UX/UI',
+            },
+            {
+                title: 'Уведомления об успехе/ошибке',
+                completed: false,
+                category: '✅ UX/UI',
+            },
+            {
+                title: 'Подтверждение действий (удалить? выйти?)',
+                completed: false,
+                category: '✅ UX/UI',
+            },
+            // Логика проекта
+            {
+                title: 'Проверка, что пользователь вошёл',
+                completed: false,
+                category: '🔹 Логика',
+            },
+            {
+                title: 'Защита страниц от гостей',
+                completed: false,
+                category: '🔹 Логика',
+            },
+            {
+                title: 'Автовыход при ошибке',
+                completed: false,
+                category: '🔹 Логика',
+            },
+            // Дополнительные функции
+            {
+                title: 'Тёмная тема',
+                completed: false,
+                category: '⭐ Доп. функции',
+            },
+            {
+                title: 'Избранное',
+                completed: false,
+                category: '⭐ Доп. функции',
+            },
+            {
+                title: 'Поиск',
+                completed: false,
+                category: '⭐ Доп. функции',
+            },
+            {
+                title: 'Фильтры',
+                completed: false,
+                category: '⭐ Доп. функции',
+            },
+            {
+                title: 'История действий',
+                completed: false,
+                category: '⭐ Доп. функции',
+            },
+        ],
+    },
     'online-python': {
         id: 'online-python',
         title: '🐍 Online Python IDE',

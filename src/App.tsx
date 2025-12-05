@@ -15,6 +15,8 @@ import { SettingsPage } from './pages/SettingsPage'
 import { ProfileEditPage } from './pages/ProfileEditPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
 import { PaymentPage } from './pages/PaymentPage'
+import { AdminPage } from './pages/AdminPage'
+import { CompetitorAnalysisPage } from './pages/CompetitorAnalysisPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { useProjectStore } from './store/projectStore'
 import { useTaskStore } from './store/taskStore'
@@ -152,6 +154,26 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <ProfileEditPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AdminPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/competitors"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <CompetitorAnalysisPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

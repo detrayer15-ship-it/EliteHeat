@@ -3,6 +3,11 @@ export interface User {
     email: string
     name: string
     password: string
+    role?: 'student' | 'admin'
+    points?: number
+    level?: number
+    streak?: number
+    achievements?: string[]
     createdAt: string
     avatar?: string
     bio?: string

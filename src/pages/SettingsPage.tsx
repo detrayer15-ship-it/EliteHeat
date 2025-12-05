@@ -1,9 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useAuthStore } from '@/store/authStore'
-import { useNavigate } from 'react-router-dom'
 
 export const SettingsPage = () => {
     const theme = useSettingsStore((state) => state.theme)
@@ -11,6 +11,7 @@ export const SettingsPage = () => {
     const setTheme = useSettingsStore((state) => state.setTheme)
     const setLanguage = useSettingsStore((state) => state.setLanguage)
     const user = useAuthStore((state) => state.user)
+    const changeUserRole = useAuthStore((state) => state.changeUserRole)
     const navigate = useNavigate()
 
     const [notifications, setNotifications] = useState(true)
@@ -23,12 +24,55 @@ export const SettingsPage = () => {
         setLanguage(newLanguage)
     }
 
+    const handleBecomeAdmin = () => {
+        if (user) {
+            changeUserRole(user.id, 'admin')
+            window.location.reload()
+        }
+    }
+
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold text-text mb-2">Настройки</h1>
-                <p className="text-gray-600">Управление вашим профилем и предпочтениями</p>
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-3xl font-bold text-text mb-2">Настройки</h1>
+                    <p className="text-gray-600">Управление вашим профилем и предпочтениями</p>
+                </div>
+                {user?.role === 'admin' && (
+                    <Button onClick={() => navigate('/admin')} variant="primary">
+                        👑 Админ-панель
+                    </Button>
+                )}
             </div>
+
+            {/* Роль пользователя */}
+            {user && (
+                <Card>
+                    <h2 className="text-xl font-bold text-text mb-4">👤 Роль пользователя</h2>
+                    <div className="flex items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-4">
+                            <div className="text-4xl">
+                                {user.role === 'admin' ? '👑' : '🎓'}
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg">
+                                    {user.role === 'admin' ? 'Администратор' : 'Ученик'}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                    {user.role === 'admin'
+                                        ? 'У вас есть доступ к админ-панели'
+                                        : 'Вы можете проходить курсы'}
+                                </p>
+                            </div>
+                        </div>
+                        {user.role !== 'admin' && (
+                            <Button variant="primary" onClick={handleBecomeAdmin}>
+                                👑 Стать админом
+                            </Button>
+                        )}
+                    </div>
+                </Card>
+            )}
 
             {/* Профиль */}
             <Card>
@@ -64,6 +108,37 @@ export const SettingsPage = () => {
                         </div>
                     </div>
                 )}
+            </Card>
+
+            {/* Тема оформления */}
+            <Card>
+                <h2 className="text-xl font-bold text-text mb-4">🎨 Тема оформления</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label className="flex flex-col items-center gap-2 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input
+                            type="radio"
+                            name="theme"
+                            value="light"
+                            checked={theme === 'light'}
+                            onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark')}
+                            className="w-4 h-4"
+                        />
+                        <div className="w-full h-12 bg-white border rounded"></div>
+                        <span className="text-sm font-medium">☀️ Светлая</span>
+                    </label>
+                    <label className="flex flex-col items-center gap-2 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                        <input
+                            type="radio"
+                            name="theme"
+                            value="dark"
+                            checked={theme === 'dark'}
+                            onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark')}
+                            className="w-4 h-4"
+                        />
+                        <div className="w-full h-12 bg-gray-900 border rounded"></div>
+                        <span className="text-sm font-medium">🌙 Тёмная</span>
+                    </label>
+                </div>
             </Card>
 
             {/* Язык */}
@@ -107,37 +182,6 @@ export const SettingsPage = () => {
                         className="w-5 h-5"
                     />
                 </label>
-            </Card>
-
-            {/* Тема оформления */}
-            <Card>
-                <h2 className="text-xl font-bold text-text mb-4">🎨 Тема оформления</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <label className="flex flex-col items-center gap-2 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input
-                            type="radio"
-                            name="theme"
-                            value="light"
-                            checked={theme === 'light'}
-                            onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark')}
-                            className="w-4 h-4"
-                        />
-                        <div className="w-full h-12 bg-white border rounded"></div>
-                        <span className="text-sm font-medium">☀️ Светлая</span>
-                    </label>
-                    <label className="flex flex-col items-center gap-2 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input
-                            type="radio"
-                            name="theme"
-                            value="dark"
-                            checked={theme === 'dark'}
-                            onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark')}
-                            className="w-4 h-4"
-                        />
-                        <div className="w-full h-12 bg-gray-900 border rounded"></div>
-                        <span className="text-sm font-medium">🌙 Тёмная</span>
-                    </label>
-                </div>
             </Card>
         </div>
     )

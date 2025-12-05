@@ -13,6 +13,7 @@ export const RegisterPage = () => {
         name: '',
         password: '',
         confirmPassword: '',
+        role: 'student' as 'student' | 'admin',
     })
     const [error, setError] = useState('')
 
@@ -25,7 +26,7 @@ export const RegisterPage = () => {
             return
         }
 
-        const result = register(formData.email, formData.password, formData.name)
+        const result = register(formData.email, formData.password, formData.name, formData.role)
 
         if (result.success) {
             // Автоматический вход после регистрации
@@ -87,6 +88,58 @@ export const RegisterPage = () => {
                         minLength={6}
                         required
                     />
+
+                    {/* Выбор роли */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                            Выберите роль
+                        </label>
+                        <div className="space-y-3">
+                            <label className="flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-smooth ${
+                                formData.role === 'student' ? 'border-primary bg-primary/5' : 'border-gray-200'
+                            }">
+                                <input
+                                    type="radio"
+                                    name="role"
+                                    value="student"
+                                    checked={formData.role === 'student'}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value as 'student' | 'admin' })}
+                                    className="mt-1"
+                                />
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">🎓</span>
+                                        <span className="font-semibold text-lg">Ученик</span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        Проходите курсы, выполняйте задания, получайте сертификаты
+                                    </p>
+                                </div>
+                            </label>
+
+                            <label className="flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-smooth ${
+                                formData.role === 'admin' ? 'border-error bg-error/5' : 'border-gray-200'
+                            }">
+                                <input
+                                    type="radio"
+                                    name="role"
+                                    value="admin"
+                                    checked={formData.role === 'admin'}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value as 'student' | 'admin' })}
+                                    className="mt-1"
+                                />
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">👑</span>
+                                        <span className="font-semibold text-lg">Учитель (Админ)</span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        Управляйте пользователями, проверяйте задания, назначайте роли
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
 
                     <Button type="submit" className="w-full">
                         Создать аккаунт

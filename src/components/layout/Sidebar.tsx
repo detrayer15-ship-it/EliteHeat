@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/Button'
 const navItems = [
     { path: '/dashboard', label: 'Главная', icon: '🏠' },
     { path: '/projects', label: 'Проекты', icon: '📁' },
-    { path: '/tasks', label: 'Задачи', icon: '✓' },
+    { path: '/tasks', label: 'Курсы', icon: '🎓' },
     { path: '/progress', label: 'Трекер Прогресса', icon: '📊' },
+    { path: '/competitors', label: 'Конкуренты', icon: '📊' },
     { path: '/ai-assistant', label: 'AI Помощник', icon: '🤖' },
     { path: '/analyzer', label: 'Анализ', icon: '📈' },
     { path: '/subscription', label: 'Подписка', icon: '💎' },
@@ -54,8 +55,8 @@ export const Sidebar = () => {
                             key={item.path}
                             to={item.path}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${isActive
-                                    ? 'bg-primary text-white'
-                                    : 'text-text hover:bg-gray-100'
+                                ? 'bg-primary text-white'
+                                : 'text-gray-700 hover:bg-gray-100'
                                 }`}
                         >
                             <span className="text-xl">{item.icon}</span>
@@ -63,6 +64,20 @@ export const Sidebar = () => {
                         </Link>
                     )
                 })}
+
+                {/* Админ-панель - только для админов */}
+                {user?.role === 'admin' && (
+                    <Link
+                        to="/admin"
+                        className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/admin'
+                            ? 'bg-error text-white'
+                            : 'text-error hover:bg-error/10'
+                            }`}
+                    >
+                        <span className="text-xl">👑</span>
+                        <span className="font-medium">Админ-панель</span>
+                    </Link>
+                )}
             </nav>
 
             {/* Logout Button */}
