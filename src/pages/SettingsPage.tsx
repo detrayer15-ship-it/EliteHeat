@@ -11,7 +11,6 @@ export const SettingsPage = () => {
     const setTheme = useSettingsStore((state) => state.setTheme)
     const setLanguage = useSettingsStore((state) => state.setLanguage)
     const user = useAuthStore((state) => state.user)
-    const changeUserRole = useAuthStore((state) => state.changeUserRole)
     const navigate = useNavigate()
 
     const [notifications, setNotifications] = useState(true)
@@ -22,13 +21,6 @@ export const SettingsPage = () => {
 
     const handleLanguageChange = (newLanguage: 'ru' | 'en') => {
         setLanguage(newLanguage)
-    }
-
-    const handleBecomeAdmin = () => {
-        if (user) {
-            changeUserRole(user.id, 'admin')
-            window.location.reload()
-        }
     }
 
     return (
@@ -49,27 +41,20 @@ export const SettingsPage = () => {
             {user && (
                 <Card>
                     <h2 className="text-xl font-bold text-text mb-4">👤 Роль пользователя</h2>
-                    <div className="flex items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-4">
-                            <div className="text-4xl">
-                                {user.role === 'admin' ? '👑' : '🎓'}
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-lg">
-                                    {user.role === 'admin' ? 'Администратор' : 'Ученик'}
-                                </h3>
-                                <p className="text-sm text-gray-600">
-                                    {user.role === 'admin'
-                                        ? 'У вас есть доступ к админ-панели'
-                                        : 'Вы можете проходить курсы'}
-                                </p>
-                            </div>
+                    <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div className="text-4xl">
+                            {user.role === 'admin' ? '👑' : '🎓'}
                         </div>
-                        {user.role !== 'admin' && (
-                            <Button variant="primary" onClick={handleBecomeAdmin}>
-                                👑 Стать админом
-                            </Button>
-                        )}
+                        <div>
+                            <h3 className="font-semibold text-lg">
+                                {user.role === 'admin' ? 'Администратор' : 'Ученик'}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                                {user.role === 'admin'
+                                    ? 'У вас есть доступ к админ-панели и управлению пользователями'
+                                    : 'Вы можете проходить курсы и выполнять задания'}
+                            </p>
+                        </div>
                     </div>
                 </Card>
             )}
