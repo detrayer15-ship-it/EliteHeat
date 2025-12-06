@@ -87,11 +87,6 @@ export const ProjectDetailPage = () => {
     const activeTasks = tasks.filter(t => !t.completed).length
     const overdueTasks = tasks.filter(t => !t.completed && t.deadline && new Date(t.deadline) < new Date()).length
 
-    const stageLabels = {
-        idea: 'Идея',
-        prototype: 'Прототип',
-        presentation: 'Презентация',
-    }
 
     return (
         <div className="space-y-6">
@@ -128,7 +123,7 @@ export const ProjectDetailPage = () => {
                         <p className="text-gray-600">{project.description}</p>
                     </div>
                     <Badge variant={project.stage === 'presentation' ? 'success' : project.stage === 'prototype' ? 'warning' : 'default'}>
-                        {stageLabels[project.stage]}
+                        {project.stage === 'idea' ? 'Идея' : project.stage === 'prototype' ? 'Прототип' : project.stage === 'presentation' ? 'Презентация' : 'Завершено'}
                     </Badge>
                 </div>
 

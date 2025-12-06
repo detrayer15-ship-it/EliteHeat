@@ -8,7 +8,6 @@ import { ProgressBar } from '@/components/ui/ProgressBar'
 import { AssignmentCard } from '@/modules/assignments/AssignmentCard'
 import { AssignmentForm } from '@/modules/assignments/AssignmentForm'
 import { Assignment } from '@/types/assignment'
-import { generateId } from '@/utils/uuid'
 
 type FilterType = 'all' | 'active' | 'completed'
 
@@ -17,7 +16,6 @@ export const ProjectProgressPage = () => {
     const projects = useProjectStore((state) => state.projects)
     const [filter, setFilter] = useState<FilterType>('all')
     const [showForm, setShowForm] = useState(false)
-    const [selectedProject, setSelectedProject] = useState<string | null>(null)
 
     // Собираем все задания из всех проектов
     const allAssignments = useMemo(() => {
@@ -85,7 +83,7 @@ export const ProjectProgressPage = () => {
                             {stats.progress}%
                         </span>
                     </div>
-                    <ProgressBar progress={stats.progress} />
+                    <ProgressBar value={stats.progress} />
                     <p className="text-sm text-gray-600 mt-2">
                         Выполнено {stats.completed} из {stats.total}
                     </p>
@@ -151,7 +149,7 @@ export const ProjectProgressPage = () => {
             {/* Create Assignment Modal */}
             <Modal isOpen={showForm} onClose={() => setShowForm(false)} title="Новое задание">
                 <AssignmentForm
-                    projectId={selectedProject || projects[0]?.id || ''}
+                    projectId={projects[0]?.id || ''}
                     onSubmit={handleCreateAssignment}
                     onCancel={() => setShowForm(false)}
                 />

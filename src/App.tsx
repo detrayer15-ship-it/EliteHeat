@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AppLayout } from './components/layout/AppLayout'
 import { LandingPage } from './pages/LandingPage'
 import { Dashboard } from './pages/Dashboard'
@@ -16,7 +16,6 @@ import { ProfileEditPage } from './pages/ProfileEditPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
 import { PaymentPage } from './pages/PaymentPage'
 import { AdminPage } from './pages/AdminPage'
-import { CompetitorAnalysisPage } from './pages/CompetitorAnalysisPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { useProjectStore } from './store/projectStore'
 import { useTaskStore } from './store/taskStore'
@@ -164,16 +163,6 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <AdminPage />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/competitors"
-                    element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <CompetitorAnalysisPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

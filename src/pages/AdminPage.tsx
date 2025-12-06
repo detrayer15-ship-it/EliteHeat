@@ -13,7 +13,7 @@ export const AdminPage = () => {
         changeUserRole(userId, newRole)
     }
 
-    const deleteUser = (userId: string) => {
+    const deleteUser = (_userId: string) => {
         if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
             // Здесь будет логика удаления
             alert('Функция удаления будет добавлена')
@@ -79,8 +79,8 @@ export const AdminPage = () => {
                 <button
                     onClick={() => setSelectedTab('users')}
                     className={`px-4 py-2 font-semibold transition-smooth ${selectedTab === 'users'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-gray-600 hover:text-gray-800'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-gray-600 hover:text-gray-800'
                         }`}
                 >
                     👥 Пользователи
@@ -88,8 +88,8 @@ export const AdminPage = () => {
                 <button
                     onClick={() => setSelectedTab('settings')}
                     className={`px-4 py-2 font-semibold transition-smooth ${selectedTab === 'settings'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-gray-600 hover:text-gray-800'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-gray-600 hover:text-gray-800'
                         }`}
                 >
                     ⚙️ Настройки
@@ -97,8 +97,8 @@ export const AdminPage = () => {
                 <button
                     onClick={() => setSelectedTab('stats')}
                     className={`px-4 py-2 font-semibold transition-smooth ${selectedTab === 'stats'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-gray-600 hover:text-gray-800'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-gray-600 hover:text-gray-800'
                         }`}
                 >
                     📊 Статистика
@@ -136,8 +136,8 @@ export const AdminPage = () => {
                                         <td className="p-3 text-center">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-sm font-semibold ${u.role === 'admin'
-                                                        ? 'bg-error/10 text-error'
-                                                        : 'bg-success/10 text-success'
+                                                    ? 'bg-error/10 text-error'
+                                                    : 'bg-success/10 text-success'
                                                     }`}
                                             >
                                                 {u.role === 'admin' ? '👑 Админ' : '🎓 Ученик'}

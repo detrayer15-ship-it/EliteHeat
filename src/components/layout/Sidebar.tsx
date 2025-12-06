@@ -7,9 +7,8 @@ const navItems = [
     { path: '/projects', label: 'Проекты', icon: '📁' },
     { path: '/tasks', label: 'Курсы', icon: '🎓' },
     { path: '/progress', label: 'Трекер Прогресса', icon: '📊' },
-    { path: '/competitors', label: 'Конкуренты', icon: '📊' },
     { path: '/ai-assistant', label: 'AI Помощник', icon: '🤖' },
-    { path: '/analyzer', label: 'Анализ', icon: '📈' },
+    { path: '/analyzer', label: 'AI Review', icon: '🤖' },
     { path: '/subscription', label: 'Подписка', icon: '💎' },
     { path: '/settings', label: 'Настройки', icon: '⚙️' },
 ]
