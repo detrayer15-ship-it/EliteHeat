@@ -1,0 +1,38 @@
+{
+    "name": "eliteheat-backend",
+    "version": "1.0.0",
+    "description": "Backend for EliteHeat educational platform with real-time chat and admin panel",
+    "main": "src/server.js",
+    "type": "module",
+    "scripts": {
+        "start": "node src/server.js",
+        "dev": "nodemon src/server.js",
+        "dev:memory": "nodemon src/server-memory.js"
+    },
+    "keywords": [
+        "education",
+        "chat",
+        "admin",
+        "nodejs",
+        "express",
+        "mongodb",
+        "socket.io"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "express-rate-limit": "^7.1.5",
+        "express-validator": "^7.0.1",
+        "helmet": "^7.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.20.2",
+        "socket.io": "^4.6.1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.2"
+    }
+}

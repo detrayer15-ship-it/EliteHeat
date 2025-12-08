@@ -7,7 +7,7 @@ import { ProjectsPage } from './pages/ProjectsPage'
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
 import { TasksPage } from './pages/TasksPage'
 import { ProgressTrackerPage } from './pages/ProgressTrackerPage'
-import { AnalyzerPage } from './pages/AnalyzerPage'
+import { AIReviewPage } from './pages/AnalyzerPage'
 import { AIAssistantPage } from './pages/AIAssistantPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -16,19 +16,29 @@ import { ProfileEditPage } from './pages/ProfileEditPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
 import { PaymentPage } from './pages/PaymentPage'
 import { AdminPage } from './pages/AdminPage'
+import { AdminDashboardPage } from './pages/AdminDashboardPage'
+import { TaskReviewPage } from './pages/TaskReviewPage'
+import { UsersPage } from './pages/UsersPage'
+import { SubmissionsPage } from './pages/SubmissionsPage'
+import { FamilySubscriptionPage } from './pages/FamilySubscriptionPage'
+import { ChatPage } from './pages/ChatPage'
+import { AdminUsersPage } from './pages/AdminUsersPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { useProjectStore } from './store/projectStore'
 import { useTaskStore } from './store/taskStore'
 import { useSettingsStore } from './store/settingsStore'
+import { useAuthStore } from './store/authStore'
 
 function App() {
     const loadProjects = useProjectStore((state) => state.loadProjects)
     const loadTasks = useTaskStore((state) => state.loadTasks)
     const theme = useSettingsStore((state) => state.theme)
+    const loadUser = useAuthStore((state) => state.loadUser)
 
     useEffect(() => {
         loadProjects()
         loadTasks()
+        loadUser() // Load user from token on app start
 
         // Apply saved theme on load
         if (theme === 'dark') {
@@ -36,7 +46,7 @@ function App() {
         } else {
             document.documentElement.classList.remove('dark')
         }
-    }, [loadProjects, loadTasks, theme])
+    }, [loadProjects, loadTasks, loadUser, theme])
 
     return (
         <BrowserRouter>
@@ -102,7 +112,7 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <AnalyzerPage />
+                                <AIReviewPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }
@@ -123,6 +133,16 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <SubscriptionPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/family-subscription"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <FamilySubscriptionPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }
@@ -158,11 +178,61 @@ function App() {
                     }
                 />
                 <Route
+                    path="/users"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <UsersPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/submissions"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <SubmissionsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/admin"
                     element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <AdminPage />
+                                <AdminDashboardPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/tasks"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <TaskReviewPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/chat"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ChatPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/users"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AdminUsersPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

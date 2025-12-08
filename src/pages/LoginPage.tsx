@@ -13,12 +13,15 @@ export const LoginPage = () => {
         password: '',
     })
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
 
-        const result = login(formData.email, formData.password)
+        setIsLoading(true)
+        const result = await login(formData.email, formData.password)
+        setIsLoading(false)
 
         if (result.success) {
             navigate('/dashboard')
@@ -61,7 +64,7 @@ export const LoginPage = () => {
                         required
                     />
 
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full" loading={isLoading}>
                         Войти
                     </Button>
 

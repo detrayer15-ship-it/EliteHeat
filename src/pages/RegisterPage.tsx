@@ -13,11 +13,13 @@ export const RegisterPage = () => {
         name: '',
         password: '',
         confirmPassword: '',
+        city: '',
         role: 'student' as 'student' | 'admin',
     })
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
 
@@ -26,10 +28,11 @@ export const RegisterPage = () => {
             return
         }
 
-        const result = register(formData.email, formData.password, formData.name, formData.role)
+        setIsLoading(true)
+        const result = await register(formData.email, formData.password, formData.name, formData.city, formData.role)
+        setIsLoading(false)
 
         if (result.success) {
-            // Автоматический вход после регистрации
             navigate('/dashboard')
         } else {
             setError(result.message)
@@ -89,59 +92,45 @@ export const RegisterPage = () => {
                         required
                     />
 
-                    {/* Выбор роли */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                            Выберите роль
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Роль
                         </label>
-                        <div className="space-y-3">
-                            <label className="flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-smooth ${
-                                formData.role === 'student' ? 'border-primary bg-primary/5' : 'border-gray-200'
-                            }">
-                                <input
-                                    type="radio"
-                                    name="role"
-                                    value="student"
-                                    checked={formData.role === 'student'}
-                                    onChange={(e) => setFormData({ ...formData, role: e.target.value as 'student' | 'admin' })}
-                                    className="mt-1"
-                                />
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-2xl">🎓</span>
-                                        <span className="font-semibold text-lg">Ученик</span>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        Проходите курсы, выполняйте задания, получайте сертификаты
-                                    </p>
-                                </div>
-                            </label>
-
-                            <label className="flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-smooth ${
-                                formData.role === 'admin' ? 'border-error bg-error/5' : 'border-gray-200'
-                            }">
-                                <input
-                                    type="radio"
-                                    name="role"
-                                    value="admin"
-                                    checked={formData.role === 'admin'}
-                                    onChange={(e) => setFormData({ ...formData, role: e.target.value as 'student' | 'admin' })}
-                                    className="mt-1"
-                                />
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-2xl">👑</span>
-                                        <span className="font-semibold text-lg">Учитель (Админ)</span>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        Управляйте пользователями, проверяйте задания, назначайте роли
-                                    </p>
-                                </div>
-                            </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, role: 'student' })}
+                                className={`p-4 border-2 rounded-lg transition-all ${formData.role === 'student'
+                                    ? 'border-primary bg-primary/5 text-primary'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                            >
+                                <div className="text-2xl mb-1">🎓</div>
+                                <div className="font-semibold">Ученик</div>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, role: 'admin' })}
+                                className={`p-4 border-2 rounded-lg transition-all ${formData.role === 'admin'
+                                    ? 'border-primary bg-primary/5 text-primary'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                            >
+                                <div className="text-2xl mb-1">👑</div>
+                                <div className="font-semibold">Админ</div>
+                            </button>
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full">
+                    <Input
+                        label="Город"
+                        value={formData.city}
+                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        placeholder="Алматы"
+                        required
+                    />
+
+                    <Button type="submit" className="w-full" loading={isLoading}>
                         Создать аккаунт
                     </Button>
 

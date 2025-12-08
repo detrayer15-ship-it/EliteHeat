@@ -16,12 +16,12 @@ export const Button = ({
     disabled,
     ...props
 }: ButtonProps) => {
-    const baseStyles = 'font-medium rounded-lg transition-smooth disabled:opacity-50 disabled:cursor-not-allowed'
+    const baseStyles = 'font-medium rounded-lg transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95'
 
     const variants = {
-        primary: 'bg-primary text-white hover:bg-primary/90',
-        secondary: 'bg-white text-text border border-gray-200 hover:bg-gray-50',
-        ghost: 'text-text hover:bg-gray-100',
+        primary: 'bg-primary text-white hover:bg-primary-dark hover:shadow-lg',
+        secondary: 'bg-white text-text border border-gray-200 hover:bg-gray-100 hover:border-primary hover:shadow-md',
+        ghost: 'text-text hover:bg-primary/10 hover:text-primary',
     }
 
     const sizes = {

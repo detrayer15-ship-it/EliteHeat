@@ -156,7 +156,7 @@ export const LandingPage = () => {
                         <a href="#" className="hover:text-white transition-smooth">Поддержка</a>
                     </div>
                     <div className="mt-8 text-sm text-gray-500">
-                        © 2024 EliteHeat. Все права защищены.
+                        © 2025 EliteHeat. Все права защищены.
                     </div>
                 </div>
             </footer>

@@ -1,6 +1,5 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { Button } from '@/components/ui/Button'
 
 const navItems = [
     { path: '/dashboard', label: 'Главная', icon: '🏠' },
@@ -15,81 +14,98 @@ const navItems = [
 
 export const Sidebar = () => {
     const location = useLocation()
-    const navigate = useNavigate()
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
 
-    const handleLogout = () => {
-        logout()
-        navigate('/')
-    }
-
     return (
-        <aside className="w-64 bg-white border-r border-gray-200 h-screen sticky top-0 hidden lg:flex lg:flex-col">
-            <div className="p-6">
-                <h1 className="text-2xl font-bold text-primary">EliteHeat</h1>
+        <div className="w-64 bg-white h-screen fixed left-0 top-0 shadow-lg flex flex-col">
+            {/* Logo */}
+            <div className="p-6 border-b">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-ai-blue bg-clip-text text-transparent">
+                    EliteHeat
+                </h1>
                 <p className="text-sm text-gray-600 mt-1">Образовательная платформа</p>
             </div>
 
-            {/* User Profile */}
-            {user && (
-                <div className="px-6 pb-4 border-b border-gray-200">
-                    <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
-                        <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg">
-                            {user.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-text truncate">{user.name}</div>
-                            <div className="text-xs text-gray-600 truncate">{user.email}</div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Navigation */}
+            <nav className="flex-1 overflow-y-auto p-4">
+                <ul className="space-y-2">
+                    {navItems.map((item) => {
+                        const isActive = location.pathname === item.path
+                        return (
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${isActive
+                                        ? 'bg-primary text-white'
+                                        : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
+                            >
+                                <span className="text-xl">{item.icon}</span>
+                                <span className="font-medium">{item.label}</span>
+                            </Link>
+                        )
+                    })}
 
-            <nav className="px-3 flex-1 overflow-y-auto">
-                {navItems.map((item) => {
-                    const isActive = location.pathname === item.path
-                    return (
+                    {/* Задания - только для админов */}
+                    {user?.role === 'admin' && (
                         <Link
-                            key={item.path}
-                            to={item.path}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${isActive
-                                ? 'bg-primary text-white'
-                                : 'text-gray-700 hover:bg-gray-100'
+                            to="/submissions"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/submissions'
+                                    ? 'bg-primary text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                 }`}
                         >
-                            <span className="text-xl">{item.icon}</span>
-                            <span className="font-medium">{item.label}</span>
+                            <span className="text-xl">📝</span>
+                            <span className="font-medium">Задания</span>
                         </Link>
-                    )
-                })}
+                    )}
 
-                {/* Админ-панель - только для админов */}
-                {user?.role === 'admin' && (
-                    <Link
-                        to="/admin"
-                        className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/admin'
-                            ? 'bg-error text-white'
-                            : 'text-error hover:bg-error/10'
-                            }`}
-                    >
-                        <span className="text-xl">👑</span>
-                        <span className="font-medium">Админ-панель</span>
-                    </Link>
-                )}
+                    {/* Админ-панель - только для админов */}
+                    {user?.role === 'admin' && (
+                        <Link
+                            to="/admin"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/admin'
+                                    ? 'bg-error text-white'
+                                    : 'text-error hover:bg-error/10'
+                                }`}
+                        >
+                            <span className="text-xl">👑</span>
+                            <span className="font-medium">Админ-панель</span>
+                        </Link>
+                    )}
+                </ul>
             </nav>
 
-            {/* Logout Button */}
-            <div className="p-3 border-t border-gray-200">
-                <Button
-                    variant="secondary"
-                    className="w-full"
-                    onClick={handleLogout}
-                >
-                    <span className="mr-2">🚪</span>
-                    Выйти
-                </Button>
+            {/* User Profile */}
+            <div className="p-4 border-t">
+                {user ? (
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-ai-blue rounded-full flex items-center justify-center text-white font-bold">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-text truncate">{user.name}</p>
+                                <p className="text-xs text-gray-600 truncate">{user.email}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={logout}
+                            className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-smooth"
+                        >
+                            Выйти
+                        </button>
+                    </div>
+                ) : (
+                    <Link
+                        to="/login"
+                        className="block w-full px-4 py-2 bg-primary text-white text-center rounded-lg font-medium hover:bg-primary/90 transition-smooth"
+                    >
+                        Войти
+                    </Link>
+                )}
             </div>
-        </aside>
+        </div>
     )
 }

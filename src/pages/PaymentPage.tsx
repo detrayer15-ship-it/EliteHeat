@@ -1,250 +1,163 @@
 import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { SubscriptionPlan } from '@/types/subscription'
-import { useSubscriptionStore } from '@/store/subscriptionStore'
+import { Input } from '@/components/ui/Input'
 
 export const PaymentPage = () => {
     const navigate = useNavigate()
     const location = useLocation()
-    const plan = location.state?.plan as SubscriptionPlan | undefined
-    const activateSubscription = useSubscriptionStore((state) => state.activateSubscription)
+    const { plan, price } = location.state || { plan: 'Месячная', price: 12000 }
 
-    const [transactionId, setTransactionId] = useState('')
-    const [isProcessing, setIsProcessing] = useState(false)
-    const [paymentMethod, setPaymentMethod] = useState<'kaspi' | 'halyk'>('kaspi')
+    const [selectedMethod, setSelectedMethod] = useState<'kaspi' | 'halyk' | null>(null)
+    const [paymentData, setPaymentData] = useState({
+        phone: '',
+        email: '',
+        name: '',
+    })
 
-    if (!plan) {
-        navigate('/subscription')
-        return null
-    }
-
-    const handleConfirmPayment = () => {
-        if (!transactionId.trim()) {
-            alert('Пожалуйста, введите номер транзакции')
+    const handlePayment = () => {
+        if (!selectedMethod) {
+            alert('Выберите способ оплаты')
             return
         }
 
-        setIsProcessing(true)
+        if (!paymentData.phone || !paymentData.email || !paymentData.name) {
+            alert('Заполните все поля')
+            return
+        }
 
-        // Имитация проверки платежа
-        setTimeout(() => {
-            activateSubscription(plan.id, plan.price)
-            setIsProcessing(false)
-            alert('✅ Оплата подтверждена! Подписка активирована.')
-            navigate('/subscription')
-        }, 2000)
+        // Здесь будет интеграция с платежными системами
+        alert(`Оплата через ${selectedMethod === 'kaspi' ? 'Kaspi.kz' : 'Halyk Bank'}\nСумма: ${price.toLocaleString('ru-RU')}₸\n\nВ production здесь будет редирект на платежную систему`)
+
+        // После успешной оплаты
+        navigate('/dashboard')
     }
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
+            {/* Header */}
             <div>
-                <Button variant="ghost" onClick={() => navigate('/subscription')} className="mb-4">
-                    ← Назад к тарифам
-                </Button>
                 <h1 className="text-3xl font-bold text-text mb-2">💳 Оплата подписки</h1>
-                <p className="text-gray-600">Выберите способ оплаты и следуйте инструкциям</p>
+                <p className="text-gray-600">Выбранный тариф: <span className="font-semibold">{plan}</span></p>
             </div>
 
-            {/* Выбранный тариф */}
-            <Card className="bg-primary/5 border-primary/20">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h3 className="text-xl font-bold text-text mb-1">{plan.name}</h3>
-                        <p className="text-gray-600">{plan.duration}</p>
+            {/* Order Summary */}
+            <Card>
+                <h2 className="text-xl font-bold mb-4">📋 Детали заказа</h2>
+                <div className="space-y-3">
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span className="text-gray-600">Тариф:</span>
+                        <span className="font-semibold">{plan}</span>
                     </div>
-                    <div className="text-right">
-                        <div className="text-3xl font-bold text-primary">
-                            {plan.price.toLocaleString('ru-RU')} ₸
-                        </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <span className="text-gray-600">Сумма к оплате:</span>
+                        <span className="text-2xl font-bold text-primary">{price.toLocaleString('ru-RU')}₸</span>
                     </div>
                 </div>
             </Card>
 
-            {/* Выбор способа оплаты */}
+            {/* Payment Method Selection */}
             <Card>
-                <h2 className="text-xl font-bold text-text mb-4">Способ оплаты</h2>
+                <h2 className="text-xl font-bold mb-4">💳 Выберите способ оплаты</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button
-                        onClick={() => setPaymentMethod('kaspi')}
-                        className={`p-4 border-2 rounded-lg transition-smooth ${paymentMethod === 'kaspi'
-                            ? 'border-primary bg-primary/5'
-                            : 'border-gray-200 hover:border-primary/50'
+                    <div
+                        onClick={() => setSelectedMethod('kaspi')}
+                        className={`p-6 border-2 rounded-lg cursor-pointer transition-smooth ${selectedMethod === 'kaspi'
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-200 hover:border-primary/50'
                             }`}
                     >
-                        <div className="text-4xl mb-2">🔴</div>
-                        <h4 className="font-semibold text-text">Kaspi</h4>
-                        <p className="text-sm text-gray-600">Kaspi QR / Kaspi Pay</p>
-                    </button>
-                    <button
-                        onClick={() => setPaymentMethod('halyk')}
-                        className={`p-4 border-2 rounded-lg transition-smooth ${paymentMethod === 'halyk'
-                            ? 'border-primary bg-primary/5'
-                            : 'border-gray-200 hover:border-primary/50'
+                        <div className="text-center">
+                            <div className="text-5xl mb-3">💳</div>
+                            <h3 className="text-xl font-bold mb-2">Kaspi.kz</h3>
+                            <p className="text-sm text-gray-600">Быстрая оплата через Kaspi</p>
+                        </div>
+                    </div>
+
+                    <div
+                        onClick={() => setSelectedMethod('halyk')}
+                        className={`p-6 border-2 rounded-lg cursor-pointer transition-smooth ${selectedMethod === 'halyk'
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-200 hover:border-primary/50'
                             }`}
                     >
-                        <div className="text-4xl mb-2">💳</div>
-                        <h4 className="font-semibold text-text">Halyk Bank</h4>
-                        <p className="text-sm text-gray-600">Перевод на карту</p>
-                    </button>
+                        <div className="text-center">
+                            <div className="text-5xl mb-3">🏦</div>
+                            <h3 className="text-xl font-bold mb-2">Halyk Bank</h3>
+                            <p className="text-sm text-gray-600">Оплата через Halyk Bank</p>
+                        </div>
+                    </div>
                 </div>
-            </Card>
 
-            {/* Инструкции по оплате */}
-            {paymentMethod === 'kaspi' && (
-                <Card>
-                    <h2 className="text-xl font-bold text-text mb-4">📱 Оплата через Kaspi</h2>
-
-                    <div className="space-y-4">
-                        <div className="bg-gray-50 p-6 rounded-lg text-center">
-                            <div className="text-6xl mb-3">📱</div>
-                            <p className="text-sm text-gray-600 mb-2">Отсканируйте QR-код в приложении Kaspi</p>
-                            <div className="inline-block p-4 bg-white border-2 border-gray-300 rounded-lg">
-                                <div className="w-48 h-48 bg-gray-200 flex items-center justify-center">
-                                    <span className="text-gray-500">QR-код Kaspi</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="border-t pt-4">
-                            <h4 className="font-semibold text-text mb-3">Или переведите на номер:</h4>
-                            <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-2xl font-bold text-primary">+7 (777) 123-45-67</span>
-                                    <Button
-                                        variant="secondary"
-                                        size="sm"
-                                        onClick={() => {
-                                            navigator.clipboard.writeText('+77771234567')
-                                            alert('Номер скопирован!')
-                                        }}
-                                    >
-                                        Копировать
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-warning/10 p-4 rounded-lg border border-warning/20">
-                            <p className="text-sm text-gray-700">
-                                <strong>Важно:</strong> После оплаты введите номер транзакции из Kaspi ниже
-                            </p>
-                        </div>
-                    </div>
-                </Card>
-            )}
-
-            {paymentMethod === 'halyk' && (
-                <Card>
-                    <h2 className="text-xl font-bold text-text mb-4">💳 Оплата через Halyk Bank</h2>
-
-                    <div className="space-y-4">
-                        <div>
-                            <h4 className="font-semibold text-text mb-3">Реквизиты для перевода:</h4>
-                            <div className="space-y-3">
-                                <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
-                                    <div className="text-sm text-gray-600 mb-1">Номер карты</div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xl font-bold text-primary">4400 4301 2345 6789</span>
-                                        <Button
-                                            variant="secondary"
-                                            size="sm"
-                                            onClick={() => {
-                                                navigator.clipboard.writeText('4400430123456789')
-                                                alert('Номер карты скопирован!')
-                                            }}
-                                        >
-                                            Копировать
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <div className="grid grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                            <span className="text-gray-600">Владелец:</span>
-                                            <div className="font-semibold">ELITE HEAT PLATFORM</div>
-                                        </div>
-                                        <div>
-                                            <span className="text-gray-600">Банк:</span>
-                                            <div className="font-semibold">Halyk Bank</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-warning/10 p-4 rounded-lg border border-warning/20">
-                            <p className="text-sm text-gray-700">
-                                <strong>Важно:</strong> После оплаты введите номер транзакции из банковского приложения ниже
-                            </p>
-                        </div>
-                    </div>
-                </Card>
-            )}
-
-            {/* Подтверждение оплаты */}
-            <Card>
-                <h2 className="text-xl font-bold text-text mb-4">✅ Подтверждение оплаты</h2>
-
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Номер транзакции / ID платежа
-                        </label>
-                        <input
-                            type="text"
-                            value={transactionId}
-                            onChange={(e) => setTransactionId(e.target.value)}
-                            placeholder="Введите номер транзакции"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                            Номер транзакции можно найти в истории платежей вашего приложения
+                {selectedMethod && (
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800">
+                            ℹ️ После нажатия "Оплатить" вы будете перенаправлены на страницу{' '}
+                            {selectedMethod === 'kaspi' ? 'Kaspi.kz' : 'Halyk Bank'} для завершения оплаты
                         </p>
                     </div>
+                )}
+            </Card>
 
-                    <Button
-                        onClick={handleConfirmPayment}
-                        disabled={!transactionId.trim() || isProcessing}
-                        className="w-full"
-                    >
-                        {isProcessing ? 'Проверка платежа...' : 'Подтвердить оплату'}
-                    </Button>
+            {/* Contact Information */}
+            <Card>
+                <h2 className="text-xl font-bold mb-4">📝 Контактная информация</h2>
+                <div className="space-y-4">
+                    <Input
+                        label="Имя и Фамилия"
+                        type="text"
+                        placeholder="Иван Иванов"
+                        value={paymentData.name}
+                        onChange={(e) => setPaymentData({ ...paymentData, name: e.target.value })}
+                    />
+                    <Input
+                        label="Номер телефона"
+                        type="tel"
+                        placeholder="+7 (___) ___-__-__"
+                        value={paymentData.phone}
+                        onChange={(e) => setPaymentData({ ...paymentData, phone: e.target.value })}
+                    />
+                    <Input
+                        label="Email"
+                        type="email"
+                        placeholder="example@email.com"
+                        value={paymentData.email}
+                        onChange={(e) => setPaymentData({ ...paymentData, email: e.target.value })}
+                    />
+                </div>
+            </Card>
 
-                    <div className="text-center text-sm text-gray-500">
-                        Нажимая кнопку, вы подтверждаете, что совершили оплату
+            {/* Security Notice */}
+            <Card>
+                <div className="flex items-start gap-3">
+                    <div className="text-2xl">🔒</div>
+                    <div>
+                        <h3 className="font-semibold mb-1">Безопасная оплата</h3>
+                        <p className="text-sm text-gray-600">
+                            Все платежи защищены SSL-шифрованием. Мы не храним данные ваших банковских карт.
+                        </p>
                     </div>
                 </div>
             </Card>
 
-            {/* Инструкция */}
-            <Card className="bg-gray-50">
-                <h3 className="font-semibold text-text mb-3">📋 Как оплатить:</h3>
-                <ol className="space-y-2 text-sm text-gray-700">
-                    <li className="flex gap-2">
-                        <span className="font-semibold">1.</span>
-                        <span>Выберите способ оплаты (Kaspi или Halyk Bank)</span>
-                    </li>
-                    <li className="flex gap-2">
-                        <span className="font-semibold">2.</span>
-                        <span>Переведите указанную сумму по реквизитам</span>
-                    </li>
-                    <li className="flex gap-2">
-                        <span className="font-semibold">3.</span>
-                        <span>Скопируйте номер транзакции из приложения</span>
-                    </li>
-                    <li className="flex gap-2">
-                        <span className="font-semibold">4.</span>
-                        <span>Вставьте номер в поле выше и нажмите "Подтвердить"</span>
-                    </li>
-                    <li className="flex gap-2">
-                        <span className="font-semibold">5.</span>
-                        <span>Подписка активируется автоматически после проверки</span>
-                    </li>
-                </ol>
-            </Card>
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+                <Button
+                    variant="secondary"
+                    className="flex-1"
+                    onClick={() => navigate('/subscription')}
+                >
+                    ← Назад
+                </Button>
+                <Button
+                    className="flex-1"
+                    onClick={handlePayment}
+                    disabled={!selectedMethod}
+                >
+                    Оплатить {price.toLocaleString('ru-RU')}₸
+                </Button>
+            </div>
         </div>
     )
 }

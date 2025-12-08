@@ -1,127 +1,215 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { User } from '@/types/user'
-import { generateId } from '@/utils/uuid'
+import { authAPI } from '@/api/auth'
+import { socketService } from '@/services/socket'
 
 interface AuthStore {
     user: User | null
+    token: string | null
     isAuthenticated: boolean
-    users: User[] // Имитация базы данных пользователей
+    isLoading: boolean
+    error: string | null
 
-    register: (email: string, password: string, name: string, role?: 'student' | 'admin') => { success: boolean; message: string }
-    login: (email: string, password: string) => { success: boolean; message: string }
-    logout: () => void
+    register: (email: string, password: string, name: string, city: string, role?: string) => Promise<{ success: boolean; message: string }>
+    login: (email: string, password: string) => Promise<{ success: boolean; message: string }>
+    logout: () => Promise<void>
     updateProfile: (data: Partial<User>) => void
-    changeUserRole: (userId: string, newRole: 'student' | 'admin') => void
+    loadUser: () => Promise<void>
+    setError: (error: string | null) => void
 }
 
 export const useAuthStore = create<AuthStore>()(
     persist(
         (set, get) => ({
             user: null,
+            token: null,
             isAuthenticated: false,
-            users: [], // Хранилище всех зарегистрированных пользователей
+            isLoading: false,
+            error: null,
 
-            register: (email: string, password: string, name: string, role?: 'student' | 'admin') => {
-                const { users } = get()
+            register: async (email: string, password: string, name: string, city: string, role?: string) => {
+                try {
+                    set({ isLoading: true, error: null })
 
-                // Проверка: существует ли пользователь с таким email
-                const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase())
-                if (existingUser) {
-                    return { success: false, message: 'Пользователь с таким email уже существует' }
+                    const response = await authAPI.register({ email, password, name, city, role })
+
+                    if (response.success) {
+                        const { user, token } = response.data
+
+                        // Save token and user
+                        localStorage.setItem('token', token)
+                        localStorage.setItem('user', JSON.stringify(user))
+
+                        // Connect socket
+                        socketService.connect(token)
+
+                        set({
+                            user,
+                            token,
+                            isAuthenticated: true,
+                            isLoading: false
+                        })
+
+                        return { success: true, message: 'Регистрация успешна' }
+                    } else {
+                        set({ isLoading: false, error: response.message })
+                        return { success: false, message: response.message || 'Ошибка регистрации' }
+                    }
+                } catch (error: any) {
+                    const message = error.response?.data?.message || error.message || 'Ошибка регистрации'
+                    set({ isLoading: false, error: message })
+                    return { success: false, message }
                 }
-
-                // Валидация
-                if (!email || !password || !name) {
-                    return { success: false, message: 'Все поля обязательны для заполнения' }
-                }
-
-                if (password.length < 6) {
-                    return { success: false, message: 'Пароль должен содержать минимум 6 символов' }
-                }
-
-                // Создание нового пользователя
-                const newUser: User = {
-                    id: generateId(),
-                    email: email.toLowerCase(),
-                    name,
-                    password, // В реальном приложении должен быть хеш
-                    role: role || 'student', // Используем выбранную роль или student по умолчанию
-                    points: 0,
-                    level: 1,
-                    streak: 0,
-                    achievements: [],
-                    createdAt: new Date().toISOString(),
-                }
-
-                // Сохранение в "базу данных"
-                const updatedUsers = [...users, newUser]
-
-                // Автоматический вход после регистрации
-                set({
-                    users: updatedUsers,
-                    user: newUser,
-                    isAuthenticated: true,
-                })
-
-                return { success: true, message: 'Регистрация успешна!' }
             },
 
-            login: (email: string, password: string) => {
-                const { users } = get()
+            login: async (email: string, password: string) => {
+                try {
+                    set({ isLoading: true, error: null })
 
-                // Поиск пользователя в "базе данных"
-                const user = users.find(
-                    u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-                )
+                    const response = await authAPI.login({ email, password })
 
-                if (!user) {
-                    return { success: false, message: 'Неверный email или пароль' }
+                    if (response.success) {
+                        const { user, token } = response.data
+
+                        // Save token and user
+                        localStorage.setItem('token', token)
+                        localStorage.setItem('user', JSON.stringify(user))
+
+                        // Connect socket
+                        socketService.connect(token)
+
+                        set({
+                            user,
+                            token,
+                            isAuthenticated: true,
+                            isLoading: false
+                        })
+
+                        return { success: true, message: 'Вход выполнен успешно!' }
+                    }
+
+                    return { success: false, message: response.message || 'Ошибка входа' }
+                } catch (error: any) {
+                    const message = error.response?.data?.message || 'Неверный email или пароль'
+                    set({ isLoading: false, error: message })
+                    return { success: false, message }
                 }
-
-                // Вход в систему
-                set({
-                    user,
-                    isAuthenticated: true,
-                })
-
-                return { success: true, message: 'Вход выполнен успешно!' }
             },
 
-            logout: () => {
+            logout: async () => {
+                try {
+                    await authAPI.logout()
+                } catch (error) {
+                    console.error('Logout error:', error)
+                }
+
+                // Disconnect socket
+                socketService.disconnect()
+
+                // Clear storage
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+
                 set({
                     user: null,
-                    isAuthenticated: false,
+                    token: null,
+                    isAuthenticated: false
                 })
             },
 
             updateProfile: (data: Partial<User>) => {
-                const { user, users } = get()
+                const { user } = get()
                 if (!user) return
 
                 const updatedUser = { ...user, ...data }
-                const updatedUsers = users.map(u => u.id === user.id ? updatedUser : u)
-
-                set({
-                    user: updatedUser,
-                    users: updatedUsers,
-                })
+                set({ user: updatedUser })
+                localStorage.setItem('user', JSON.stringify(updatedUser))
             },
 
-            changeUserRole: (userId: string, newRole: 'student' | 'admin') => {
-                const { users, user } = get()
-                const updatedUsers = users.map(u =>
-                    u.id === userId ? { ...u, role: newRole } : u
-                )
+            loadUser: async () => {
+                const token = localStorage.getItem('token')
+                const savedUser = localStorage.getItem('user')
 
-                set({
-                    users: updatedUsers,
-                    user: user?.id === userId ? { ...user, role: newRole } : user,
-                })
+                if (!token) {
+                    set({ isAuthenticated: false, isLoading: false })
+                    return
+                }
+
+                // Try to restore from localStorage first
+                if (savedUser) {
+                    try {
+                        const user = JSON.parse(savedUser)
+                        set({
+                            user,
+                            token,
+                            isAuthenticated: true,
+                            isLoading: false
+                        })
+
+                        // Connect socket
+                        socketService.connect(token)
+
+                        // Verify token in background
+                        authAPI.getMe().then(response => {
+                            if (response.success) {
+                                set({ user: response.data })
+                                localStorage.setItem('user', JSON.stringify(response.data))
+                            }
+                        }).catch(() => {
+                            // Token invalid, logout
+                            localStorage.removeItem('token')
+                            localStorage.removeItem('user')
+                            set({ user: null, token: null, isAuthenticated: false })
+                        })
+
+                        return
+                    } catch (e) {
+                        console.error('Error parsing saved user:', e)
+                    }
+                }
+
+                // Fallback: fetch from API
+                try {
+                    set({ isLoading: true })
+
+                    const response = await authAPI.getMe()
+
+                    if (response.success) {
+                        localStorage.setItem('user', JSON.stringify(response.data))
+
+                        // Connect socket
+                        socketService.connect(token)
+
+                        set({
+                            user: response.data,
+                            token,
+                            isAuthenticated: true,
+                            isLoading: false
+                        })
+                    }
+                } catch (error) {
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('user')
+                    set({
+                        user: null,
+                        token: null,
+                        isAuthenticated: false,
+                        isLoading: false
+                    })
+                }
             },
+
+            setError: (error: string | null) => {
+                set({ error })
+            }
         }),
         {
-            name: 'auth-storage', // Ключ в localStorage
+            name: 'auth-storage',
+            partialize: (state) => ({
+                token: state.token,
+                user: state.user
+            })
         }
     )
 )
