@@ -1,9 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { User } from '@/types/user'
 import { firebaseAuthAPI, UserData } from '@/api/firebase-auth'
-import { auth } from '@/config/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '@/config/firebase'
 
 interface AuthStore {
     user: UserData | null
@@ -99,7 +98,6 @@ export const useAuthStore = create<AuthStore>()(
             },
 
             loadUser: async () => {
-                // Listen to Firebase auth state
                 onAuthStateChanged(auth, async (firebaseUser) => {
                     if (firebaseUser) {
                         try {
