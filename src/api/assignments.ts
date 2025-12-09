@@ -8,8 +8,7 @@ import {
     query,
     where,
     orderBy,
-    Timestamp,
-    increment
+    Timestamp
 } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 

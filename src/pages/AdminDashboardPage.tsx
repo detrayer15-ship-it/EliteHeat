@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { adminAPI } from '@/api/admin-new'
+// import { adminAPI } from '@/api/admin-new' // Deprecated
 
 interface AdminStats {
     level: number
@@ -37,17 +37,17 @@ export const AdminDashboardPage = () => {
         try {
             setLoading(true)
 
-            // Load admin stats
-            const statsResponse = await adminAPI.getStats()
-            if (statsResponse.success) {
-                setStats(statsResponse.data)
-            }
+            // Placeholder stats
+            setStats({
+                level: currentUser?.level || 1,
+                points: currentUser?.points || 0,
+                tasksReviewed: 0,
+                nextLevelPoints: 100,
+                progress: 0
+            })
 
-            // Load all users
-            const usersResponse = await adminAPI.getAllUsers()
-            if (usersResponse.success) {
-                setUsers(usersResponse.data)
-            }
+            // Placeholder users
+            setUsers([])
         } catch (error) {
             console.error('Error loading admin data:', error)
         } finally {

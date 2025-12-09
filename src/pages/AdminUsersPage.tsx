@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { adminAPI } from '@/api/admin'
+// import { adminAPI } from '@/api/admin' // Deprecated
 import { useAuthStore } from '@/store/authStore'
 
 interface User {
@@ -33,85 +33,27 @@ export const AdminUsersPage = () => {
     }, [roleFilter, search])
 
     const loadUsers = async () => {
-        try {
-            const params: any = {}
-            if (roleFilter !== 'all') params.role = roleFilter
-            if (search) params.search = search
-
-            const response = await adminAPI.getUsers(params)
-            if (response.success) {
-                setUsers(response.data.users)
-            }
-        } catch (error) {
-            console.error('Failed to load users:', error)
-        }
+        setUsers([]) // Placeholder
     }
 
     const loadAdmins = async () => {
-        try {
-            const response = await adminAPI.getAdmins()
-            if (response.success) {
-                setAdmins(response.data)
-            }
-        } catch (error) {
-            console.error('Failed to load admins:', error)
-        }
+        setAdmins([]) // Placeholder
     }
 
     const handleBan = async (userId: string) => {
-        if (!confirm('Вы уверены?')) return
-
-        try {
-            const response = await adminAPI.banUser(userId)
-            if (response.success) {
-                loadUsers()
-                alert(response.message)
-            }
-        } catch (error: any) {
-            alert(error.response?.data?.message || 'Ошибка')
-        }
+        alert('Функция временно недоступна')
     }
 
     const handleDelete = async (userId: string) => {
-        if (!confirm('Вы уверены? Это действие необратимо!')) return
-
-        try {
-            const response = await adminAPI.deleteUser(userId)
-            if (response.success) {
-                loadUsers()
-                alert(response.message)
-            }
-        } catch (error: any) {
-            alert(error.response?.data?.message || 'Ошибка')
-        }
+        alert('Функция временно недоступна')
     }
 
     const handleChangeRole = async (userId: string, newRole: 'student' | 'admin') => {
-        if (!confirm(`Изменить роль на ${newRole === 'admin' ? 'Админ' : 'Ученик'}?`)) return
-
-        try {
-            const response = await adminAPI.changeRole(userId, newRole)
-            if (response.success) {
-                loadUsers()
-                loadAdmins()
-                alert(response.message)
-            }
-        } catch (error: any) {
-            alert(error.response?.data?.message || 'Ошибка')
-        }
+        alert('Функция временно недоступна')
     }
 
     const showIPHistory = async (userId: string) => {
-        try {
-            const response = await adminAPI.getIPHistory(userId)
-            if (response.success) {
-                setIpHistory(response.data.ipHistory)
-                setSelectedUser(users.find(u => u._id === userId) || null)
-                setShowIPModal(true)
-            }
-        } catch (error: any) {
-            alert(error.response?.data?.message || 'Ошибка')
-        }
+        alert('Функция временно недоступна')
     }
 
     // Check if current user is admin
@@ -222,8 +164,8 @@ export const AdminUsersPage = () => {
                                     <td className="p-3 text-sm">📍 {user.city}</td>
                                     <td className="p-3">
                                         <span className={`px-2 py-1 rounded text-xs font-semibold ${user.role === 'admin'
-                                                ? 'bg-primary/10 text-primary'
-                                                : 'bg-gray-100 text-gray-700'
+                                            ? 'bg-primary/10 text-primary'
+                                            : 'bg-gray-100 text-gray-700'
                                             }`}>
                                             {user.role === 'admin' ? '👑 Админ' : '🎓 Ученик'}
                                         </span>
