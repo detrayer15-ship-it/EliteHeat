@@ -176,26 +176,8 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route
-                    path="/profile/edit"
-                    element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <ProfileEditPage />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/users"
-                    element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <UsersPage />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    }
-                />
+
+
                 <Route
                     path="/submissions"
                     element={

@@ -23,8 +23,8 @@ export const AdminUsersPage = () => {
     const [admins, setAdmins] = useState<User[]>([])
     const [search, setSearch] = useState('')
     const [roleFilter, setRoleFilter] = useState<'all' | 'student' | 'admin'>('all')
-    const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const [ipHistory, setIpHistory] = useState<any[]>([])
+    const [_selectedUser, _setSelectedUser] = useState<User | null>(null)
+    const [_ipHistory, _setIpHistory] = useState<any[]>([])
     const [showIPModal, setShowIPModal] = useState(false)
 
     useEffect(() => {
@@ -40,19 +40,19 @@ export const AdminUsersPage = () => {
         setAdmins([]) // Placeholder
     }
 
-    const handleBan = async (userId: string) => {
+    const handleBan = async (_userId: string) => {
         alert('Функция временно недоступна')
     }
 
-    const handleDelete = async (userId: string) => {
+    const handleDelete = async (_userId: string) => {
         alert('Функция временно недоступна')
     }
 
-    const handleChangeRole = async (userId: string, newRole: 'student' | 'admin') => {
+    const handleChangeRole = async (_userId: string, _newRole: 'student' | 'admin') => {
         alert('Функция временно недоступна')
     }
 
-    const showIPHistory = async (userId: string) => {
+    const showIPHistory = async (_userId: string) => {
         alert('Функция временно недоступна')
     }
 
