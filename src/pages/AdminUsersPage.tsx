@@ -23,9 +23,6 @@ export const AdminUsersPage = () => {
     const [admins, setAdmins] = useState<User[]>([])
     const [search, setSearch] = useState('')
     const [roleFilter, setRoleFilter] = useState<'all' | 'student' | 'admin'>('all')
-    const [_selectedUser, _setSelectedUser] = useState<User | null>(null)
-    const [_ipHistory, _setIpHistory] = useState<any[]>([])
-    const [showIPModal, setShowIPModal] = useState(false)
 
     useEffect(() => {
         loadUsers()
@@ -228,50 +225,6 @@ export const AdminUsersPage = () => {
                         </div>
                     )}
                 </div>
-            </Card>
-
-            {/* IP History Modal */}
-            {showIPModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <Card className="max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-                        <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h2 className="text-xl font-bold">История IP адресов</h2>
-                                <p className="text-sm text-gray-600">{selectedUser.name} ({selectedUser.email})</p>
-                            </div>
-                            <button
-                                onClick={() => setShowIPModal(false)}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="space-y-3">
-                            {ipHistory.map((record, idx) => (
-                                <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <div className="font-mono text-sm font-semibold">{record.ip}</div>
-                                            <div className="text-xs text-gray-500 mt-1">{record.userAgent}</div>
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                            {new Date(record.loginAt).toLocaleString('ru-RU')}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <Button
-                            className="w-full mt-4"
-                            onClick={() => setShowIPModal(false)}
-                        >
-                            Закрыть
-                        </Button>
-                    </Card>
-                </div>
-            )}
         </div>
     )
 }
