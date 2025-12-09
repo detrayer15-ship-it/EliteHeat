@@ -37,8 +37,8 @@ export const Sidebar = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${isActive
-                                        ? 'bg-primary text-white'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                    ? 'bg-primary text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
                                 <span className="text-xl">{item.icon}</span>
@@ -47,17 +47,59 @@ export const Sidebar = () => {
                         )
                     })}
 
-                    {/* Задания - только для админов */}
-                    {user?.role === 'admin' && (
+                    {/* Связаться с ментором - только для учеников */}
+                    {user?.role === 'student' && (
                         <Link
-                            to="/submissions"
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/submissions'
+                            to="/chat"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/chat'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'text-gray-700 hover:bg-blue-50'
+                                }`}
+                        >
+                            <span className="text-xl">💬</span>
+                            <span className="font-medium">Связаться с ментором</span>
+                        </Link>
+                    )}
+
+                    {/* Мои задания - только для учеников */}
+                    {user?.role === 'student' && (
+                        <Link
+                            to="/my-assignments"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/my-assignments'
                                     ? 'bg-primary text-white'
                                     : 'text-gray-700 hover:bg-gray-100'
                                 }`}
                         >
                             <span className="text-xl">📝</span>
+                            <span className="font-medium">Мои задания</span>
+                        </Link>
+                    )}
+
+                    {/* Задания - только для админов */}
+                    {user?.role === 'admin' && (
+                        <Link
+                            to="/submissions"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/submissions'
+                                ? 'bg-primary text-white'
+                                : 'text-gray-700 hover:bg-gray-100'
+                                }`}
+                        >
+                            <span className="text-xl">📝</span>
                             <span className="font-medium">Задания</span>
+                        </Link>
+                    )}
+
+                    {/* Чаты - только для админов */}
+                    {user?.role === 'admin' && (
+                        <Link
+                            to="/admin/chat"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/admin/chat'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'text-gray-700 hover:bg-blue-50'
+                                }`}
+                        >
+                            <span className="text-xl">💬</span>
+                            <span className="font-medium">Чаты</span>
                         </Link>
                     )}
 
@@ -66,8 +108,8 @@ export const Sidebar = () => {
                         <Link
                             to="/admin"
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-smooth ${location.pathname === '/admin'
-                                    ? 'bg-error text-white'
-                                    : 'text-error hover:bg-error/10'
+                                ? 'bg-error text-white'
+                                : 'text-error hover:bg-error/10'
                                 }`}
                         >
                             <span className="text-xl">👑</span>

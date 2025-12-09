@@ -1,0 +1,154 @@
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged,
+    User as FirebaseUser
+} from 'firebase/auth'
+import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore'
+import { auth, db } from '@/config/firebase'
+
+export interface UserData {
+    id: string
+    email: string
+    name: string
+    city: string
+    role: 'student' | 'admin'
+    level?: number
+    points?: number
+    tasksReviewed?: number
+    createdAt: Date
+}
+
+export const firebaseAuthAPI = {
+    // Register new user
+    register: async (email: string, password: string, name: string, city: string, role: 'student' | 'admin' = 'student') => {
+        try {
+            // Create auth user
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+            const user = userCredential.user
+
+            // Create user document in Firestore
+            const userData: any = {
+                id: user.uid,
+                email: user.email!,
+                name,
+                city,
+                role,
+                createdAt: Timestamp.now()
+            }
+
+            // Add admin fields only if role is admin
+            if (role === 'admin') {
+                userData.level = 1
+                userData.points = 0
+                userData.tasksReviewed = 0
+            }
+
+            await setDoc(doc(db, 'users', user.uid), userData)
+
+            return {
+                success: true,
+                data: {
+                    user: userData,
+                    token: await user.getIdToken()
+                }
+            }
+        } catch (error: any) {
+            console.error('Firebase Registration Error:', error)
+            console.error('Error code:', error.code)
+            console.error('Error message:', error.message)
+
+            let userMessage = 'Ошибка регистрации'
+
+            if (error.code === 'auth/email-already-in-use') {
+                userMessage = 'Этот email уже используется'
+            } else if (error.code === 'auth/weak-password') {
+                userMessage = 'Пароль должен быть минимум 6 символов'
+            } else if (error.code === 'auth/invalid-email') {
+                userMessage = 'Неверный формат email'
+            } else if (error.code === 'auth/operation-not-allowed') {
+                userMessage = 'Email/Password авторизация не включена в Firebase Console'
+            }
+
+            return {
+                success: false,
+                message: userMessage
+            }
+        }
+    },
+
+    // Login user
+    login: async (email: string, password: string) => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            const user = userCredential.user
+
+            // Get user data from Firestore
+            const userDoc = await getDoc(doc(db, 'users', user.uid))
+
+            if (!userDoc.exists()) {
+                throw new Error('Данные пользователя не найдены')
+            }
+
+            const userData = userDoc.data() as UserData
+
+            return {
+                success: true,
+                data: {
+                    user: userData,
+                    token: await user.getIdToken()
+                }
+            }
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message || 'Неверный email или пароль'
+            }
+        }
+    },
+
+    // Logout
+    logout: async () => {
+        try {
+            await signOut(auth)
+            return { success: true }
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message
+            }
+        }
+    },
+
+    // Get current user
+    getMe: async () => {
+        try {
+            const user = auth.currentUser
+            if (!user) {
+                throw new Error('Не авторизован')
+            }
+
+            const userDoc = await getDoc(doc(db, 'users', user.uid))
+
+            if (!userDoc.exists()) {
+                throw new Error('Данные пользователя не найдены')
+            }
+
+            return {
+                success: true,
+                data: userDoc.data() as UserData
+            }
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message
+            }
+        }
+    },
+
+    // Listen to auth state changes
+    onAuthChange: (callback: (user: FirebaseUser | null) => void) => {
+        return onAuthStateChanged(auth, callback)
+    }
+}

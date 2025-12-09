@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone can read user profiles
+      allow read: if true;
+      
+      // Users can only write their own data
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      // Admins can write any user data
+      allow write: if request.auth != null && 
+                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Submissions collection
+    match /submissions/{submissionId} {
+      // Students can read their own submissions
+      allow read: if request.auth != null && 
+                     resource.data.studentId == request.auth.uid;
+      
+      // Admins can read all submissions
+      allow read: if request.auth != null && 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // Students can create submissions
+      allow create: if request.auth != null && 
+                       request.resource.data.studentId == request.auth.uid;
+      
+      // Admins can update submissions (for review)
+      allow update: if request.auth != null && 
+                       get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Chats collection
+    match /chats/{chatId} {
+      // Users can read chats they're part of
+      allow read: if request.auth != null && 
+                     (resource.data.studentId == request.auth.uid || 
+                      resource.data.adminId == request.auth.uid);
+      
+      // Students can create chats
+      allow create: if request.auth != null && 
+                       request.resource.data.studentId == request.auth.uid;
+      
+      // Participants can update chats (send messages)
+      allow update: if request.auth != null && 
+                       (resource.data.studentId == request.auth.uid || 
+                        resource.data.adminId == request.auth.uid);
+    }
+  }
+}

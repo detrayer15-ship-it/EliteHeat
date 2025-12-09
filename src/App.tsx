@@ -23,6 +23,9 @@ import { SubmissionsPage } from './pages/SubmissionsPage'
 import { FamilySubscriptionPage } from './pages/FamilySubscriptionPage'
 import { ChatPage } from './pages/ChatPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
+import { MyAssignmentsPage } from './pages/MyAssignmentsPage'
+import { AdminChatPage } from './pages/AdminChatPage'
+import { StudentChatPage } from './pages/StudentChatPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { useProjectStore } from './store/projectStore'
 import { useTaskStore } from './store/taskStore'
@@ -93,6 +96,16 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <TasksPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/my-assignments"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <MyAssignmentsPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }
@@ -218,11 +231,21 @@ function App() {
                     }
                 />
                 <Route
+                    path="/admin/chat"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AdminChatPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/chat"
                     element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <ChatPage />
+                                <StudentChatPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

@@ -1,223 +1,175 @@
 import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
+import { assignmentsAPI } from '@/api/assignments'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Modal } from '@/components/ui/Modal'
 import { Textarea } from '@/components/ui/Textarea'
-import { submissionsAPI, Submission } from '@/api/submissions'
+
+interface Submission {
+    id: string
+    assignmentTitle: string
+    studentName: string
+    content: string
+    status: string
+    submittedAt: any
+    reviewComment?: string
+}
 
 export const TaskReviewPage = () => {
-    const user = useAuthStore((state) => state.user)
+    const user = useAuthStore(state => state.user)
     const [submissions, setSubmissions] = useState<Submission[]>([])
-    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending')
-    const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
-    const [reviewComment, setReviewComment] = useState('')
-    const [loading, setLoading] = useState(true)
+    const [selectedSubmission, setSelectedSubmission] = useState<string | null>(null)
+    const [comment, setComment] = useState('')
+    const [isReviewing, setIsReviewing] = useState(false)
 
     useEffect(() => {
         loadSubmissions()
-    }, [filter])
+    }, [])
 
     const loadSubmissions = async () => {
-        try {
-            setLoading(true)
-            const response = await submissionsAPI.getAll(filter === 'all' ? undefined : filter)
-            if (response.success) {
-                setSubmissions(response.data)
-            }
-        } catch (error) {
-            console.error('Error loading submissions:', error)
-        } finally {
-            setLoading(false)
+        const result = await assignmentsAPI.getAllSubmissions()
+        if (result.success) {
+            setSubmissions(result.data as Submission[])
         }
     }
 
-    const handleReview = async (status: 'approved' | 'rejected') => {
-        if (!selectedSubmission) return
+    const handleReview = async (submissionId: string, status: 'approved' | 'rejected') => {
+        if (!user) return
 
-        try {
-            await submissionsAPI.review(selectedSubmission._id, {
-                status,
-                comment: reviewComment,
-                pointsEarned: status === 'approved' ? 10 : 0
-            })
+        setIsReviewing(true)
+        const result = await assignmentsAPI.reviewSubmission(
+            submissionId,
+            user.id,
+            status,
+            comment || (status === 'approved' ? 'Отличная работа!' : 'Нужно доработать')
+        )
 
+        if (result.success) {
+            setComment('')
             setSelectedSubmission(null)
-            setReviewComment('')
             loadSubmissions()
-
-            alert(status === 'approved' ? 'Задание принято! +10 очков' : 'Задание отклонено. +5 очков за проверку')
-        } catch (error) {
-            console.error('Error reviewing submission:', error)
-            alert('Ошибка при проверке задания')
         }
+        setIsReviewing(false)
     }
 
-    if (user?.role !== 'admin') {
+    const getStatusBadge = (status: string) => {
+        const badges: Record<string, { label: string; className: string }> = {
+            pending: { label: '⏳ Ожидает', className: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' },
+            approved: { label: '✅ Принято', className: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' },
+            rejected: { label: '❌ Отклонено', className: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' }
+        }
+
+        const badge = badges[status] || badges.pending
         return (
-            <div className="text-center py-12">
-                <h1 className="text-2xl font-bold text-error mb-4">Доступ запрещён</h1>
-                <p className="text-gray-600">Эта страница доступна только администраторам</p>
-            </div>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${badge.className}`}>
+                {badge.label}
+            </span>
         )
     }
 
-    const filteredSubmissions = submissions
+    const pendingSubmissions = submissions.filter(s => s.status === 'pending')
+    const reviewedSubmissions = submissions.filter(s => s.status !== 'pending')
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold text-text mb-2">📝 Проверка заданий</h1>
-                <p className="text-gray-600">Проверяйте задания учеников и зарабатывайте очки</p>
-            </div>
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold mb-8">Проверка заданий</h1>
 
-            {/* Filters */}
-            <div className="flex gap-2">
-                <Button
-                    variant={filter === 'pending' ? 'primary' : 'secondary'}
-                    onClick={() => setFilter('pending')}
-                >
-                    ⏳ На проверке ({submissions.filter(s => s.status === 'pending').length})
-                </Button>
-                <Button
-                    variant={filter === 'approved' ? 'primary' : 'secondary'}
-                    onClick={() => setFilter('approved')}
-                >
-                    ✅ Принятые
-                </Button>
-                <Button
-                    variant={filter === 'rejected' ? 'primary' : 'secondary'}
-                    onClick={() => setFilter('rejected')}
-                >
-                    ❌ Отклонённые
-                </Button>
-                <Button
-                    variant={filter === 'all' ? 'primary' : 'secondary'}
-                    onClick={() => setFilter('all')}
-                >
-                    📋 Все
-                </Button>
-            </div>
-
-            {/* Submissions List */}
-            {loading ? (
-                <div className="text-center py-12">
-                    <div className="text-4xl mb-4">⏳</div>
-                    <p className="text-gray-600">Загрузка...</p>
-                </div>
-            ) : filteredSubmissions.length === 0 ? (
-                <Card>
-                    <div className="text-center py-12">
-                        <div className="text-4xl mb-4">📭</div>
-                        <p className="text-gray-600">Нет заданий</p>
-                    </div>
-                </Card>
-            ) : (
-                <div className="grid grid-cols-1 gap-4">
-                    {filteredSubmissions.map((submission) => (
-                        <Card key={submission._id}>
-                            <div className="flex justify-between items-start">
+            <div className="mb-12">
+                <h2 className="text-2xl font-semibold mb-4">Ожидают проверки ({pendingSubmissions.length})</h2>
+                <div className="grid gap-4">
+                    {pendingSubmissions.map(submission => (
+                        <Card key={submission.id} className="p-6">
+                            <div className="flex justify-between items-start mb-4">
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                                            {submission.student?.name.charAt(0).toUpperCase() || '?'}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg">{submission.taskTitle}</h3>
-                                            <p className="text-sm text-gray-600">
-                                                {submission.student?.name} • {submission.student?.email}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-700 mb-3">{submission.description}</p>
-                                    {submission.fileUrl && (
-                                        <a
-                                            href={submission.fileUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-primary hover:underline text-sm"
-                                        >
-                                            📎 Прикреплённый файл
-                                        </a>
-                                    )}
-                                    <div className="mt-3 text-sm text-gray-500">
-                                        Отправлено: {new Date(submission.createdAt).toLocaleString('ru-RU')}
-                                    </div>
+                                    <h3 className="text-lg font-semibold">{submission.assignmentTitle}</h3>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        Ученик: {submission.studentName}
+                                    </p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-500">
+                                        Отправлено: {new Date(submission.submittedAt?.seconds * 1000).toLocaleDateString('ru-RU')}
+                                    </p>
                                 </div>
-                                <div className="ml-4">
-                                    {submission.status === 'pending' ? (
-                                        <Button
-                                            onClick={() => setSelectedSubmission(submission)}
-                                            variant="primary"
-                                        >
-                                            Проверить
-                                        </Button>
-                                    ) : (
-                                        <span className={`px-4 py-2 rounded-lg font-semibold ${submission.status === 'approved'
-                                                ? 'bg-success/10 text-success'
-                                                : 'bg-error/10 text-error'
-                                            }`}>
-                                            {submission.status === 'approved' ? '✅ Принято' : '❌ Отклонено'}
-                                        </span>
-                                    )}
-                                </div>
+                                {getStatusBadge(submission.status)}
                             </div>
-                            {submission.reviewComment && (
-                                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                                    <p className="text-sm font-semibold text-gray-700 mb-1">Комментарий:</p>
-                                    <p className="text-sm text-gray-600">{submission.reviewComment}</p>
+
+                            <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <p className="whitespace-pre-wrap">{submission.content}</p>
+                            </div>
+
+                            {selectedSubmission === submission.id ? (
+                                <div className="space-y-4">
+                                    <Textarea
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                        placeholder="Комментарий (необязательно)"
+                                        rows={3}
+                                    />
+                                    <div className="flex gap-2">
+                                        <Button
+                                            onClick={() => handleReview(submission.id, 'approved')}
+                                            disabled={isReviewing}
+                                            className="bg-green-600 hover:bg-green-700"
+                                        >
+                                            ✔ Принять
+                                        </Button>
+                                        <Button
+                                            onClick={() => handleReview(submission.id, 'rejected')}
+                                            disabled={isReviewing}
+                                            className="bg-red-600 hover:bg-red-700"
+                                        >
+                                            ✖ Отклонить
+                                        </Button>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={() => {
+                                                setSelectedSubmission(null)
+                                                setComment('')
+                                            }}
+                                        >
+                                            Отмена
+                                        </Button>
+                                    </div>
                                 </div>
+                            ) : (
+                                <Button onClick={() => setSelectedSubmission(submission.id)}>
+                                    Проверить
+                                </Button>
                             )}
                         </Card>
                     ))}
+
+                    {pendingSubmissions.length === 0 && (
+                        <Card className="p-8 text-center text-gray-500">
+                            Нет заданий на проверке
+                        </Card>
+                    )}
                 </div>
-            )}
+            </div>
 
-            {/* Review Modal */}
-            {selectedSubmission && (
-                <Modal
-                    isOpen={true}
-                    onClose={() => {
-                        setSelectedSubmission(null)
-                        setReviewComment('')
-                    }}
-                    title="Проверка задания"
-                >
-                    <div className="space-y-4">
-                        <div>
-                            <h3 className="font-bold text-lg mb-2">{selectedSubmission.taskTitle}</h3>
-                            <p className="text-gray-600 mb-2">
-                                Ученик: {selectedSubmission.student?.name}
-                            </p>
-                            <p className="text-gray-700">{selectedSubmission.description}</p>
-                        </div>
-
-                        <Textarea
-                            label="Комментарий"
-                            value={reviewComment}
-                            onChange={(e) => setReviewComment(e.target.value)}
-                            placeholder="Оставьте комментарий для ученика..."
-                            rows={4}
-                        />
-
-                        <div className="flex gap-3">
-                            <Button
-                                onClick={() => handleReview('approved')}
-                                variant="primary"
-                                className="flex-1"
-                            >
-                                ✅ Принять (+10 очков)
-                            </Button>
-                            <Button
-                                onClick={() => handleReview('rejected')}
-                                variant="secondary"
-                                className="flex-1"
-                            >
-                                ❌ Отклонить (+5 очков)
-                            </Button>
-                        </div>
+            {reviewedSubmissions.length > 0 && (
+                <div>
+                    <h2 className="text-2xl font-semibold mb-4">Проверенные ({reviewedSubmissions.length})</h2>
+                    <div className="grid gap-4">
+                        {reviewedSubmissions.map(submission => (
+                            <Card key={submission.id} className="p-6">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="text-lg font-semibold">{submission.assignmentTitle}</h3>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Ученик: {submission.studentName}
+                                        </p>
+                                        {submission.reviewComment && (
+                                            <p className="text-sm text-gray-500 mt-2">
+                                                Комментарий: {submission.reviewComment}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {getStatusBadge(submission.status)}
+                                </div>
+                            </Card>
+                        ))}
                     </div>
-                </Modal>
+                </div>
             )}
         </div>
     )
