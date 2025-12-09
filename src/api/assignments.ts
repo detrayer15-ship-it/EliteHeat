@@ -1,27 +1,42 @@
-getAll: async () => {
-    try {
-        const assignmentsSnapshot = await getDocs(
-            query(collection(db, 'assignments'), orderBy('createdAt', 'desc'))
-        )
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    addDoc,
+    updateDoc,
+    query,
+    where,
+    orderBy,
+    Timestamp,
+    increment
+} from 'firebase/firestore'
+import { db } from '@/config/firebase'
 
-        const assignments = assignmentsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }))
+export const assignmentsAPI = {
+    getAll: async () => {
+        try {
+            const assignmentsSnapshot = await getDocs(
+                query(collection(db, 'assignments'), orderBy('createdAt', 'desc'))
+            )
 
-        return {
-            success: true,
-            data: assignments
+            const assignments = assignmentsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+
+            return {
+                success: true,
+                data: assignments
+            }
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message
+            }
         }
-    } catch (error: any) {
-        return {
-            success: false,
-            message: error.message
-        }
-    }
-},
+    },
 
-    // Submit assignment
     submitAssignment: async (
         assignmentId: string,
         studentId: string,
@@ -52,117 +67,111 @@ getAll: async () => {
         }
     },
 
-        // Get student submissions
-        getMySubmissions: async (studentId: string) => {
-            try {
-                const submissionsSnapshot = await getDocs(
-                    query(
-                        collection(db, 'submissions'),
-                        where('studentId', '==', studentId),
-                        orderBy('submittedAt', 'desc')
-                    )
+    getMySubmissions: async (studentId: string) => {
+        try {
+            const submissionsSnapshot = await getDocs(
+                query(
+                    collection(db, 'submissions'),
+                    where('studentId', '==', studentId),
+                    orderBy('submittedAt', 'desc')
                 )
+            )
 
-                const submissions = submissionsSnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }))
+            const submissions = submissionsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
 
-                return {
-                    success: true,
-                    data: submissions
-                }
-            } catch (error: any) {
-                return {
-                    success: false,
-                    message: error.message
-                }
+            return {
+                success: true,
+                data: submissions
             }
-        },
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message
+            }
+        }
+    },
 
-            // Get all submissions (admin)
-            getAllSubmissions: async () => {
-                try {
-                    const submissionsSnapshot = await getDocs(
-                        query(collection(db, 'submissions'), orderBy('submittedAt', 'desc'))
-                    )
+    getAllSubmissions: async () => {
+        try {
+            const submissionsSnapshot = await getDocs(
+                query(collection(db, 'submissions'), orderBy('submittedAt', 'desc'))
+            )
 
-                    const submissions = await Promise.all(
-                        submissionsSnapshot.docs.map(async (docSnapshot) => {
-                            const data = docSnapshot.data()
+            const submissions = await Promise.all(
+                submissionsSnapshot.docs.map(async (docSnapshot) => {
+                    const data = docSnapshot.data()
 
-                            // Get assignment info
-                            const assignmentDoc = await getDoc(doc(db, 'assignments', data.assignmentId))
-                            const assignmentData = assignmentDoc.data()
-
-                            return {
-                                id: docSnapshot.id,
-                                ...data,
-                                assignmentTitle: assignmentData?.title || 'Неизвестное задание'
-                            }
-                        })
-                    )
+                    const assignmentDoc = await getDoc(doc(db, 'assignments', data.assignmentId))
+                    const assignmentData = assignmentDoc.data()
 
                     return {
-                        success: true,
-                        data: submissions
+                        id: docSnapshot.id,
+                        ...data,
+                        assignmentTitle: assignmentData?.title || 'Неизвестное задание'
                     }
-                } catch (error: any) {
-                    return {
-                        success: false,
-                        message: error.message
-                    }
-                }
-            },
+                })
+            )
 
-                // Review submission
-                reviewSubmission: async (
-                    submissionId: string,
-                    adminId: string,
-                    status: 'approved' | 'rejected',
-                    comment: string
-                ) => {
-                    try {
-                        const submissionRef = doc(db, 'submissions', submissionId)
+            return {
+                success: true,
+                data: submissions
+            }
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message
+            }
+        }
+    },
 
-                        await updateDoc(submissionRef, {
-                            status,
-                            reviewedBy: adminId,
-                            reviewComment: comment,
-                            reviewedAt: Timestamp.now()
-                        })
+    reviewSubmission: async (
+        submissionId: string,
+        adminId: string,
+        status: 'approved' | 'rejected',
+        comment: string
+    ) => {
+        try {
+            const submissionRef = doc(db, 'submissions', submissionId)
 
-                        // Add points to admin
-                        const userRef = doc(db, 'users', adminId)
-                        const userDoc = await getDoc(userRef)
+            await updateDoc(submissionRef, {
+                status,
+                reviewedBy: adminId,
+                reviewComment: comment,
+                reviewedAt: Timestamp.now()
+            })
 
-                        if (userDoc.exists()) {
-                            const currentPoints = userDoc.data().points || 0
-                            const tasksReviewed = (userDoc.data().tasksReviewed || 0) + 1
-                            const newPoints = currentPoints + 10
+            const userRef = doc(db, 'users', adminId)
+            const userDoc = await getDoc(userRef)
 
-                            // Calculate level
-                            let level = 1
-                            if (newPoints >= 1000) level = 5
-                            else if (newPoints >= 600) level = 4
-                            else if (newPoints >= 300) level = 3
-                            else if (newPoints >= 100) level = 2
+            if (userDoc.exists()) {
+                const currentPoints = userDoc.data().points || 0
+                const tasksReviewed = (userDoc.data().tasksReviewed || 0) + 1
+                const newPoints = currentPoints + 10
 
-                            await updateDoc(userRef, {
-                                points: newPoints,
-                                level,
-                                tasksReviewed
-                            })
-                        }
+                let level = 1
+                if (newPoints >= 1000) level = 5
+                else if (newPoints >= 600) level = 4
+                else if (newPoints >= 300) level = 3
+                else if (newPoints >= 100) level = 2
 
-                        return {
-                            success: true
-                        }
-                    } catch (error: any) {
-                        return {
-                            success: false,
-                            message: error.message
-                        }
-                    }
-                }
+                await updateDoc(userRef, {
+                    points: newPoints,
+                    level,
+                    tasksReviewed
+                })
+            }
+
+            return {
+                success: true
+            }
+        } catch (error: any) {
+            return {
+                success: false,
+                message: error.message
+            }
+        }
+    }
 }
