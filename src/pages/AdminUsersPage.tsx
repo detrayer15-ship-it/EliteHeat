@@ -222,8 +222,9 @@ export const AdminUsersPage = () => {
                         <div className="text-center py-8 text-gray-500">
                             <div className="text-4xl mb-2">👥</div>
                             <p>Пользователи не найдены</p>
-                    )}
                         </div>
+                    )}
+                </div>
             </Card>
         </div>
     )
