@@ -71,7 +71,7 @@ export const SettingsPage = () => {
                             <div>
                                 <div className="font-semibold text-lg text-text">{user.name}</div>
                                 <div className="text-sm text-gray-600">{user.email}</div>
-                                {user.bio && <div className="text-sm text-gray-500 mt-1">{user.bio}</div>}
+                                {/* {user.bio && <div className="text-sm text-gray-500 mt-1">{user.bio}</div>} */}
                             </div>
                         </div>
                         <Button onClick={() => navigate('/profile/edit')}>

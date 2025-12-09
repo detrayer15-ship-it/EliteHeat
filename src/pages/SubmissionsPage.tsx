@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
@@ -8,7 +7,6 @@ import { useAuthStore } from '@/store/authStore'
 import { statusLabels, statusColors } from '@/types/submission'
 
 export const SubmissionsPage = () => {
-    const navigate = useNavigate()
     const user = useAuthStore((state) => state.user)
     const mySubmissions = useSubmissionStore((state) => state.getMySubmissions())
     const pendingSubmissions = useSubmissionStore((state) => state.getPendingSubmissions())
@@ -19,7 +17,7 @@ export const SubmissionsPage = () => {
     const [feedback, setFeedback] = useState('')
     const [grade, setGrade] = useState(5)
 
-    const isAdmin = user?.role === 'admin' || user?.role === 'senior_admin' || user?.role === 'developer'
+    const isAdmin = user?.role === 'admin'
 
     const handleApprove = (submissionId: string) => {
         reviewSubmission(submissionId, 'approved', feedback, grade)
@@ -51,8 +49,8 @@ export const SubmissionsPage = () => {
                     <button
                         onClick={() => setSelectedTab('my')}
                         className={`px-4 py-2 font-semibold transition-smooth ${selectedTab === 'my'
-                                ? 'text-primary border-b-2 border-primary'
-                                : 'text-gray-600 hover:text-gray-800'
+                            ? 'text-primary border-b-2 border-primary'
+                            : 'text-gray-600 hover:text-gray-800'
                             }`}
                     >
                         Мои задания ({mySubmissions.length})
@@ -60,8 +58,8 @@ export const SubmissionsPage = () => {
                     <button
                         onClick={() => setSelectedTab('review')}
                         className={`px-4 py-2 font-semibold transition-smooth ${selectedTab === 'review'
-                                ? 'text-primary border-b-2 border-primary'
-                                : 'text-gray-600 hover:text-gray-800'
+                            ? 'text-primary border-b-2 border-primary'
+                            : 'text-gray-600 hover:text-gray-800'
                             }`}
                     >
                         На проверку ({pendingSubmissions.length})
