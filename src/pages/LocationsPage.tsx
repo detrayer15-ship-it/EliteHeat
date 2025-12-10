@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { useTranslation } from '@/i18n/useTranslation'
 
 interface Office {
     id: string
@@ -48,7 +47,6 @@ const offices: Office[] = [
 ]
 
 export const LocationsPage = () => {
-    const { t } = useTranslation()
     const [selectedOffice, setSelectedOffice] = useState<Office | null>(offices[0])
 
     const openIn2GIS = (office: Office) => {
@@ -88,8 +86,8 @@ export const LocationsPage = () => {
                             key={office.id}
                             hover
                             className={`cursor-pointer transition-all ${selectedOffice?.id === office.id
-                                    ? 'border-2 border-primary shadow-lg'
-                                    : 'border-2 border-transparent'
+                                ? 'border-2 border-primary shadow-lg'
+                                : 'border-2 border-transparent'
                                 }`}
                             onClick={() => setSelectedOffice(office)}
                         >

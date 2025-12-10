@@ -168,17 +168,21 @@ export const firebaseAuthAPI = {
 
             if (!userDoc.exists()) {
                 // Create new user document
-                const userData = {
+                const now = Timestamp.now()
+                const userData: UserData = {
                     id: user.uid,
                     email: user.email!,
                     name: user.displayName || 'Пользователь',
                     city: 'Не указан',
                     role: 'student' as const,
                     photoURL: user.photoURL || undefined,
-                    createdAt: Timestamp.now()
+                    createdAt: now.toDate()
                 }
 
-                await setDoc(doc(db, 'users', user.uid), userData)
+                await setDoc(doc(db, 'users', user.uid), {
+                    ...userData,
+                    createdAt: now
+                })
 
                 return {
                     success: true,
