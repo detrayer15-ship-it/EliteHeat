@@ -105,11 +105,11 @@ export const ProfileEditPage = () => {
                 name: fullName,
                 email: formData.email,
                 city: formData.city,
-                phone: formData.phone || null,
-                birthday: formData.birthday || null,
-                bio: formData.bio || null,
+                phone: formData.phone || undefined,
+                birthday: formData.birthday || undefined,
+                bio: formData.bio || undefined,
                 username: formData.username,
-                photoURL: photoURL || null,
+                photoURL: photoURL || undefined,
             }
 
             await updateDoc(doc(db, 'users', user.id), updatedData)
