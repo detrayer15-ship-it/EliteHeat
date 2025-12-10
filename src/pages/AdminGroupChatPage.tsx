@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useAuthStore } from '@/store/authStore'
-import { collection, addDoc, query, orderBy, onSnapshot, Timestamp, where } from 'firebase/firestore'
+import { collection, addDoc, query, orderBy, onSnapshot, Timestamp } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 
 interface AdminMessage {
@@ -119,8 +119,8 @@ export const AdminGroupChatPage = () => {
                                 >
                                     <div
                                         className={`max-w-[70%] rounded-2xl px-4 py-3 ${isCurrentUser
-                                                ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white'
-                                                : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800'
+                                            ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white'
+                                            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800'
                                             }`}
                                     >
                                         {!isCurrentUser && (

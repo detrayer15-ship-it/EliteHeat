@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { collection, query, where, onSnapshot, orderBy, limit, Timestamp } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, orderBy, limit } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 import { useAuthStore } from '@/store/authStore'
 import { useNavigate } from 'react-router-dom'
@@ -187,8 +187,8 @@ export const NotificationBell = () => {
                                             key={notif.id}
                                             onClick={() => handleNotificationClick(notif)}
                                             className={`w-full p-4 mb-2 rounded-xl border-2 transition-all hover:shadow-lg text-left ${notif.read
-                                                    ? 'bg-white border-gray-200'
-                                                    : `bg-gradient-to-r ${getNotificationColor(notif.type)}`
+                                                ? 'bg-white border-gray-200'
+                                                : `bg-gradient-to-r ${getNotificationColor(notif.type)}`
                                                 }`}
                                         >
                                             <div className="flex items-start gap-3">

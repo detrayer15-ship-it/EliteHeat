@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/Card'
 import { useAuthStore } from '@/store/authStore'
-import { adminRanks, pointsActions, getRankByPoints, getProgressToNextRank } from '@/utils/adminRanks'
+import { adminRanks, pointsActions, getProgressToNextRank } from '@/utils/adminRanks'
 
 export const AdminRanksPage = () => {
     const user = useAuthStore((state) => state.user)
@@ -172,10 +172,10 @@ export const AdminRanksPage = () => {
                             <div
                                 key={rank.level}
                                 className={`p-4 rounded-xl border-2 transition-all ${isCurrentRank
-                                        ? `bg-gradient-to-r ${rank.color} text-white border-transparent shadow-lg scale-105`
-                                        : isAchieved
-                                            ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300'
-                                            : 'bg-white border-gray-200 opacity-60'
+                                    ? `bg-gradient-to-r ${rank.color} text-white border-transparent shadow-lg scale-105`
+                                    : isAchieved
+                                        ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300'
+                                        : 'bg-white border-gray-200 opacity-60'
                                     }`}
                             >
                                 <div className="flex items-center gap-4">
