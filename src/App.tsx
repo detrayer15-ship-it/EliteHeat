@@ -23,6 +23,8 @@ import { FamilySubscriptionPage } from './pages/FamilySubscriptionPage'
 import { AdminUsersManagementPage } from './pages/AdminUsersManagementPage'
 import { MyAssignmentsPage } from './pages/MyAssignmentsPage'
 import { AdminChatPage } from './pages/AdminChatPage'
+import { AdminGroupChatPage } from './pages/AdminGroupChatPage'
+import { AdminRanksPage } from './pages/AdminRanksPage'
 import { StudentChatPage } from './pages/StudentChatPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { useProjectStore } from './store/projectStore'
@@ -236,6 +238,26 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <AdminChatPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/group-chat"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AdminGroupChatPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/ranks"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AdminRanksPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

@@ -133,7 +133,37 @@ export const Sidebar = () => {
                                     }`}
                             >
                                 <span className="text-xl">💬</span>
-                                <span className="font-medium">Чаты</span>
+                                <span className="font-medium">Чаты учеников</span>
+                            </Link>
+                        )}
+
+                        {/* Групповой чат админов */}
+                        {user?.role === 'admin' && (
+                            <Link
+                                to="/admin/group-chat"
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${location.pathname === '/admin/group-chat'
+                                    ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg transform scale-105'
+                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-100 hover:shadow-md'
+                                    }`}
+                            >
+                                <span className="text-xl">👥</span>
+                                <span className="font-medium">Чат админов</span>
+                            </Link>
+                        )}
+
+                        {/* Ранги и очки - только для админов */}
+                        {user?.role === 'admin' && (
+                            <Link
+                                to="/admin/ranks"
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${location.pathname === '/admin/ranks'
+                                    ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg transform scale-105'
+                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-orange-100 hover:shadow-md'
+                                    }`}
+                            >
+                                <span className="text-xl">🏆</span>
+                                <span className="font-medium">Ранги и очки</span>
                             </Link>
                         )}
 
