@@ -13,6 +13,7 @@ interface AuthStore {
     register: (email: string, password: string, name: string, city: string, role?: 'student' | 'admin') => Promise<{ success: boolean; message: string }>
     login: (email: string, password: string) => Promise<{ success: boolean; message: string }>
     logout: () => Promise<void>
+    setUser: (user: UserData | null) => void
     updateProfile: (data: Partial<UserData>) => void
     loadUser: () => Promise<void>
     setError: (error: string | null) => void
@@ -87,6 +88,13 @@ export const useAuthStore = create<AuthStore>()(
                         isAuthenticated: false
                     })
                 }
+            },
+
+            setUser: (user: UserData | null) => {
+                set({
+                    user,
+                    isAuthenticated: !!user
+                })
             },
 
             updateProfile: (data: Partial<UserData>) => {

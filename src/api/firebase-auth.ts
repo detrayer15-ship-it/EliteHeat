@@ -17,6 +17,11 @@ export interface UserData {
     level?: number
     points?: number
     tasksReviewed?: number
+    photoURL?: string
+    username?: string
+    phone?: string
+    birthday?: string
+    bio?: string
     createdAt: Date
 }
 
