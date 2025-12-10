@@ -8,6 +8,10 @@ export interface User {
     points?: number
     tasksReviewed?: number
     avatar?: string
+    photoURL?: string
+    username?: string
+    phone?: string
+    birthday?: string
     bio?: string
     createdAt?: Date
 }

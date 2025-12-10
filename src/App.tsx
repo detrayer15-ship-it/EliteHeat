@@ -12,6 +12,7 @@ import { AIAssistantPage } from './pages/AIAssistantPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { ProfileEditPage } from './pages/ProfileEditPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
 import { PaymentPage } from './pages/PaymentPage'
 import { AdminDashboardPage } from './pages/AdminDashboardPage'
@@ -19,6 +20,7 @@ import { TaskReviewPage } from './pages/TaskReviewPage'
 import { SubmissionsPage } from './pages/SubmissionsPage'
 import { FamilySubscriptionPage } from './pages/FamilySubscriptionPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
+import { AdminUsersManagementPage } from './pages/AdminUsersManagementPage'
 import { MyAssignmentsPage } from './pages/MyAssignmentsPage'
 import { AdminChatPage } from './pages/AdminChatPage'
 import { StudentChatPage } from './pages/StudentChatPage'
@@ -176,6 +178,16 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path="/profile/edit"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ProfileEditPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
 
 
                 <Route
@@ -233,7 +245,7 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <AdminUsersPage />
+                                <AdminUsersManagementPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

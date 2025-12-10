@@ -3,9 +3,9 @@ import { persist } from 'zustand/middleware'
 
 interface SettingsState {
     theme: 'light' | 'dark'
-    language: 'ru' | 'en'
+    language: 'ru' | 'en' | 'kz'
     setTheme: (theme: 'light' | 'dark') => void
-    setLanguage: (language: 'ru' | 'en') => void
+    setLanguage: (language: 'ru' | 'en' | 'kz') => void
 }
 
 export const useSettingsStore = create<SettingsState>()(
