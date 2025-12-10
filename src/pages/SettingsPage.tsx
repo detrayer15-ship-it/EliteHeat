@@ -271,8 +271,8 @@ export const SettingsPage = () => {
                                     key={size}
                                     onClick={() => handleFontSizeChange(size)}
                                     className={`p-3 border-2 rounded-xl font-medium transition-all ${fontSize === size
-                                            ? 'border-primary bg-gradient-to-r from-primary/10 to-purple-600/10 text-primary'
-                                            : 'border-gray-200 hover:border-primary/50'
+                                        ? 'border-primary bg-gradient-to-r from-primary/10 to-purple-600/10 text-primary'
+                                        : 'border-gray-200 hover:border-primary/50'
                                         }`}
                                 >
                                     {size === 'small' && 'Маленький'}
@@ -319,35 +319,59 @@ export const SettingsPage = () => {
                 </div>
             </Card>
 
-            {/* Интеграции (скоро) */}
+            {/* Интеграции */}
             <Card hover>
                 <h2 className="text-xl font-bold text-text mb-4">🔗 Интеграции</h2>
                 <div className="space-y-3">
-                    <div className="p-4 border-2 border-gray-200 rounded-xl bg-gray-50">
+                    {/* Google OAuth */}
+                    <div className="p-4 border-2 border-green-200 rounded-xl bg-gradient-to-r from-green-50 to-green-100/50">
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-2xl">🔐</span>
                             <span className="font-medium">Вход через Google</span>
-                            <span className="ml-auto text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Скоро</span>
+                            <span className="ml-auto text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">✓ Активно</span>
                         </div>
-                        <p className="text-sm text-gray-600">Быстрый вход с помощью Google аккаунта</p>
+                        <p className="text-sm text-gray-600 mb-3">Быстрый вход с помощью Google аккаунта</p>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => navigate('/login')}
+                        >
+                            Войти через Google
+                        </Button>
                     </div>
 
-                    <div className="p-4 border-2 border-gray-200 rounded-xl bg-gray-50">
+                    {/* Kaspi & Stripe */}
+                    <div className="p-4 border-2 border-blue-200 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/50">
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-2xl">💳</span>
                             <span className="font-medium">Kaspi & Stripe</span>
-                            <span className="ml-auto text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Скоро</span>
+                            <span className="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">✓ Активно</span>
                         </div>
-                        <p className="text-sm text-gray-600">Оплата подписки через Kaspi или банковскую карту</p>
+                        <p className="text-sm text-gray-600 mb-3">Оплата подписки через Kaspi или банковскую карту</p>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => navigate('/subscription')}
+                        >
+                            Настроить платежи
+                        </Button>
                     </div>
 
-                    <div className="p-4 border-2 border-gray-200 rounded-xl bg-gray-50">
+                    {/* 2GIS / Google Maps */}
+                    <div className="p-4 border-2 border-purple-200 rounded-xl bg-gradient-to-r from-purple-50 to-purple-100/50">
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-2xl">🗺️</span>
                             <span className="font-medium">2ГИС / Google Maps</span>
-                            <span className="ml-auto text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Скоро</span>
+                            <span className="ml-auto text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">✓ Активно</span>
                         </div>
-                        <p className="text-sm text-gray-600">Интеграция с картами для поиска офисов</p>
+                        <p className="text-sm text-gray-600 mb-3">Интеграция с картами для поиска офисов</p>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => navigate('/locations')}
+                        >
+                            Посмотреть на карте
+                        </Button>
                     </div>
                 </div>
             </Card>

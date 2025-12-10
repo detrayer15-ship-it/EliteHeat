@@ -12,6 +12,7 @@ interface AuthStore {
 
     register: (email: string, password: string, name: string, city: string, role?: 'student' | 'admin') => Promise<{ success: boolean; message: string }>
     login: (email: string, password: string) => Promise<{ success: boolean; message: string }>
+    loginWithGoogle: () => Promise<{ success: boolean; message: string }>
     logout: () => Promise<void>
     setUser: (user: UserData | null) => void
     updateProfile: (data: Partial<UserData>) => void
@@ -72,6 +73,30 @@ export const useAuthStore = create<AuthStore>()(
                     return { success: false, message: response.message || 'Ошибка входа' }
                 } catch (error: any) {
                     const message = error.message || 'Неверный email или пароль'
+                    set({ isLoading: false, error: message })
+                    return { success: false, message }
+                }
+            },
+
+            loginWithGoogle: async () => {
+                try {
+                    set({ isLoading: true, error: null })
+                    const response = await firebaseAuthAPI.signInWithGoogle()
+
+                    if (response.success && response.data) {
+                        set({
+                            user: response.data.user,
+                            isAuthenticated: true,
+                            isLoading: false
+                        })
+
+                        return { success: true, message: 'Вход через Google выполнен!' }
+                    }
+
+                    set({ isLoading: false, error: response.message })
+                    return { success: false, message: response.message || 'Ошибка входа через Google' }
+                } catch (error: any) {
+                    const message = error.message || 'Ошибка входа через Google'
                     set({ isLoading: false, error: message })
                     return { success: false, message }
                 }

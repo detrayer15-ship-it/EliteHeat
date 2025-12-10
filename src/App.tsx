@@ -14,6 +14,7 @@ import { RegisterPage } from './pages/RegisterPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { ProfileEditPage } from './pages/ProfileEditPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
+import { LocationsPage } from './pages/LocationsPage'
 import { PaymentPage } from './pages/PaymentPage'
 import { AdminDashboardPage } from './pages/AdminDashboardPage'
 import { TaskReviewPage } from './pages/TaskReviewPage'
@@ -143,6 +144,16 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <SubscriptionPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/locations"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <LocationsPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

@@ -152,6 +152,70 @@ export const firebaseAuthAPI = {
         }
     },
 
+    // Google Sign-In
+    signInWithGoogle: async () => {
+        try {
+            const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth')
+            const provider = new GoogleAuthProvider()
+            provider.addScope('profile')
+            provider.addScope('email')
+
+            const result = await signInWithPopup(auth, provider)
+            const user = result.user
+
+            // Check if user exists in Firestore
+            const userDoc = await getDoc(doc(db, 'users', user.uid))
+
+            if (!userDoc.exists()) {
+                // Create new user document
+                const userData = {
+                    id: user.uid,
+                    email: user.email!,
+                    name: user.displayName || 'Пользователь',
+                    city: 'Не указан',
+                    role: 'student' as const,
+                    photoURL: user.photoURL || undefined,
+                    createdAt: Timestamp.now()
+                }
+
+                await setDoc(doc(db, 'users', user.uid), userData)
+
+                return {
+                    success: true,
+                    data: {
+                        user: userData,
+                        token: await user.getIdToken()
+                    }
+                }
+            }
+
+            // Return existing user
+            const userData = userDoc.data() as UserData
+            return {
+                success: true,
+                data: {
+                    user: userData,
+                    token: await user.getIdToken()
+                }
+            }
+        } catch (error: any) {
+            console.error('Google Sign-In Error:', error)
+
+            let userMessage = 'Ошибка входа через Google'
+
+            if (error.code === 'auth/popup-closed-by-user') {
+                userMessage = 'Вход отменён'
+            } else if (error.code === 'auth/popup-blocked') {
+                userMessage = 'Всплывающее окно заблокировано браузером'
+            }
+
+            return {
+                success: false,
+                message: userMessage
+            }
+        }
+    },
+
     // Listen to auth state changes
     onAuthChange: (callback: (user: FirebaseUser | null) => void) => {
         return onAuthStateChanged(auth, callback)
