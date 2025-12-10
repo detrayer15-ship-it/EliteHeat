@@ -19,7 +19,7 @@ const offices: Office[] = [
         name: 'EliteHeat - Алматы (Центр)',
         address: 'ул. Абая, 150/230',
         city: 'Алматы',
-        phone: '+7 (727) 123-45-67',
+        phone: '+7 771 693 3595',
         hours: 'Пн-Пт: 9:00-18:00',
         lat: 43.2220,
         lng: 76.8512
@@ -29,7 +29,7 @@ const offices: Office[] = [
         name: 'EliteHeat - Астана',
         address: 'пр. Кабанбай батыра, 53',
         city: 'Астана',
-        phone: '+7 (7172) 98-76-54',
+        phone: '+7 707 554 9835',
         hours: 'Пн-Пт: 9:00-18:00',
         lat: 51.1694,
         lng: 71.4491
@@ -39,7 +39,7 @@ const offices: Office[] = [
         name: 'EliteHeat - Шымкент',
         address: 'пр. Тауке хана, 25',
         city: 'Шымкент',
-        phone: '+7 (7252) 55-44-33',
+        phone: '+7 705 986 9303',
         hours: 'Пн-Пт: 9:00-18:00',
         lat: 42.3417,
         lng: 69.5901
