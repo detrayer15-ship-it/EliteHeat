@@ -1,39 +1,112 @@
 import { useState, useRef, useEffect } from 'react'
-import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { useChatStore } from '@/store/chatStore'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+
+interface Message {
+    id: string
+    role: 'user' | 'assistant'
+    content: string
+    timestamp: Date
+    image?: string
+}
+
+type AttachmentType = 'pdf' | 'presentation' | 'text' | 'image' | null
+
+// Инициализация Gemini AI
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyCjZ6u_7uG128pM-9Y1u0MNN3ulk6xmMuo')
 
 export const AIAssistantPage = () => {
-    const [inputMessage, setInputMessage] = useState('')
-    const messagesEndRef = useRef<HTMLDivElement>(null)
-
-    const sessions = useChatStore((state) => state.sessions)
-    const currentSessionId = useChatStore((state) => state.currentSessionId)
-    const currentSession = useChatStore((state) => state.getCurrentSession())
-    const isLoading = useChatStore((state) => state.isLoading)
-    const createSession = useChatStore((state) => state.createSession)
-    const sendMessage = useChatStore((state) => state.sendMessage)
-    const setCurrentSession = useChatStore((state) => state.setCurrentSession)
-    const deleteSession = useChatStore((state) => state.deleteSession)
-
-    useEffect(() => {
-        // Создаем первую сессию если её нет
-        if (sessions.length === 0) {
-            createSession('Первый чат')
+    const [messages, setMessages] = useState<Message[]>([
+        {
+            id: '1',
+            role: 'assistant',
+            content: 'Привет! Я ваш AI-помощник EliteHeat. Могу помочь с:\n\n📚 Объяснением материала курсов\n💻 Проверкой кода и поиском ошибок\n🎨 Анализом дизайна и презентаций\n📄 Работой с документами\n🖼️ Анализом изображений\n\nЗагрузите файл или задайте вопрос!',
+            timestamp: new Date()
         }
-    }, [sessions.length, createSession])
+    ])
+    const [input, setInput] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const [attachmentType, setAttachmentType] = useState<AttachmentType>(null)
+    const [selectedImage, setSelectedImage] = useState<string | null>(null)
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const imageInputRef = useRef<HTMLInputElement>(null)
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
 
     useEffect(() => {
-        // Автоскролл к последнему сообщению
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [currentSession?.messages])
+        scrollToBottom()
+    }, [messages])
 
     const handleSend = async () => {
-        if (!inputMessage.trim() || isLoading) return
+        if (!input.trim() && !selectedImage) return
 
-        await sendMessage(inputMessage)
-        setInputMessage('')
+        const userMessage: Message = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: input || 'Проанализируй это изображение',
+            timestamp: new Date(),
+            image: selectedImage || undefined
+        }
+
+        setMessages(prev => [...prev, userMessage])
+        setInput('')
+        setIsLoading(true)
+
+        try {
+            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+
+            let result
+            if (selectedImage) {
+                // Если есть изображение, отправляем его вместе с текстом
+                const imagePart = {
+                    inlineData: {
+                        data: selectedImage.split(',')[1],
+                        mimeType: 'image/jpeg'
+                    }
+                }
+
+                const prompt = input || 'Проанализируй это изображение. Если это код - найди ошибки. Если это дизайн - дай рекомендации. Если это задание - помоги его решить.'
+                result = await model.generateContent([prompt, imagePart])
+            } else {
+                // Только текст
+                const prompt = `Ты - AI-помощник образовательной платформы EliteHeat. Помогай студентам с:
+- Объяснением концепций программирования (Python, JavaScript)
+- Проверкой кода и поиском ошибок
+- Советами по дизайну в Figma
+- Решением задач и заданий
+- Созданием презентаций
+
+Вопрос студента: ${input}`
+
+                result = await model.generateContent(prompt)
+            }
+
+            const response = await result.response
+            const text = response.text()
+
+            const aiMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: text,
+                timestamp: new Date()
+            }
+            setMessages(prev => [...prev, aiMessage])
+            setSelectedImage(null)
+        } catch (error) {
+            console.error('AI Error:', error)
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: 'Извините, произошла ошибка. Попробуйте еще раз или проверьте API ключ Gemini.',
+                timestamp: new Date()
+            }
+            setMessages(prev => [...prev, errorMessage])
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -43,151 +116,196 @@ export const AIAssistantPage = () => {
         }
     }
 
-    return (
-        <div className="h-[calc(100vh-120px)] flex gap-4">
-            {/* Sidebar with chat history */}
-            <div className="w-64 flex-shrink-0 space-y-2">
-                <Button
-                    onClick={() => createSession()}
-                    className="w-full"
-                >
-                    ➕ Новый чат
-                </Button>
+    const handleAttachment = (type: AttachmentType) => {
+        setAttachmentType(type)
+        if (type === 'pdf' || type === 'presentation') {
+            fileInputRef.current?.click()
+        } else if (type === 'image') {
+            imageInputRef.current?.click()
+        }
+    }
 
-                <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
-                    {sessions.map((session) => (
-                        <div
-                            key={session.id}
-                            className={`p-3 rounded-lg cursor-pointer transition-smooth ${session.id === currentSessionId
-                                    ? 'bg-primary text-white'
-                                    : 'bg-white hover:bg-gray-50'
-                                }`}
-                            onClick={() => setCurrentSession(session.id)}
-                        >
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium truncate flex-1">
-                                    {session.title}
-                                </span>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        deleteSession(session.id)
-                                    }}
-                                    className="ml-2 text-xs opacity-70 hover:opacity-100"
-                                >
-                                    🗑️
-                                </button>
-                            </div>
-                            <div className="text-xs opacity-70 mt-1">
-                                {session.messages.length} сообщений
-                            </div>
-                        </div>
-                    ))}
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const userMessage: Message = {
+                id: Date.now().toString(),
+                role: 'user',
+                content: `📎 Загружен файл: ${file.name}\n\nФункция анализа PDF и презентаций будет добавлена в следующем обновлении.`,
+                timestamp: new Date()
+            }
+            setMessages(prev => [...prev, userMessage])
+        }
+        setAttachmentType(null)
+    }
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setSelectedImage(reader.result as string)
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    return (
+        <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
+            {/* Header */}
+            <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white text-xl font-bold">
+                        ✨
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-800">AI Помощник EliteHeat</h1>
+                        <p className="text-sm text-gray-500">Powered by Google Gemini</p>
+                    </div>
                 </div>
             </div>
 
-            {/* Main chat area */}
-            <div className="flex-1 flex flex-col">
-                {/* Header */}
-                <Card className="mb-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-ai-blue rounded-full flex items-center justify-center text-2xl">
-                            🤖
-                        </div>
-                        <div>
-                            <h1 className="text-2xl font-bold text-text">AI Помощник</h1>
-                            <p className="text-sm text-gray-600">Ваш персональный помощник по программированию</p>
-                        </div>
-                    </div>
-                </Card>
-
-                {/* Messages */}
-                <Card className="flex-1 overflow-y-auto mb-4 p-4">
-                    {currentSession?.messages.length === 0 ? (
-                        <div className="h-full flex items-center justify-center">
-                            <div className="text-center max-w-md">
-                                <div className="text-6xl mb-4">💬</div>
-                                <h3 className="text-xl font-semibold mb-2">Начните разговор</h3>
-                                <p className="text-gray-600 mb-4">
-                                    Задайте любой вопрос по программированию, и я помогу вам!
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-4 py-6">
+                <div className="max-w-4xl mx-auto space-y-6">
+                    {messages.map((message) => (
+                        <div
+                            key={message.id}
+                            className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                            {message.role === 'assistant' && (
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white flex-shrink-0">
+                                    ✨
+                                </div>
+                            )}
+                            <div
+                                className={`max-w-2xl rounded-2xl px-5 py-3 ${message.role === 'user'
+                                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
+                                    : 'bg-white border border-gray-200 text-gray-800'
+                                    }`}
+                            >
+                                {message.image && (
+                                    <img
+                                        src={message.image}
+                                        alt="Uploaded"
+                                        className="rounded-lg mb-3 max-w-full h-auto max-h-64 object-contain"
+                                    />
+                                )}
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                                <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-400'}`}>
+                                    {message.timestamp.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                                 </p>
-                                <div className="grid grid-cols-1 gap-2 text-sm">
-                                    <button
-                                        onClick={() => setInputMessage('Как написать функцию на Python?')}
-                                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-smooth text-left"
-                                    >
-                                        💡 Как написать функцию на Python?
-                                    </button>
-                                    <button
-                                        onClick={() => setInputMessage('Объясни что такое переменные')}
-                                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-smooth text-left"
-                                    >
-                                        📚 Объясни что такое переменные
-                                    </button>
-                                    <button
-                                        onClick={() => setInputMessage('Помоги с моим кодом')}
-                                        className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-smooth text-left"
-                                    >
-                                        🔧 Помоги с моим кодом
-                                    </button>
+                            </div>
+                            {message.role === 'user' && (
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 flex items-center justify-center text-white flex-shrink-0">
+                                    👤
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                    {isLoading && (
+                        <div className="flex gap-4">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white">
+                                ✨
+                            </div>
+                            <div className="bg-white border border-gray-200 rounded-2xl px-5 py-3">
+                                <div className="flex gap-2">
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                                 </div>
                             </div>
                         </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {currentSession?.messages.map((message) => (
-                                <div
-                                    key={message.id}
-                                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                                >
-                                    <div
-                                        className={`max-w-[70%] p-4 rounded-lg ${message.role === 'user'
-                                                ? 'bg-primary text-white'
-                                                : 'bg-gray-100 text-text'
-                                            }`}
-                                    >
-                                        <div className="whitespace-pre-wrap">{message.content}</div>
-                                        <div className={`text-xs mt-2 ${message.role === 'user' ? 'text-white/70' : 'text-gray-500'
-                                            }`}>
-                                            {new Date(message.timestamp).toLocaleTimeString('ru-RU', {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            {isLoading && (
-                                <div className="flex justify-start">
-                                    <div className="bg-gray-100 p-4 rounded-lg">
-                                        <div className="flex gap-2">
-                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            <div ref={messagesEndRef} />
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+            </div>
+
+            {/* Input Area */}
+            <div className="bg-white border-t border-gray-200 px-4 py-4">
+                <div className="max-w-4xl mx-auto">
+                    {/* Selected Image Preview */}
+                    {selectedImage && (
+                        <div className="mb-3 relative inline-block">
+                            <img
+                                src={selectedImage}
+                                alt="Preview"
+                                className="rounded-lg max-h-32 object-contain border-2 border-blue-500"
+                            />
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                            >
+                                ×
+                            </button>
                         </div>
                     )}
-                </Card>
 
-                {/* Input */}
-                <div className="flex gap-2">
-                    <Input
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder="Напишите ваш вопрос..."
-                        disabled={isLoading}
+                    {/* Attachment Buttons */}
+                    <div className="flex gap-2 mb-3 flex-wrap">
+                        <button
+                            onClick={() => handleAttachment('image')}
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors text-sm font-medium text-blue-700"
+                        >
+                            <span className="text-lg">🖼️</span>
+                            <span>Изображение</span>
+                        </button>
+                        <button
+                            onClick={() => handleAttachment('pdf')}
+                            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm font-medium text-gray-700"
+                        >
+                            <span className="text-lg">📄</span>
+                            <span>PDF</span>
+                        </button>
+                        <button
+                            onClick={() => handleAttachment('presentation')}
+                            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm font-medium text-gray-700"
+                        >
+                            <span className="text-lg">📊</span>
+                            <span>Презентация</span>
+                        </button>
+                    </div>
+
+                    {/* Input Field */}
+                    <div className="flex gap-3 items-end">
+                        <div className="flex-1 relative">
+                            <textarea
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                placeholder="Задайте вопрос, загрузите код для проверки или изображение для анализа..."
+                                className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-blue-500 resize-none min-h-[56px] max-h-[200px]"
+                                rows={1}
+                            />
+                        </div>
+                        <Button
+                            onClick={handleSend}
+                            disabled={(!input.trim() && !selectedImage) || isLoading}
+                            className="h-14 px-6 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl"
+                        >
+                            <span className="text-xl">↑</span>
+                        </Button>
+                    </div>
+
+                    {/* Hidden file inputs */}
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept={attachmentType === 'pdf' ? '.pdf' : '.ppt,.pptx,.key'}
+                        onChange={handleFileUpload}
+                        className="hidden"
                     />
-                    <Button
-                        onClick={handleSend}
-                        disabled={!inputMessage.trim() || isLoading}
-                    >
-                        {isLoading ? '⏳' : '📤'} Отправить
-                    </Button>
+                    <input
+                        ref={imageInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                    />
+
+                    <p className="text-xs text-gray-500 text-center mt-3">
+                        AI может делать ошибки. Проверяйте важную информацию.
+                    </p>
                 </div>
             </div>
         </div>

@@ -142,13 +142,7 @@ function App() {
                 />
                 <Route
                     path="/subscription"
-                    element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <SubscriptionPage />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    }
+                    element={<SubscriptionPage />}
                 />
                 <Route
                     path="/locations"

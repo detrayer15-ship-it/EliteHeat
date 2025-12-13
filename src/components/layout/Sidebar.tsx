@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { EliteHeatLogo } from '@/components/ui/EliteHeatLogo'
 
 const navItems = [
     { path: '/dashboard', label: 'Главная', icon: '🏠' },
     { path: '/projects', label: 'Проекты', icon: '📁' },
     { path: '/tasks', label: 'Курсы', icon: '🎓' },
     { path: '/progress', label: 'Трекер Прогресса', icon: '📊' },
-    { path: '/ai-assistant', label: 'AI Помощник', icon: '🤖' },
-    { path: '/analyzer', label: 'AI Review', icon: '🤖' },
-    { path: '/subscription', label: 'Подписка', icon: '💎' },
+    { path: '/ai-assistant', label: 'AI Помощник', icon: '✨' },
     { path: '/settings', label: 'Настройки', icon: '⚙️' },
 ]
 
@@ -50,10 +49,14 @@ export const Sidebar = () => {
             `}>
                 {/* Logo */}
                 <div className="p-6 border-b border-gray-200 bg-white">
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-purple-500 to-ai-blue bg-clip-text text-transparent">
-                        EliteHeat
-                    </h1>
-                    <p className="text-sm text-gray-600 mt-1">Образовательная платформа</p>
+                    <div className="flex items-center gap-3 mb-2">
+                        <EliteHeatLogo className="w-12 h-12" />
+                        <h1 className="text-2xl font-bold flex items-center">
+                            <span className="text-blue-700">Elite</span>
+                            <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Heat</span>
+                        </h1>
+                    </div>
+                    <p className="text-sm text-gray-600">Образовательная платформа</p>
                 </div>
 
                 {/* Navigation */}
