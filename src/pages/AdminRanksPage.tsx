@@ -1,219 +1,275 @@
-import { Card } from '@/components/ui/Card'
+import { useState } from 'react'
+import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore'
+import { db } from '@/config/firebase'
+import { adminRanks } from '@/utils/adminRanks'
+import { ArrowLeft } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { adminRanks, pointsActions, getProgressToNextRank } from '@/utils/adminRanks'
 
 export const AdminRanksPage = () => {
-    const user = useAuthStore((state) => state.user)
-    const points = user?.points || 0
-    const { current, next, progress } = getProgressToNextRank(points)
+    const navigate = useNavigate()
+    const currentUser = useAuthStore((state) => state.user)
+    const [email, setEmail] = useState('')
+    const [selectedRank, setSelectedRank] = useState<number>(0)
+    const [status, setStatus] = useState('')
+    const [loading, setLoading] = useState(false)
 
-    if (!user || user.role !== 'admin') {
+    // Проверка доступа - для admin и developer
+    if (currentUser?.role !== 'admin' && currentUser?.role !== 'developer') {
         return (
-            <div className="text-center py-12">
-                <div className="text-6xl mb-4">🔒</div>
-                <h2 className="text-2xl font-bold mb-2">Доступ запрещён</h2>
-                <p className="text-gray-600">Эта страница доступна только администраторам</p>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md">
+                    <div className="text-6xl mb-4">🔒</div>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Доступ запрещён</h1>
+                    <p className="text-gray-600 mb-6">
+                        Эта страница доступна только администраторам
+                    </p>
+                    <button
+                        onClick={() => navigate('/admin')}
+                        className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    >
+                        Вернуться в админ-панель
+                    </button>
+                </div>
             </div>
         )
     }
 
+    const isDeveloper = currentUser?.role === 'developer'
+
+    const handleChangeRank = async () => {
+        if (!email.trim()) {
+            setStatus('❌ Введите email')
+            return
+        }
+
+        setLoading(true)
+        setStatus('⏳ Обновление ранга...')
+
+        try {
+            // Найти пользователя по email
+            const usersRef = collection(db, 'users')
+            const q = query(usersRef, where('email', '==', email.trim()))
+            const querySnapshot = await getDocs(q)
+
+            if (querySnapshot.empty) {
+                setStatus('❌ Пользователь с таким email не найден')
+                setLoading(false)
+                return
+            }
+
+            // Получить выбранный ранг
+            const rank = adminRanks.find(r => r.level === selectedRank)
+            if (!rank) {
+                setStatus('❌ Ранг не найден')
+                setLoading(false)
+                return
+            }
+
+            // Обновить очки пользователя (устанавливаем минимум для этого ранга)
+            for (const userDoc of querySnapshot.docs) {
+                const userRef = doc(db, 'users', userDoc.id)
+                await updateDoc(userRef, {
+                    adminPoints: rank.minPoints,
+                    updatedAt: new Date().toISOString()
+                })
+            }
+
+            setStatus(`✅ Ранг изменён на "${rank.name}" (${rank.minPoints} очков)`)
+            setEmail('')
+        } catch (error) {
+            console.error('Error updating rank:', error)
+            setStatus('❌ Ошибка при обновлении ранга')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
-        <div className="max-w-6xl mx-auto space-y-6 page-transition">
-            {/* Заголовок */}
-            <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-600 bg-clip-text text-transparent mb-2">
-                    🏆 Система рангов и очков
-                </h1>
-                <p className="text-gray-600">Зарабатывайте очки за активность и повышайте свой ранг!</p>
-            </div>
-
-            {/* Текущий ранг */}
-            <Card className="bg-gradient-to-br from-white to-gray-50">
-                <div className="text-center mb-6">
-                    <div className="text-6xl mb-3">{current.icon}</div>
-                    <h2 className={`text-3xl font-bold bg-gradient-to-r ${current.color} bg-clip-text text-transparent mb-2`}>
-                        {current.name}
-                    </h2>
-                    <p className="text-gray-600 mb-4">{current.description}</p>
-                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 px-6 py-3 rounded-full border-2 border-yellow-300">
-                        <span className="text-2xl">⭐</span>
-                        <span className="text-2xl font-bold text-orange-600">{points}</span>
-                        <span className="text-gray-600">очков</span>
-                    </div>
+        <div className="min-h-screen bg-gray-50 py-8">
+            <div className="max-w-2xl mx-auto px-4">
+                {/* Header */}
+                <div className="mb-8">
+                    <button
+                        onClick={() => navigate('/admin')}
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Назад
+                    </button>
+                    <h1 className="text-3xl font-bold text-gray-900">Изменение рангов</h1>
+                    <p className="text-gray-600 mt-2">Измените ранг администратора по email</p>
                 </div>
 
-                {/* Прогресс до следующего ранга */}
-                {next && (
-                    <div className="mt-6">
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600">
-                                Прогресс до {next.icon} {next.name}
-                            </span>
-                            <span className="text-sm font-bold text-primary">
-                                {Math.round(progress)}%
-                            </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                            <div
-                                className={`h-full bg-gradient-to-r ${next.color} transition-all duration-500 rounded-full`}
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                            Ещё {next.minPoints - points} очков до следующего ранга
-                        </p>
-                    </div>
-                )}
-            </Card>
-
-            {/* Как зарабатывать очки */}
-            <Card>
-                <h2 className="text-2xl font-bold mb-4">💰 Как зарабатывать очки</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-2 border-green-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">✅</span>
+                {/* Form - только для developer */}
+                {isDeveloper && (
+                    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <div className="space-y-6">
+                            {/* Email Input */}
                             <div>
-                                <h3 className="font-bold">Проверка задания</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.REVIEW_TASK} очков</p>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Email пользователя
+                                </label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="admin@example.com"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                />
                             </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Проверьте и оцените задание ученика</p>
-                    </div>
 
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">👍</span>
+                            {/* Rank Selector */}
                             <div>
-                                <h3 className="font-bold">Одобрение задания</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.APPROVE_TASK} очков</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Одобрите качественное задание</p>
-                    </div>
-
-                    <div className="p-4 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-2 border-red-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">❌</span>
-                            <div>
-                                <h3 className="font-bold">Отклонение задания</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.REJECT_TASK} очков</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Отклоните задание с комментариями</p>
-                    </div>
-
-                    <div className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">💬</span>
-                            <div>
-                                <h3 className="font-bold">Ответ на сообщение</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.REPLY_MESSAGE} очков</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Ответьте на вопрос ученика в чате</p>
-                    </div>
-
-                    <div className="p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-xl border-2 border-yellow-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">📚</span>
-                            <div>
-                                <h3 className="font-bold">Создание курса</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.CREATE_COURSE} очков</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Создайте новый обучающий курс</p>
-                    </div>
-
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border-2 border-orange-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">📖</span>
-                            <div>
-                                <h3 className="font-bold">Добавление урока</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.ADD_LESSON} очков</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Добавьте урок в существующий курс</p>
-                    </div>
-
-                    <div className="p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-xl border-2 border-pink-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">🤝</span>
-                            <div>
-                                <h3 className="font-bold">Помощь ученику</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.HELP_STUDENT} очков</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Помогите ученику решить проблему</p>
-                    </div>
-
-                    <div className="p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl border-2 border-indigo-200">
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-3xl">📅</span>
-                            <div>
-                                <h3 className="font-bold">Ежедневный вход</h3>
-                                <p className="text-sm text-gray-600">+{pointsActions.DAILY_LOGIN} очков</p>
-                            </div>
-                        </div>
-                        <p className="text-xs text-gray-500">Войдите в систему каждый день</p>
-                    </div>
-                </div>
-            </Card>
-
-            {/* Все ранги */}
-            <Card>
-                <h2 className="text-2xl font-bold mb-4">🎖️ Все ранги</h2>
-                <div className="space-y-3">
-                    {adminRanks.map((rank) => {
-                        const isCurrentRank = rank.level === current.level
-                        const isAchieved = points >= rank.minPoints
-
-                        return (
-                            <div
-                                key={rank.level}
-                                className={`p-4 rounded-xl border-2 transition-all ${isCurrentRank
-                                    ? `bg-gradient-to-r ${rank.color} text-white border-transparent shadow-lg scale-105`
-                                    : isAchieved
-                                        ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300'
-                                        : 'bg-white border-gray-200 opacity-60'
-                                    }`}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="text-4xl">{rank.icon}</div>
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <h3 className={`text-xl font-bold ${isCurrentRank ? 'text-white' : 'text-gray-800'}`}>
-                                                Уровень {rank.level}: {rank.name}
-                                            </h3>
-                                            {isCurrentRank && <span className="text-sm bg-white/20 px-2 py-1 rounded-full">Текущий</span>}
-                                            {isAchieved && !isCurrentRank && <span className="text-sm">✓</span>}
-                                        </div>
-                                        <p className={`text-sm mb-2 ${isCurrentRank ? 'text-white/90' : 'text-gray-600'}`}>
-                                            {rank.description}
-                                        </p>
-                                        <p className={`text-xs ${isCurrentRank ? 'text-white/70' : 'text-gray-500'}`}>
-                                            {rank.minPoints} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints} очков
-                                        </p>
-                                    </div>
+                                <label className="block text-sm font-medium text-gray-700 mb-3">
+                                    Выберите ранг
+                                </label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {adminRanks.map((rank) => (
+                                        <button
+                                            key={rank.level}
+                                            onClick={() => setSelectedRank(rank.level)}
+                                            className={`p-4 rounded-lg border-2 transition-all text-left ${selectedRank === rank.level
+                                                ? 'border-purple-500 bg-purple-50'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-2xl">{rank.icon}</span>
+                                                <div>
+                                                    <h3 className="font-semibold text-gray-900">
+                                                        {rank.name}
+                                                    </h3>
+                                                    <p className="text-xs text-gray-500">
+                                                        Уровень {rank.level}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-gray-600">
+                                                {rank.minPoints} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints} очков
+                                            </p>
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
-                        )
-                    })}
-                </div>
-            </Card>
 
-            {/* Информация о компании */}
-            <Card className="bg-gradient-to-br from-cyan-50 to-blue-100 border-2 border-cyan-200">
-                <div className="text-center">
-                    <div className="text-5xl mb-3">🚀</div>
-                    <h2 className="text-2xl font-bold mb-2">Создатель платформы</h2>
-                    <p className="text-lg font-semibold text-primary mb-2">Компания EliteHeat</p>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Мы создаём лучшую образовательную платформу для развития навыков и достижения целей.
-                        Присоединяйтесь к нашей команде и помогайте ученикам расти!
-                    </p>
+                            {/* Submit Button */}
+                            <button
+                                onClick={handleChangeRank}
+                                disabled={loading || !email.trim() || selectedRank === 0}
+                                className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                {loading ? '⏳ Обновление...' : 'Изменить ранг'}
+                            </button>
+
+                            {/* Status */}
+                            {status && (
+                                <div className={`p-4 rounded-lg ${status.includes('✅')
+                                    ? 'bg-green-50 text-green-800'
+                                    : status.includes('❌')
+                                        ? 'bg-red-50 text-red-800'
+                                        : 'bg-blue-50 text-blue-800'
+                                    }`}>
+                                    <p className="text-sm font-medium">{status}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Info */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-900 mb-2">ℹ️ Информация</h3>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                        <li>• Ранг определяется количеством очков (adminPoints)</li>
+                        <li>• При изменении ранга устанавливается минимум очков для этого уровня</li>
+                        <li>• Очки можно заработать за проверку заданий и помощь ученикам</li>
+                    </ul>
                 </div>
-            </Card>
+
+                {/* Ranks Reference */}
+                <div className="mt-6 bg-white rounded-lg shadow-sm p-6">
+                    <h3 className="font-semibold text-gray-900 mb-4">📊 Справка по рангам</h3>
+                    <div className="space-y-2">
+                        {adminRanks.map((rank) => (
+                            <div key={rank.level} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-xl">{rank.icon}</span>
+                                    <div>
+                                        <p className="font-medium text-gray-900">{rank.name}</p>
+                                        <p className="text-xs text-gray-500">{rank.description}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-medium text-gray-700">
+                                        {rank.minPoints} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints}
+                                    </p>
+                                    <p className="text-xs text-gray-500">очков</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Responsibilities Guide */}
+                <div className="mt-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg shadow-sm p-6 border-2 border-purple-200">
+                    <h3 className="font-bold text-gray-900 mb-4 text-lg flex items-center gap-2">
+                        📋 Обязанности и права по рангам
+                    </h3>
+                    <div className="space-y-4">
+                        <div className="bg-white rounded-lg p-4 border-l-4 border-green-500">
+                            <h4 className="font-semibold text-gray-900 mb-2">🌱 Стажёр (0-49 очков)</h4>
+                            <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                                <li>• Доступ к базовым функциям админ-панели</li>
+                                <li>• Просмотр списка учеников</li>
+                                <li>• Ответы в чате с учениками</li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-white rounded-lg p-4 border-l-4 border-blue-500">
+                            <h4 className="font-semibold text-gray-900 mb-2">⚡ Модератор (100-199 очков)</h4>
+                            <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                                <li>• Все права Стажёра</li>
+                                <li>• Управление группами учеников</li>
+                                <li>• Проверка простых заданий</li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-white rounded-lg p-4 border-l-4 border-purple-500">
+                            <h4 className="font-semibold text-gray-900 mb-2">⭐ Эксперт (350-549 очков)</h4>
+                            <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                                <li>• Все права Модератора</li>
+                                <li>• Проверка сложных заданий</li>
+                                <li>• Создание учебных материалов</li>
+                                <li>• Менторство новых админов</li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-white rounded-lg p-4 border-l-4 border-yellow-500">
+                            <h4 className="font-semibold text-gray-900 mb-2">🏆 Архитектор (1500+ очков)</h4>
+                            <ul className="text-sm text-gray-600 space-y-1 ml-4">
+                                <li>• Все права Эксперта</li>
+                                <li>• Управление всеми админами</li>
+                                <li>• Доступ к аналитике</li>
+                                <li>• Принятие стратегических решений</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Developer Note */}
+                <div className="mt-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg shadow-lg p-6 text-white">
+                    <h3 className="font-bold text-xl mb-3 flex items-center gap-2">
+                        ⚠️ Важно для разработчика
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                        <p>• Только разработчик может изменять ранги администраторов</p>
+                        <p>• Очки начисляются автоматически за выполнение задач</p>
+                        <p>• Разработчик может вручную добавлять/убавлять очки при необходимости</p>
+                        <p>• Понижение ранга возможно только в исключительных случаях</p>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

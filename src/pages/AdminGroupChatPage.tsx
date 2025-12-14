@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
 import { useAuthStore } from '@/store/authStore'
 import { collection, addDoc, query, orderBy, onSnapshot, Timestamp } from 'firebase/firestore'
 import { db } from '@/config/firebase'
+import { Send, Users, MessageCircle } from 'lucide-react'
 
 interface AdminMessage {
     id: string
@@ -22,7 +20,7 @@ export const AdminGroupChatPage = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        if (!user || user.role !== 'admin') return
+        if (!user || (user.role !== 'admin' && user.role !== 'developer')) return
 
         // Subscribe to admin group chat messages
         const q = query(
@@ -78,101 +76,144 @@ export const AdminGroupChatPage = () => {
         }
     }
 
-    if (!user || user.role !== 'admin') {
+    if (!user || (user.role !== 'admin' && user.role !== 'developer')) {
         return (
-            <div className="text-center py-12">
-                <div className="text-6xl mb-4">🔒</div>
-                <h2 className="text-2xl font-bold mb-2">Доступ запрещён</h2>
-                <p className="text-gray-600">Эта страница доступна только администраторам</p>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center bg-white p-8 rounded-lg shadow-lg max-w-md">
+                    <div className="text-6xl mb-4">🔒</div>
+                    <h2 className="text-2xl font-bold mb-2">Доступ запрещён</h2>
+                    <p className="text-gray-600">Эта страница доступна только администраторам</p>
+                </div>
             </div>
         )
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6 page-transition">
-            {/* Заголовок */}
-            <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-pink-600 bg-clip-text text-transparent mb-2">
-                    👥 Групповой чат админов
-                </h1>
-                <p className="text-gray-600">Общее обсуждение для всех администраторов</p>
-            </div>
-
-            {/* Чат */}
-            <Card className="h-[600px] flex flex-col">
-                {/* Сообщения */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {messages.length === 0 ? (
-                        <div className="text-center text-gray-500 py-12">
-                            <div className="text-4xl mb-2">💬</div>
-                            <p>Пока нет сообщений</p>
-                            <p className="text-sm">Начните обсуждение!</p>
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg">
+                            <Users className="w-8 h-8 text-white" />
                         </div>
-                    ) : (
-                        messages.map((msg) => {
-                            const isCurrentUser = msg.senderId === user.id
+                        <div>
+                            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                Групповой чат админов
+                            </h1>
+                            <p className="text-gray-600">Общее обсуждение для всей команды</p>
+                        </div>
+                    </div>
+                </div>
 
-                            return (
-                                <div
-                                    key={msg.id}
-                                    className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
-                                >
+                {/* Chat Container */}
+                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    {/* Chat Messages */}
+                    <div className="h-[600px] overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-gray-50 to-white">
+                        {messages.length === 0 ? (
+                            <div className="h-full flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="inline-block p-6 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full mb-4">
+                                        <MessageCircle className="w-16 h-16 text-purple-600" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Пока нет сообщений</h3>
+                                    <p className="text-gray-500">Начните обсуждение с командой!</p>
+                                </div>
+                            </div>
+                        ) : (
+                            messages.map((msg) => {
+                                const isCurrentUser = msg.senderId === user.id
+
+                                return (
                                     <div
-                                        className={`max-w-[70%] rounded-2xl px-4 py-3 ${isCurrentUser
-                                            ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white'
-                                            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800'
-                                            }`}
+                                        key={msg.id}
+                                        className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'} animate-fade-in`}
                                     >
-                                        {!isCurrentUser && (
-                                            <div className="text-xs font-semibold mb-1 opacity-75">
-                                                👑 {msg.senderName}
-                                            </div>
-                                        )}
-                                        <p className="break-words">{msg.message}</p>
                                         <div
-                                            className={`text-xs mt-1 ${isCurrentUser ? 'text-white/70' : 'text-gray-500'
+                                            className={`max-w-[70%] rounded-2xl px-5 py-3 shadow-md ${isCurrentUser
+                                                    ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white'
+                                                    : 'bg-white border-2 border-gray-100 text-gray-800'
                                                 }`}
                                         >
-                                            {msg.timestamp.toLocaleTimeString('ru-RU', {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
+                                            {!isCurrentUser && (
+                                                <div className="flex items-center gap-2 text-xs font-semibold mb-2 text-purple-600">
+                                                    <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white text-xs">
+                                                        {msg.senderName.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    {msg.senderName}
+                                                </div>
+                                            )}
+                                            <p className="break-words leading-relaxed">{msg.message}</p>
+                                            <div
+                                                className={`text-xs mt-2 ${isCurrentUser ? 'text-white/70' : 'text-gray-400'
+                                                    }`}
+                                            >
+                                                {msg.timestamp.toLocaleTimeString('ru-RU', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )
-                        })
-                    )}
-                    <div ref={messagesEndRef} />
-                </div>
-
-                {/* Форма отправки */}
-                <form onSubmit={handleSendMessage} className="border-t border-gray-200 p-4">
-                    <div className="flex gap-3">
-                        <Input
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Напишите сообщение..."
-                            disabled={loading}
-                            className="flex-1"
-                        />
-                        <Button type="submit" loading={loading} disabled={!newMessage.trim()}>
-                            📤 Отправить
-                        </Button>
+                                )
+                            })
+                        )}
+                        <div ref={messagesEndRef} />
                     </div>
-                </form>
-            </Card>
 
-            {/* Информация */}
-            <Card>
-                <h2 className="text-xl font-bold mb-4">ℹ️ О групповом чате</h2>
-                <div className="space-y-2 text-sm text-gray-600">
-                    <p>• Все администраторы видят сообщения в реальном времени</p>
-                    <p>• Используйте этот чат для координации работы и обсуждения вопросов</p>
-                    <p>• Сообщения сохраняются в базе данных</p>
-                    <p>• Ученики не имеют доступа к этому чату</p>
+                    {/* Input Form */}
+                    <form onSubmit={handleSendMessage} className="border-t border-gray-200 p-6 bg-white">
+                        <div className="flex gap-3">
+                            <input
+                                type="text"
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder="Напишите сообщение..."
+                                disabled={loading}
+                                className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all disabled:opacity-50"
+                            />
+                            <button
+                                type="submit"
+                                disabled={loading || !newMessage.trim()}
+                                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                            >
+                                <Send className="w-5 h-5" />
+                                Отправить
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </Card>
+
+                {/* Info Card */}
+                <div className="mt-6 bg-white rounded-2xl shadow-lg p-6 border-2 border-purple-100">
+                    <div className="flex items-start gap-4">
+                        <div className="p-3 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg">
+                            <MessageCircle className="w-6 h-6 text-purple-600" />
+                        </div>
+                        <div className="flex-1">
+                            <h2 className="text-lg font-bold text-gray-900 mb-3">ℹ️ О групповом чате</h2>
+                            <div className="space-y-2 text-sm text-gray-600">
+                                <p className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                    Все администраторы видят сообщения в реальном времени
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                    Используйте для координации работы и обсуждения вопросов
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                    Сообщения сохраняются в базе данных
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                                    Ученики не имеют доступа к этому чату
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

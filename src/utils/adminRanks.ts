@@ -86,19 +86,10 @@ export const adminRanks: AdminRank[] = [
         level: 9,
         name: 'Архитектор',
         minPoints: 1500,
-        maxPoints: 1999,
+        maxPoints: Infinity,
         color: 'from-indigo-400 to-indigo-500',
         icon: '🏆',
         description: 'Архитектор платформы, формирует её развитие'
-    },
-    {
-        level: 10,
-        name: 'Разработчик',
-        minPoints: 2000,
-        maxPoints: Infinity,
-        color: 'from-cyan-400 via-blue-500 to-purple-600',
-        icon: '🚀',
-        description: 'Создатель платформы EliteHeat, высший ранг'
     }
 ]
 

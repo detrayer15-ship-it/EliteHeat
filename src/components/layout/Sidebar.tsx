@@ -62,20 +62,26 @@ export const Sidebar = () => {
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto p-4">
                     <ul className="space-y-2">
-                        {navItems.map((item) => {
+                        {navItems.map((item, index) => {
                             const isActive = location.pathname === item.path
                             return (
                                 <Link
                                     key={item.path}
                                     to={item.path}
                                     onClick={() => setIsOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${isActive
+                                    style={{ animationDelay: `${index * 0.05}s` }}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 group animate-slideIn ${isActive
                                         ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg transform scale-105'
-                                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 hover:shadow-md'
+                                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 hover:shadow-md hover:scale-105 hover:translate-x-2'
                                         }`}
                                 >
-                                    <span className="text-xl">{item.icon}</span>
+                                    <span className={`text-xl transition-transform duration-300 ${isActive ? 'animate-bounce' : 'group-hover:scale-125 group-hover:rotate-12'}`}>
+                                        {item.icon}
+                                    </span>
                                     <span className="font-medium">{item.label}</span>
+                                    {isActive && (
+                                        <span className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
+                                    )}
                                 </Link>
                             )
                         })}

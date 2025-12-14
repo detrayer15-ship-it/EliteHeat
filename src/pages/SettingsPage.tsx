@@ -58,24 +58,38 @@ export const SettingsPage = () => {
 
             {/* Роль пользователя */}
             {user && (
-                <Card hover>
-                    <h2 className="text-xl font-bold text-text mb-4">👤 Роль пользователя</h2>
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-primary/5 to-purple-600/5 rounded-xl border border-primary/20">
-                        <div className="text-5xl">
-                            {user.role === 'admin' ? '👑' : '🎓'}
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-lg">
-                                {user.role === 'admin' ? 'Администратор' : 'Ученик'}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                {user.role === 'admin'
-                                    ? 'У вас есть доступ к админ-панели и управлению пользователями'
-                                    : 'Вы можете проходить курсы и выполнять задания'}
-                            </p>
+                <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-2xl p-8 text-white">
+                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                        👤 Роль пользователя
+                    </h2>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border-2 border-white/20">
+                        <div className="flex items-center gap-6">
+                            <div className="text-7xl">
+                                {user.role === 'admin' || user.role === 'developer' ? '👑' : '🎓'}
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="font-bold text-3xl mb-2">
+                                    {user.role === 'developer' ? 'Разработчик' : user.role === 'admin' ? 'Администратор' : 'Ученик'}
+                                </h3>
+                                <p className="text-lg text-purple-100">
+                                    {user.role === 'developer'
+                                        ? 'Полный доступ ко всем функциям платформы'
+                                        : user.role === 'admin'
+                                            ? 'Доступ к админ-панели и управлению пользователями'
+                                            : 'Вы можете проходить курсы и выполнять задания'}
+                                </p>
+                                {(user.role === 'admin' || user.role === 'developer') && user.adminPoints !== undefined && (
+                                    <div className="mt-4 flex items-center gap-3">
+                                        <div className="px-4 py-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                                            <span className="text-sm text-purple-100">Очки:</span>
+                                            <span className="ml-2 font-bold text-xl">{user.adminPoints}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </Card>
+                </div>
             )}
 
             {/* Профиль */}

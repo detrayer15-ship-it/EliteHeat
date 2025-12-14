@@ -13,10 +13,11 @@ export interface UserData {
     email: string
     name: string
     city: string
-    role: 'student' | 'admin'
+    role: 'student' | 'admin' | 'developer'
     level?: number
     points?: number
     tasksReviewed?: number
+    adminPoints?: number
     photoURL?: string
     username?: string
     phone?: string
@@ -203,7 +204,10 @@ export const firebaseAuthAPI = {
                 }
             }
         } catch (error: any) {
-            console.error('Google Sign-In Error:', error)
+            // Don't log error if user simply closed the popup
+            if (error.code !== 'auth/popup-closed-by-user') {
+                console.error('Google Sign-In Error:', error)
+            }
 
             let userMessage = 'Ошибка входа через Google'
 

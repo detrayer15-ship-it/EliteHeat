@@ -4,7 +4,7 @@ import { AppLayout } from './components/layout/AppLayout'
 import { LandingPage } from './pages/LandingPage'
 import { Dashboard } from './pages/Dashboard'
 import { ProjectsPage } from './pages/ProjectsPage'
-import { ProjectDetailPage } from './pages/ProjectDetailPage'
+import { ProjectDashboardPage } from './pages/ProjectDashboardPage'
 import { TasksPage } from './pages/TasksPage'
 import { ProgressTrackerPage } from './pages/ProgressTrackerPage'
 import { AIReviewPage } from './pages/AnalyzerPage'
@@ -21,11 +21,18 @@ import { TaskReviewPage } from './pages/TaskReviewPage'
 import { SubmissionsPage } from './pages/SubmissionsPage'
 import { FamilySubscriptionPage } from './pages/FamilySubscriptionPage'
 import { AdminUsersManagementPage } from './pages/AdminUsersManagementPage'
+import { AdminUsersPage } from './pages/AdminUsersPage'
+import { AdminGroupsPage } from './pages/AdminGroupsPage'
 import { MyAssignmentsPage } from './pages/MyAssignmentsPage'
 import { AdminChatPage } from './pages/AdminChatPage'
 import { AdminGroupChatPage } from './pages/AdminGroupChatPage'
 import { AdminRanksPage } from './pages/AdminRanksPage'
 import { StudentChatPage } from './pages/StudentChatPage'
+import { DeveloperSetupPage } from './pages/DeveloperSetupPage'
+import { CoursesPage } from './pages/CoursesPage'
+import { ProjectDetailPage } from './pages/ProjectDetailPage'
+import { SubmitAssignmentPage } from './pages/SubmitAssignmentPage'
+import { ReviewAssignmentsPage } from './pages/ReviewAssignmentsPage'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { useProjectStore } from './store/projectStore'
 import { useTaskStore } from './store/taskStore'
@@ -58,6 +65,7 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/dev-setup" element={<DeveloperSetupPage />} />
 
                 {/* Protected routes - с AppLayout */}
                 <Route
@@ -96,6 +104,16 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <TasksPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/submit-assignment"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <SubmitAssignmentPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }
@@ -247,6 +265,16 @@ function App() {
                     }
                 />
                 <Route
+                    path="/admin/review"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ReviewAssignmentsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/admin/ranks"
                     element={
                         <ProtectedRoute>
@@ -271,7 +299,17 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <AdminUsersManagementPage />
+                                <AdminUsersPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/groups"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AdminGroupsPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

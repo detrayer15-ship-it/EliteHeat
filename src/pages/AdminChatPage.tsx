@@ -13,9 +13,9 @@ interface User {
     role: string
 }
 
+
 export const AdminChatPage = () => {
     const user = useAuthStore(state => state.user)
-    const [activeTab, setActiveTab] = useState<'students' | 'admins'>('students')
     const [users, setUsers] = useState<User[]>([])
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -23,7 +23,7 @@ export const AdminChatPage = () => {
 
     useEffect(() => {
         loadUsers()
-    }, [activeTab])
+    }, [])
 
     useEffect(() => {
         if (!selectedUser || !user) return
@@ -42,9 +42,7 @@ export const AdminChatPage = () => {
     const loadUsers = async () => {
         const result = await adminAPI.getUsers()
         if (result.success) {
-            const filtered = (result.data as User[]).filter(u =>
-                activeTab === 'students' ? u.role === 'student' : u.role === 'admin' && u.id !== user?.id
-            )
+            const filtered = (result.data as User[]).filter(u => u.role === 'student')
             setUsers(filtered)
         }
     }
@@ -71,26 +69,10 @@ export const AdminChatPage = () => {
             <div className="grid grid-cols-12 gap-4 h-[600px]">
                 {/* Sidebar */}
                 <div className="col-span-4 flex flex-col">
-                    {/* Tabs */}
-                    <div className="flex gap-2 mb-4">
-                        <Button
-                            onClick={() => {
-                                setActiveTab('students')
-                                setSelectedUser(null)
-                            }}
-                            variant={activeTab === 'students' ? 'primary' : 'secondary'}
-                        >
-                            Ученики
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                setActiveTab('admins')
-                                setSelectedUser(null)
-                            }}
-                            variant={activeTab === 'admins' ? 'primary' : 'secondary'}
-                        >
-                            Админы
-                        </Button>
+                    {/* Header */}
+                    <div className="mb-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-4 text-white">
+                        <h2 className="text-xl font-bold">Ученики</h2>
+                        <p className="text-sm text-green-100">Выберите ученика для чата</p>
                     </div>
 
                     {/* User list */}
@@ -101,8 +83,8 @@ export const AdminChatPage = () => {
                                     key={u.id}
                                     onClick={() => setSelectedUser(u)}
                                     className={`p-3 rounded cursor-pointer transition ${selectedUser?.id === u.id
-                                            ? 'bg-blue-100 dark:bg-blue-900'
-                                            : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                                        ? 'bg-blue-100 dark:bg-blue-900'
+                                        : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     <div className="font-semibold">{u.name}</div>
@@ -136,8 +118,8 @@ export const AdminChatPage = () => {
                                         >
                                             <div
                                                 className={`max-w-[70%] p-3 rounded-lg ${msg.senderId === user?.id
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'bg-gray-200 dark:bg-gray-700'
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-gray-200 dark:bg-gray-700'
                                                     }`}
                                             >
                                                 <div className="text-sm font-semibold mb-1">{msg.senderName}</div>
