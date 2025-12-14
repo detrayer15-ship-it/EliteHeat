@@ -132,18 +132,21 @@ export const ProjectCreationChat = () => {
                 slides: [
                     {
                         id: '1',
+                        order: 1,
                         title: 'Проблема',
                         bullets: [analysis.problem],
                         speakerNotes: 'Объясните проблему, которую решает ваш проект'
                     },
                     {
                         id: '2',
+                        order: 2,
                         title: 'Решение',
                         bullets: analysis.features || [analysis.solution],
                         speakerNotes: 'Покажите как ваше решение помогает пользователям'
                     },
                     {
                         id: '3',
+                        order: 3,
                         title: 'Технологии',
                         bullets: [
                             `Frontend: ${analysis.techStack.frontend}`,
