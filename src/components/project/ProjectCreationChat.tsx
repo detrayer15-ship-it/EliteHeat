@@ -107,7 +107,7 @@ export const ProjectCreationChat = () => {
             setIsLoading(true)
 
             const projectData = {
-                userId: user?.uid || '',
+                userId: user?.id || '',
                 title: analysis.title,
                 type: analysis.type,
                 description: analysis.description,
@@ -116,7 +116,7 @@ export const ProjectCreationChat = () => {
                 audience: analysis.audience,
                 goal: `Создать ${analysis.type === 'app' ? 'приложение' : analysis.type === 'site' ? 'сайт' : 'MVP'}`,
                 stage: 'idea' as const,
-                status: 'active',
+                status: 'active' as const,
                 progress: 0,
                 tasks: [],
                 techStack: analysis.techStack,

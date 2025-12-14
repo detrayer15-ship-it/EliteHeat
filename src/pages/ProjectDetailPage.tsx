@@ -1,10 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useProjectStore } from '@/store/projectStore'
-import {
-    CheckCircle2, Circle, TrendingUp, FileText, Download,
-    MessageSquare, Lightbulb, Code, Database, Layout, Presentation
-} from 'lucide-react'
+import { CheckCircle2, Circle, Download, MessageSquare, Lightbulb, Code, Database, Layout, Presentation, Copy } from 'lucide-react'
 
 export const ProjectDetailPage = () => {
     const { projectId } = useParams()
@@ -158,8 +155,8 @@ Use React + TypeScript best practices.`
                         <button
                             onClick={() => setActiveTab('tasks')}
                             className={`flex-1 px-6 py-4 font-medium transition-colors ${activeTab === 'tasks'
-                                    ? 'text-purple-600 border-b-2 border-purple-600'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'text-purple-600 border-b-2 border-purple-600'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             <CheckCircle2 className="w-5 h-5 inline mr-2" />
@@ -168,8 +165,8 @@ Use React + TypeScript best practices.`
                         <button
                             onClick={() => setActiveTab('prompts')}
                             className={`flex-1 px-6 py-4 font-medium transition-colors ${activeTab === 'prompts'
-                                    ? 'text-purple-600 border-b-2 border-purple-600'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'text-purple-600 border-b-2 border-purple-600'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             <Code className="w-5 h-5 inline mr-2" />
@@ -178,8 +175,8 @@ Use React + TypeScript best practices.`
                         <button
                             onClick={() => setActiveTab('presentation')}
                             className={`flex-1 px-6 py-4 font-medium transition-colors ${activeTab === 'presentation'
-                                    ? 'text-purple-600 border-b-2 border-purple-600'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'text-purple-600 border-b-2 border-purple-600'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             <Presentation className="w-5 h-5 inline mr-2" />
@@ -188,8 +185,8 @@ Use React + TypeScript best practices.`
                         <button
                             onClick={() => setActiveTab('chat')}
                             className={`flex-1 px-6 py-4 font-medium transition-colors ${activeTab === 'chat'
-                                    ? 'text-purple-600 border-b-2 border-purple-600'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'text-purple-600 border-b-2 border-purple-600'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             <MessageSquare className="w-5 h-5 inline mr-2" />
@@ -207,8 +204,8 @@ Use React + TypeScript best practices.`
                                         key={task.id}
                                         onClick={() => toggleTask(task.id)}
                                         className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all ${task.completed
-                                                ? 'bg-green-50 border-2 border-green-200'
-                                                : 'bg-gray-50 border-2 border-gray-200 hover:border-purple-300'
+                                            ? 'bg-green-50 border-2 border-green-200'
+                                            : 'bg-gray-50 border-2 border-gray-200 hover:border-purple-300'
                                             }`}
                                     >
                                         {task.completed ? (
@@ -380,8 +377,8 @@ Use React + TypeScript best practices.`
                                             >
                                                 <div
                                                     className={`max-w-[80%] p-4 rounded-xl ${msg.role === 'user'
-                                                            ? 'bg-purple-600 text-white'
-                                                            : 'bg-white border-2 border-gray-200'
+                                                        ? 'bg-purple-600 text-white'
+                                                        : 'bg-white border-2 border-gray-200'
                                                         }`}
                                                 >
                                                     <div className="text-sm font-medium mb-1">

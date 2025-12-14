@@ -34,6 +34,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
         const newProject: Project = {
             id: generateId(),
+            userId: data.userId || '',
             title: data.title || 'Новый проект',
             description: data.description || '',
             problem: data.problem || '',

@@ -5,9 +5,9 @@ import { FolderKanban, Plus, TrendingUp, CheckCircle2, Clock } from 'lucide-reac
 export const ProjectsPage = () => {
     const projects = useProjectStore((state) => state.projects)
 
-    const completedProjects = projects.filter(p => p.status === 'completed' || p.stage === 'completed').length
-    const inProgressProjects = projects.filter(p => p.status === 'in-progress' || p.stage === 'development').length
-    const plannedProjects = projects.filter(p => p.status === 'planned' || p.stage === 'planning').length
+    const completedProjects = projects.filter(p => p.status === 'completed').length
+    const inProgressProjects = projects.filter(p => p.status === 'active').length
+    const plannedProjects = projects.filter(p => p.status === 'active' && p.stage === 'idea').length
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8">
