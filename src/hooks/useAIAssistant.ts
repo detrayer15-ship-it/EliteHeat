@@ -36,7 +36,7 @@ export const useAIAssistant = (context?: { projectId?: string; page?: string }) 
 Контекст разговора:
 ${sharedContext.globalContext.currentProject ? `- Текущий проект: ${sharedContext.globalContext.currentProject}` : ''}
 ${sharedContext.globalContext.currentFile ? `- Текущий файл: ${sharedContext.globalContext.currentFile}` : ''}
-${sharedContext.recentMessages.length > 0 ? `- Последние сообщения:\n${sharedContext.recentMessages.map(m => `${m.role}: ${m.content}`).join('\n')}` : ''}
+${sharedContext.recentMessages.length > 0 ? `- Последние сообщения:\n${sharedContext.recentMessages.map((m: any) => `${m.role}: ${m.content}`).join('\n')}` : ''}
 
 Вопрос пользователя: ${userMessage}
 

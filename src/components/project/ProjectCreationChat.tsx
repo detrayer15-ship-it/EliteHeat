@@ -121,13 +121,13 @@ export const ProjectCreationChat = () => {
                 tasks: [],
                 techStack: analysis.techStack,
                 roadmap: [
-                    { id: '1', title: 'Сформировать идею проекта', isCompleted: true },
-                    { id: '2', title: 'Выбрать технологический стек', isCompleted: true },
-                    { id: '3', title: 'Сгенерировать промпты для разработки', isCompleted: false },
-                    { id: '4', title: 'Получить код от AI', isCompleted: false },
-                    { id: '5', title: 'Запустить MVP', isCompleted: false },
-                    { id: '6', title: 'Подготовить презентацию', isCompleted: false },
-                    { id: '7', title: 'Провести тестирование', isCompleted: false },
+                    { id: '1', title: 'Сформировать идею проекта', isCompleted: true, order: 1 },
+                    { id: '2', title: 'Выбрать технологический стек', isCompleted: true, order: 2 },
+                    { id: '3', title: 'Сгенерировать промпты для разработки', isCompleted: false, order: 3 },
+                    { id: '4', title: 'Получить код от AI', isCompleted: false, order: 4 },
+                    { id: '5', title: 'Запустить MVP', isCompleted: false, order: 5 },
+                    { id: '6', title: 'Подготовить презентацию', isCompleted: false, order: 6 },
+                    { id: '7', title: 'Провести тестирование', isCompleted: false, order: 7 },
                 ],
                 slides: [
                     {
