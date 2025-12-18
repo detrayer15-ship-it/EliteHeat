@@ -116,8 +116,8 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
-                        {/* Задания - только для админов */}
-                        {user?.role === 'admin' && (
+                        {/* Задания - для админов и разработчиков */}
+                        {(user?.role === 'admin' || user?.role === 'developer') && (
                             <Link
                                 to="/submissions"
                                 onClick={() => setIsOpen(false)}
@@ -131,8 +131,8 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
-                        {/* Чаты - только для админов */}
-                        {user?.role === 'admin' && (
+                        {/* Чаты - для админов и разработчиков */}
+                        {(user?.role === 'admin' || user?.role === 'developer') && (
                             <Link
                                 to="/admin/chat"
                                 onClick={() => setIsOpen(false)}
@@ -146,8 +146,8 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
-                        {/* Групповой чат админов */}
-                        {user?.role === 'admin' && (
+                        {/* Групповой чат - для админов и разработчиков */}
+                        {(user?.role === 'admin' || user?.role === 'developer') && (
                             <Link
                                 to="/admin/group-chat"
                                 onClick={() => setIsOpen(false)}
@@ -161,8 +161,8 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
-                        {/* Ранги и очки - только для админов */}
-                        {user?.role === 'admin' && (
+                        {/* Ранги и очки - для админов и разработчиков */}
+                        {(user?.role === 'admin' || user?.role === 'developer') && (
                             <Link
                                 to="/admin/ranks"
                                 onClick={() => setIsOpen(false)}
@@ -176,8 +176,8 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
-                        {/* Админ-панель - только для админов */}
-                        {user?.role === 'admin' && (
+                        {/* Админ-панель - для админов и разработчиков */}
+                        {(user?.role === 'admin' || user?.role === 'developer') && (
                             <Link
                                 to="/admin"
                                 onClick={() => setIsOpen(false)}
@@ -188,6 +188,21 @@ export const Sidebar = () => {
                             >
                                 <span className="text-xl">👑</span>
                                 <span className="font-medium">Админ-панель</span>
+                            </Link>
+                        )}
+
+                        {/* Developer Panel - ТОЛЬКО для разработчиков */}
+                        {user?.role === 'developer' && (
+                            <Link
+                                to="/developer/panel"
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${location.pathname === '/developer/panel'
+                                        ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg transform scale-105'
+                                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 hover:shadow-md'
+                                    }`}
+                            >
+                                <span className="text-xl">🛠️</span>
+                                <span className="font-medium">Developer Panel</span>
                             </Link>
                         )}
                     </ul>

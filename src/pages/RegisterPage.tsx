@@ -119,7 +119,7 @@ export const RegisterPage = () => {
                                     : 'border-gray-200 hover:border-gray-300'
                                     }`}
                             >
-                                <div className="text-xl sm:text-2xl mb-1">🎓</div>
+                                <div className="text-xl sm:text-2xl mb-1">🎒</div>
                                 <div className="font-semibold text-sm sm:text-base">Ученик</div>
                             </button>
                             <button
@@ -130,8 +130,8 @@ export const RegisterPage = () => {
                                     : 'border-gray-200 hover:border-gray-300'
                                     }`}
                             >
-                                <div className="text-xl sm:text-2xl mb-1">👑</div>
-                                <div className="font-semibold text-sm sm:text-base">Админ</div>
+                                <div className="text-xl sm:text-2xl mb-1">👨‍🏫</div>
+                                <div className="font-semibold text-sm sm:text-base">Преподаватель</div>
                             </button>
                         </div>
                     </div>

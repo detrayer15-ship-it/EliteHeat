@@ -77,9 +77,8 @@ export const PythonTasksPage = () => {
         }
     }
 
-    const filteredTasks = tasks.filter((task) =>
-        filter === 'all' ? true : task.difficulty === filter
-    )
+    // Показываем все задачи без фильтрации
+    const filteredTasks = tasks
 
     const difficultyColors = {
         beginner: 'success',
@@ -310,36 +309,7 @@ export const PythonTasksPage = () => {
 
     return (
         <div>
-            <div className="flex gap-2 mb-6 flex-wrap">
-                <Button
-                    variant={filter === 'all' ? 'primary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setFilter('all')}
-                >
-                    Все ({tasks.length})
-                </Button>
-                <Button
-                    variant={filter === 'beginner' ? 'primary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setFilter('beginner')}
-                >
-                    Начальный ({tasks.filter(t => t.difficulty === 'beginner').length})
-                </Button>
-                <Button
-                    variant={filter === 'intermediate' ? 'primary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setFilter('intermediate')}
-                >
-                    Средний ({tasks.filter(t => t.difficulty === 'intermediate').length})
-                </Button>
-                <Button
-                    variant={filter === 'advanced' ? 'primary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setFilter('advanced')}
-                >
-                    Продвинутый ({tasks.filter(t => t.difficulty === 'advanced').length})
-                </Button>
-            </div>
+            {/* Убраны фильтры по уровням - показываем все задачи */}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-4">

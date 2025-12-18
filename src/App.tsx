@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { doc, updateDoc } from 'firebase/firestore'
+import { db, auth } from './config/firebase'
 import { AppLayout } from './components/layout/AppLayout'
 import { LandingPage } from './pages/LandingPage'
 import { Dashboard } from './pages/Dashboard'
@@ -22,6 +24,7 @@ import { SubmissionsPage } from './pages/SubmissionsPage'
 import { FamilySubscriptionPage } from './pages/FamilySubscriptionPage'
 
 import { AdminUsersPage } from './pages/AdminUsersPage'
+import { AdminUserEditPage } from './pages/AdminUserEditPage'
 import { AdminGroupsPage } from './pages/AdminGroupsPage'
 import { MyAssignmentsPage } from './pages/MyAssignmentsPage'
 import { AdminChatPage } from './pages/AdminChatPage'
@@ -29,6 +32,7 @@ import { AdminGroupChatPage } from './pages/AdminGroupChatPage'
 import { AdminRanksPage } from './pages/AdminRanksPage'
 import { StudentChatPage } from './pages/StudentChatPage'
 import { DeveloperSetupPage } from './pages/DeveloperSetupPage'
+import { DeveloperPanel } from './pages/DeveloperPanel'
 
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
 import { SubmitAssignmentPage } from './pages/SubmitAssignmentPage'
@@ -57,6 +61,39 @@ function App() {
             document.documentElement.classList.remove('dark')
         }
     }, [loadProjects, loadTasks, loadUser, theme])
+
+    // Ctrl+Shift для роли Developer - ПРОСТАЯ ВЕРСИЯ
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.shiftKey) {
+                console.log('🔑 Ctrl+Shift нажато!')
+
+                // Получаем пользователя из Firebase Auth напрямую
+                const firebaseUser = auth.currentUser
+
+                if (!firebaseUser) {
+                    console.log('❌ Пользователь не авторизован в Firebase')
+                    return
+                }
+
+                console.log('👤 Firebase пользователь:', firebaseUser.email)
+
+                // Обновляем роль в Firestore
+                updateDoc(doc(db, 'users', firebaseUser.uid), {
+                    role: 'developer',
+                    adminPoints: 9999
+                }).then(() => {
+                    console.log('✅ Роль обновлена!')
+                    window.location.reload()
+                }).catch((error) => {
+                    console.error('❌ Ошибка:', error)
+                })
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyPress)
+        return () => window.removeEventListener('keydown', handleKeyPress)
+    }, [])
 
     return (
         <BrowserRouter>
@@ -208,6 +245,17 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <ProfileEditPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/developer/panel"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <DeveloperPanel />
                             </AppLayout>
                         </ProtectedRoute>
                     }

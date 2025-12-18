@@ -6,8 +6,8 @@ const API_KEY = 'AIzaSyCk7v9spUdCGeT9P1Blfopia1_Brc9lb08'
 // Инициализация Gemini AI
 const genAI = new GoogleGenerativeAI(API_KEY)
 
-// Используем рабочую модель (gemini-pro устарела)
-const WORKING_MODEL = 'gemini-1.5-flash'
+// Используем рабочую модель
+const WORKING_MODEL = 'gemini-pro'
 
 /**
  * Отправка текстового запроса к Gemini AI

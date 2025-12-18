@@ -165,8 +165,8 @@ export const AdminUsersPage = () => {
                             <button
                                 onClick={() => setFilterRole('all')}
                                 className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${filterRole === 'all'
-                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 Все ({users.length})
@@ -174,8 +174,8 @@ export const AdminUsersPage = () => {
                             <button
                                 onClick={() => setFilterRole('student')}
                                 className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${filterRole === 'student'
-                                        ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 🎓 Ученики ({users.filter(u => u.role === 'student').length})
@@ -183,8 +183,8 @@ export const AdminUsersPage = () => {
                             <button
                                 onClick={() => setFilterRole('admin')}
                                 className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${filterRole === 'admin'
-                                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 ⚡ Админы ({users.filter(u => u.role === 'admin').length})
@@ -209,7 +209,7 @@ export const AdminUsersPage = () => {
                                 {/* User Avatar */}
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                                        {user.name.charAt(0).toUpperCase()}
+                                        {user.name?.charAt(0).toUpperCase() || '?'}
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-bold text-lg text-gray-900">{user.name}</h3>

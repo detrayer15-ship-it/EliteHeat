@@ -1,37 +1,28 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 import { PythonTasksPage } from './PythonTasksPage'
 import { FigmaTasksPage } from './FigmaTasksPage'
-import { BookOpen, Code, Palette, TrendingUp, Award, Users, Send } from 'lucide-react'
+import { BookOpen, Code, Palette, TrendingUp, Award, Users } from 'lucide-react'
 
 export const TasksPage = () => {
     const [activeTab, setActiveTab] = useState<'python' | 'figma'>('python')
-    const navigate = useNavigate()
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
-                                <BookOpen className="w-8 h-8 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                    Курсы
-                                </h1>
-                                <p className="text-gray-600">Обучайтесь программированию и дизайну</p>
-                            </div>
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                            <BookOpen className="w-8 h-8 text-white" />
                         </div>
-                        <button
-                            onClick={() => navigate('/submit-assignment')}
-                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all flex items-center gap-2"
-                        >
-                            <Send className="w-5 h-5" />
-                            Отправить задание
-                        </button>
+                        <div>
+                            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Курсы
+                            </h1>
+                            <p className="text-gray-600">Обучайтесь программированию и дизайну</p>
+                        </div>
                     </div>
                 </div>
 
@@ -66,7 +57,7 @@ export const TasksPage = () => {
                                 <Users className="w-5 h-5 text-pink-600" />
                             </div>
                         </div>
-                        <div className="text-3xl font-bold text-pink-600 mb-2">1,245</div>
+                        <div className="text-3xl font-bold text-pink-600 mb-2">243</div>
                         <p className="text-sm text-gray-600">Активных учеников</p>
                     </div>
                 </div>
