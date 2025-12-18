@@ -13,7 +13,7 @@ type TabType = 'roadmap' | 'prompts' | 'storyboard'
 export const ProjectDetailPage = () => {
     const { projectId } = useParams()
     const navigate = useNavigate()
-    const currentUser = useAuthStore((state) => state.currentUser)
+    const currentUser = useAuthStore((state) => state.user)
     const [activeTab, setActiveTab] = useState<TabType>('roadmap')
     const [project, setProject] = useState<any>(null)
     const [loading, setLoading] = useState(true)

@@ -5,7 +5,7 @@ import { collection, getDocs, doc, updateDoc } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 
 export const DeveloperPanel = () => {
-    const currentUser = useAuthStore((state) => state.currentUser)
+    const currentUser = useAuthStore((state) => state.user)
     const user = useAuthStore((state) => state.user) // Добавляем user
     const navigate = useNavigate()
     const [logs, setLogs] = useState<string[]>([])
@@ -13,9 +13,9 @@ export const DeveloperPanel = () => {
 
     // Проверка доступа - используем user вместо currentUser
     const actualUser = user || currentUser
-    
+
     console.log('DeveloperPanel - user:', actualUser)
-    
+
     if (!actualUser || actualUser.role !== 'developer') {
         return (
             <div className="p-6">

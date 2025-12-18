@@ -9,7 +9,7 @@ import { useAuthStore } from '@/store/authStore'
 export const AdminUserEditPage = () => {
     const { userId } = useParams()
     const navigate = useNavigate()
-    const currentUser = useAuthStore((state) => state.currentUser)
+    const currentUser = useAuthStore((state) => state.user)
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({

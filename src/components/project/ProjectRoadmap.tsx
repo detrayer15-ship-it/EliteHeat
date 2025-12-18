@@ -28,12 +28,12 @@ export const ProjectRoadmap = ({ projectId }: ProjectRoadmapProps) => {
                 const data = projectDoc.data()
 
                 if (data.roadmap && Array.isArray(data.roadmap)) {
-                    const mappedSteps = data.roadmap.map((item: any, index: number) => ({
+                    const mappedSteps: Step[] = data.roadmap.map((item: any, index: number) => ({
                         id: index + 1,
                         title: item.title,
                         description: item.description || 'Выполните этот шаг',
-                        status: item.isCompleted ? 'completed' :
-                            index === 0 ? 'current' : 'locked'
+                        status: (item.isCompleted ? 'completed' :
+                            index === 0 ? 'current' : 'locked') as 'locked' | 'current' | 'completed'
                     }))
                     setSteps(mappedSteps)
                 } else {
