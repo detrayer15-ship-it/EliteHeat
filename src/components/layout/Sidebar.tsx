@@ -101,35 +101,7 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
-                        {/* Мои задания - только для учеников */}
-                        {user?.role === 'student' && (
-                            <Link
-                                to="/my-assignments"
-                                onClick={() => setIsOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${location.pathname === '/my-assignments'
-                                    ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg transform scale-105'
-                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 hover:shadow-md'
-                                    }`}
-                            >
-                                <span className="text-xl">📝</span>
-                                <span className="font-medium">Мои задания</span>
-                            </Link>
-                        )}
 
-                        {/* Задания - для админов и разработчиков */}
-                        {(user?.role === 'admin' || user?.role === 'developer') && (
-                            <Link
-                                to="/submissions"
-                                onClick={() => setIsOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${location.pathname === '/submissions'
-                                    ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg transform scale-105'
-                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50 hover:shadow-md'
-                                    }`}
-                            >
-                                <span className="text-xl">📝</span>
-                                <span className="font-medium">Задания</span>
-                            </Link>
-                        )}
 
                         {/* Чаты - для админов и разработчиков */}
                         {(user?.role === 'admin' || user?.role === 'developer') && (
@@ -197,8 +169,8 @@ export const Sidebar = () => {
                                 to="/developer/panel"
                                 onClick={() => setIsOpen(false)}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${location.pathname === '/developer/panel'
-                                        ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg transform scale-105'
-                                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 hover:shadow-md'
+                                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg transform scale-105'
+                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 hover:shadow-md'
                                     }`}
                             >
                                 <span className="text-xl">🛠️</span>

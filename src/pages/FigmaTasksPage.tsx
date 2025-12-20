@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { TaskComments } from '@/components/TaskComments'
 
 interface FigmaTask {
     id: string
@@ -21,6 +23,7 @@ interface TestQuestion {
 }
 
 export const FigmaTasksPage = () => {
+    const navigate = useNavigate()
     const [tasks, setTasks] = useState<FigmaTask[]>([])
     const [selectedTask, setSelectedTask] = useState<FigmaTask | null>(null)
     const [filter, setFilter] = useState<'all' | 'easy' | 'medium' | 'hard'>('all')
@@ -399,7 +402,7 @@ export const FigmaTasksPage = () => {
                             <Card
                                 key={task.id}
                                 hover
-                                onClick={() => setSelectedTask(task)}
+                                onClick={() => navigate(`/figma-tasks/${task.id}`)}
                                 className={cardClass}
                             >
                                 <div className="flex items-start justify-between mb-2">
@@ -590,6 +593,9 @@ export const FigmaTasksPage = () => {
                                         После отправки ваше решение будет проверено преподавателем
                                     </p>
                                 </div>
+
+                                {/* Комментарии к заданию */}
+                                <TaskComments taskId={selectedTask.id} />
                             </div>
                         </Card>
                     ) : (

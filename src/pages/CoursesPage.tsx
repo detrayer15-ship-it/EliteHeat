@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { BookOpen, Code, Palette, Database, Globe, Zap, Star, Clock, Users } from 'lucide-react'
 
 interface Course {
@@ -90,6 +91,7 @@ const courses: Course[] = [
 ]
 
 export const CoursesPage = () => {
+    const navigate = useNavigate()
     const [selectedLevel, setSelectedLevel] = useState<string>('all')
 
     const filteredCourses = selectedLevel === 'all'
@@ -103,6 +105,15 @@ export const CoursesPage = () => {
             case 'Продвинутый': return 'bg-purple-100 text-purple-700'
             default: return 'bg-gray-100 text-gray-700'
         }
+    }
+
+    const handleCourseClick = (courseId: string) => {
+        if (courseId === 'python') {
+            navigate('/python-tasks')
+        } else if (courseId === 'figma') {
+            navigate('/figma-tasks')
+        }
+        // Для других курсов можно добавить позже
     }
 
     return (
@@ -128,8 +139,8 @@ export const CoursesPage = () => {
                     <button
                         onClick={() => setSelectedLevel('all')}
                         className={`px-6 py-3 rounded-xl font-medium transition-all ${selectedLevel === 'all'
-                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                                : 'bg-white text-gray-700 hover:shadow-md'
+                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                            : 'bg-white text-gray-700 hover:shadow-md'
                             }`}
                     >
                         Все курсы
@@ -137,8 +148,8 @@ export const CoursesPage = () => {
                     <button
                         onClick={() => setSelectedLevel('Начальный')}
                         className={`px-6 py-3 rounded-xl font-medium transition-all ${selectedLevel === 'Начальный'
-                                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
-                                : 'bg-white text-gray-700 hover:shadow-md'
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
+                            : 'bg-white text-gray-700 hover:shadow-md'
                             }`}
                     >
                         Начальный
@@ -146,8 +157,8 @@ export const CoursesPage = () => {
                     <button
                         onClick={() => setSelectedLevel('Средний')}
                         className={`px-6 py-3 rounded-xl font-medium transition-all ${selectedLevel === 'Средний'
-                                ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
-                                : 'bg-white text-gray-700 hover:shadow-md'
+                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
+                            : 'bg-white text-gray-700 hover:shadow-md'
                             }`}
                     >
                         Средний
@@ -155,8 +166,8 @@ export const CoursesPage = () => {
                     <button
                         onClick={() => setSelectedLevel('Продвинутый')}
                         className={`px-6 py-3 rounded-xl font-medium transition-all ${selectedLevel === 'Продвинутый'
-                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                                : 'bg-white text-gray-700 hover:shadow-md'
+                            ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                            : 'bg-white text-gray-700 hover:shadow-md'
                             }`}
                     >
                         Продвинутый
@@ -210,7 +221,10 @@ export const CoursesPage = () => {
                                         </div>
                                     </div>
 
-                                    <button className={`w-full py-3 bg-gradient-to-r ${course.color} text-white rounded-xl font-medium hover:shadow-lg transition-all`}>
+                                    <button
+                                        onClick={() => handleCourseClick(course.id)}
+                                        className={`w-full py-3 bg-gradient-to-r ${course.color} text-white rounded-xl font-medium hover:shadow-lg transition-all`}
+                                    >
                                         Начать обучение
                                     </button>
                                 </div>

@@ -18,6 +18,7 @@ export interface UserData {
     points?: number
     tasksReviewed?: number
     adminPoints?: number
+    teacherRank?: number
     photoURL?: string
     username?: string
     phone?: string

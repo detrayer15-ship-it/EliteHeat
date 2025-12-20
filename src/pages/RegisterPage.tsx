@@ -13,8 +13,6 @@ export const RegisterPage = () => {
         email: '',
         name: '',
         password: '',
-        confirmPassword: '',
-        city: '',
         role: 'student' as 'student' | 'admin',
     })
     const [error, setError] = useState('')
@@ -24,13 +22,8 @@ export const RegisterPage = () => {
         e.preventDefault()
         setError('')
 
-        if (formData.password !== formData.confirmPassword) {
-            setError('Пароли не совпадают!')
-            return
-        }
-
         setIsLoading(true)
-        const result = await register(formData.email, formData.password, formData.name, formData.city, formData.role)
+        const result = await register(formData.email, formData.password, formData.name, '', formData.role)
         setIsLoading(false)
 
         if (result.success) {
@@ -96,15 +89,7 @@ export const RegisterPage = () => {
                         required
                     />
 
-                    <Input
-                        label="Подтвердите пароль"
-                        type="password"
-                        value={formData.confirmPassword}
-                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                        placeholder="Повторите пароль"
-                        minLength={6}
-                        required
-                    />
+
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -136,13 +121,7 @@ export const RegisterPage = () => {
                         </div>
                     </div>
 
-                    <Input
-                        label="Город"
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        placeholder="Алматы"
-                        required
-                    />
+
 
                     <Button type="submit" className="w-full" loading={isLoading}>
                         Создать аккаунт

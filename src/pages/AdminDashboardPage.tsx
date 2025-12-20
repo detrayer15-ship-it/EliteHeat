@@ -142,20 +142,116 @@ export const AdminDashboardPage = () => {
                         <p className="text-gray-600">Проверяйте домашние задания студентов</p>
                     </button>
 
-                    {currentUser?.role === 'developer' && (
+                    <button
+                        onClick={() => navigate('/admin/ranks')}
+                        className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                    >
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                <Award className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white">Ранги и очки</h3>
+                        </div>
+                        <p className="text-yellow-50">Просмотр системы рангов</p>
+                    </button>
+
+                </div>
+
+                {/* Enhanced Features */}
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">🚀 Расширенные функции</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <button
-                            onClick={() => navigate('/admin/ranks')}
-                            className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                            onClick={() => navigate('/admin/enhanced-users')}
+                            className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                    <Users className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Расширенное управление</h3>
+                            </div>
+                            <p className="text-indigo-50">Фильтры, детали, заметки</p>
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/admin/student-monitoring')}
+                            className="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                    <TrendingUp className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Мониторинг учеников</h3>
+                            </div>
+                            <p className="text-red-50">Кто застрял, флаги проблем</p>
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/admin/enhanced-review')}
+                            className="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                    <ClipboardCheck className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Улучшенная проверка</h3>
+                            </div>
+                            <p className="text-orange-50">Шаблоны, авто-очки</p>
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/admin/enhanced-groups')}
+                            className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                    <Users className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Расширенные группы</h3>
+                            </div>
+                            <p className="text-cyan-50">Прогресс, массовые действия</p>
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/admin/live-ranks')}
+                            className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
                         >
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
                                     <Award className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-bold text-white">Изменение рангов</h3>
+                                <h3 className="text-xl font-bold text-white">Живые ранги</h3>
                             </div>
-                            <p className="text-yellow-50">Только для разработчиков</p>
+                            <p className="text-yellow-50">Логи очков, анти-накрутка</p>
                         </button>
-                    )}
+
+                        <button
+                            onClick={() => navigate('/admin/analytics')}
+                            className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                    <TrendingUp className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Аналитика</h3>
+                            </div>
+                            <p className="text-green-50">Эффективность, потери</p>
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/admin/enhanced-chat')}
+                            className="bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                    <MessageSquare className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Улучшенный чат</h3>
+                            </div>
+                            <p className="text-pink-50">Теги, FAQ, приоритеты</p>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Stats Cards */}

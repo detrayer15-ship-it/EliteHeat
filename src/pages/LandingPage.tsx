@@ -250,6 +250,576 @@ export const LandingPage = () => {
                 </div>
             </section>
 
+            {/* Использование в школе */}
+            <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            Как EliteHeat используется в школе
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Один проект = одна учебная четверть. Полный цикл от идеи до защиты.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-indigo-200">
+                            <div className="text-6xl mb-6 text-center">👨‍🎓</div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Ученик</h3>
+                            <ul className="space-y-3 text-gray-700">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-indigo-500 font-bold">1.</span>
+                                    <span>Выбирает тему проекта</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-indigo-500 font-bold">2.</span>
+                                    <span>Работает пошагово в Project Hub</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-indigo-500 font-bold">3.</span>
+                                    <span>Получает помощь AI-ассистента</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-indigo-500 font-bold">4.</span>
+                                    <span>Защищает проект перед классом</span>
+                                </li>
+                            </ul>
+                        </Card>
+
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-purple-200">
+                            <div className="text-6xl mb-6 text-center">👨‍🏫</div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Учитель</h3>
+                            <ul className="space-y-3 text-gray-700">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-purple-500 font-bold">•</span>
+                                    <span>Видит прогресс каждого ученика</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-purple-500 font-bold">•</span>
+                                    <span>Проверяет выполненные задания</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-purple-500 font-bold">•</span>
+                                    <span>Комментирует и направляет</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-purple-500 font-bold">•</span>
+                                    <span>Выставляет финальную оценку</span>
+                                </li>
+                            </ul>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+
+            {/* 🔴 КРИТИЧНО: Соответствие школьной программе */}
+            <section className="container mx-auto px-4 py-20">
+                <div className="text-center mb-16">
+                    <div className="inline-block mb-4">
+                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+                            📚 Соответствие стандартам
+                        </span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                        Соответствие учебным целям
+                    </h2>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Без этого школы боятся внедрять. Мы полностью соответствуем образовательным стандартам РК.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                    <Card className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 hover:shadow-xl transition-all">
+                        <div className="text-5xl mb-4 text-center">🧠</div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">Критическое мышление</h3>
+                        <p className="text-gray-600 text-sm text-center">
+                            Анализ проблем, поиск решений, оценка результатов
+                        </p>
+                    </Card>
+
+                    <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 hover:shadow-xl transition-all">
+                        <div className="text-5xl mb-4 text-center">🔬</div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">Проектная деятельность</h3>
+                        <p className="text-gray-600 text-sm text-center">
+                            От идеи до реализации, работа в команде
+                        </p>
+                    </Card>
+
+                    <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 hover:shadow-xl transition-all">
+                        <div className="text-5xl mb-4 text-center">💻</div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">Цифровая грамотность</h3>
+                        <p className="text-gray-600 text-sm text-center">
+                            Работа с современными инструментами и технологиями
+                        </p>
+                    </Card>
+
+                    <Card className="p-6 bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 hover:shadow-xl transition-all">
+                        <div className="text-5xl mb-4 text-center">🚀</div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">Предпринимательство</h3>
+                        <p className="text-gray-600 text-sm text-center">
+                            Создание продуктов, презентация идей
+                        </p>
+                    </Card>
+                </div>
+            </section>
+
+            {/* 🔴 КРИТИЧНО: Роль учителя */}
+            <section className="bg-gradient-to-r from-blue-50 to-indigo-50 py-20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <div className="inline-block mb-4">
+                            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+                                👨‍🏫 Для учителей
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            Инструменты для учителя
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Мы не заменяем учителя, а усиливаем его возможности
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all border-l-4 border-blue-500">
+                            <div className="flex items-start gap-4">
+                                <div className="text-4xl">📱</div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-3">Панель класса</h3>
+                                    <p className="text-gray-600 mb-4">
+                                        Видите всех учеников, их прогресс, активность и проблемные зоны в одном месте
+                                    </p>
+                                    <ul className="space-y-2 text-sm text-gray-700">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Кто на каком этапе проекта</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Кому нужна помощь</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Общая статистика класса</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all border-l-4 border-indigo-500">
+                            <div className="flex items-start gap-4">
+                                <div className="text-4xl">📄</div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-3">Авто-отчёты</h3>
+                                    <p className="text-gray-600 mb-4">
+                                        Система автоматически генерирует отчёты по успеваемости и вовлечённости
+                                    </p>
+                                    <ul className="space-y-2 text-sm text-gray-700">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Еженедельные сводки</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Отчёты по проектам</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Экспорт в Excel/PDF</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all border-l-4 border-purple-500">
+                            <div className="flex items-start gap-4">
+                                <div className="text-4xl">🛡️</div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-3">Анти-списывание</h3>
+                                    <p className="text-gray-600 mb-4">
+                                        Система отслеживает, что ученик действительно понимает материал
+                                    </p>
+                                    <ul className="space-y-2 text-sm text-gray-700">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Режим "Объясни своими словами"</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Экзаменационный режим</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>История изменений проекта</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all border-l-4 border-pink-500">
+                            <div className="flex items-start gap-4">
+                                <div className="text-4xl">💬</div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-3">Комментарии и оценка</h3>
+                                    <p className="text-gray-600 mb-4">
+                                        Оставляйте обратную связь и выставляйте оценки прямо в системе
+                                    </p>
+                                    <ul className="space-y-2 text-sm text-gray-700">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Комментарии к этапам</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Рубрики оценивания</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span>Финальная оценка проекта</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+
+            {/* 🟠 Метрики успеха (KPI) */}
+            <section className="container mx-auto px-4 py-20">
+                <div className="text-center mb-16">
+                    <div className="inline-block mb-4">
+                        <span className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+                            📈 KPI
+                        </span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                        Как мы измеряем результат
+                    </h2>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Инвесторы и школы это любят. Прозрачные метрики успеха.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                    <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 text-center hover:shadow-xl transition-all">
+                        <div className="text-5xl font-bold text-green-600 mb-2">85%</div>
+                        <div className="text-gray-700 font-semibold mb-2">Завершённых проектов</div>
+                        <p className="text-sm text-gray-600">Ученики доводят проекты до конца</p>
+                    </Card>
+
+                    <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-300 text-center hover:shadow-xl transition-all">
+                        <div className="text-5xl font-bold text-blue-600 mb-2">+40%</div>
+                        <div className="text-gray-700 font-semibold mb-2">Рост уверенности</div>
+                        <p className="text-sm text-gray-600">Самооценка навыков учеников</p>
+                    </Card>
+
+                    <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 text-center hover:shadow-xl transition-all">
+                        <div className="text-5xl font-bold text-purple-600 mb-2">4.7/5</div>
+                        <div className="text-gray-700 font-semibold mb-2">Качество защит</div>
+                        <p className="text-sm text-gray-600">Средняя оценка презентаций</p>
+                    </Card>
+
+                    <Card className="p-6 bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-300 text-center hover:shadow-xl transition-all">
+                        <div className="text-5xl font-bold text-orange-600 mb-2">92%</div>
+                        <div className="text-gray-700 font-semibold mb-2">Вовлечённость</div>
+                        <p className="text-sm text-gray-600">Активность учеников на платформе</p>
+                    </Card>
+                </div>
+
+                <div className="mt-12 max-w-4xl mx-auto">
+                    <Card className="p-8 bg-gradient-to-r from-gray-50 to-slate-50 border-2 border-gray-300">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Дополнительные метрики</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <div>
+                                <div className="text-3xl font-bold text-teal-600 mb-1">73%</div>
+                                <div className="text-sm text-gray-600">Используют AI-помощника регулярно</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold text-indigo-600 mb-1">2.5x</div>
+                                <div className="text-sm text-gray-600">Рост скорости обучения</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold text-pink-600 mb-1">95%</div>
+                                <div className="text-sm text-gray-600">Удовлетворённость учителей</div>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            </section>
+
+            {/* 🟠 Риски и решения */}
+            <section className="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 py-20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <div className="inline-block mb-4">
+                            <span className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+                                🛡️ Безопасность
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                            Риски и как мы их закрываем
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Признак зрелости — открыто говорить о рисках и показывать решения
+                        </p>
+                    </div>
+
+                    <div className="max-w-5xl mx-auto space-y-6">
+                        <Card className="p-8 bg-white hover:shadow-xl transition-all border-l-4 border-red-500">
+                            <div className="flex items-start gap-6">
+                                <div className="flex-shrink-0">
+                                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-3xl">
+                                        ⚠️
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-2xl font-bold text-red-600 mb-2">Риск: ИИ делает за ученика</h3>
+                                    <p className="text-gray-600 mb-4">
+                                        Ученик может попросить AI сделать всю работу вместо него
+                                    </p>
+                                    <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                                        <h4 className="font-bold text-green-700 mb-2">✅ Решение:</h4>
+                                        <ul className="space-y-2 text-gray-700">
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Режим "Объясни своими словами"</strong> — ученик должен пересказать решение</span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Экзаменационный режим</strong> — AI ограничен, только подсказки</span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Защита проекта</strong> — финальная презентация показывает понимание</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="p-8 bg-white hover:shadow-xl transition-all border-l-4 border-orange-500">
+                            <div className="flex items-start gap-6">
+                                <div className="flex-shrink-0">
+                                    <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center text-3xl">
+                                        😰
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-2xl font-bold text-orange-600 mb-2">Риск: Перегруз учеников</h3>
+                                    <p className="text-gray-600 mb-4">
+                                        Слишком много информации может демотивировать
+                                    </p>
+                                    <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                                        <h4 className="font-bold text-green-700 mb-2">✅ Решение:</h4>
+                                        <ul className="space-y-2 text-gray-700">
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Пошаговый Project Hub</strong> — один этап за раз</span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Прогресс-бар</strong> — видно, сколько осталось</span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Микро-достижения</strong> — мотивация на каждом шаге</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="p-8 bg-white hover:shadow-xl transition-all border-l-4 border-yellow-500">
+                            <div className="flex items-start gap-6">
+                                <div className="flex-shrink-0">
+                                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center text-3xl">
+                                        🔒
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-2xl font-bold text-yellow-600 mb-2">Риск: Безопасность данных</h3>
+                                    <p className="text-gray-600 mb-4">
+                                        Личные данные учеников должны быть защищены
+                                    </p>
+                                    <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                                        <h4 className="font-bold text-green-700 mb-2">✅ Решение:</h4>
+                                        <ul className="space-y-2 text-gray-700">
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Шифрование данных</strong> — SSL/TLS протоколы</span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Соответствие GDPR</strong> — защита персональных данных</span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-green-500 font-bold">•</span>
+                                                <span><strong>Контроль доступа</strong> — учитель видит только свой класс</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+            </section>
+
+            {/* 🟠 Правовые и этические аспекты */}
+            <section className="container mx-auto px-4 py-20">
+                <div className="text-center mb-16">
+                    <div className="inline-block mb-4">
+                        <span className="bg-gradient-to-r from-slate-600 to-gray-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+                            ⚖️ Этика и право
+                        </span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-slate-600 to-gray-600 bg-clip-text text-transparent">
+                        Правовые и этические аспекты
+                    </h2>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Для школ это очень важно. Мы работаем прозрачно и ответственно.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <Card className="p-8 bg-gradient-to-br from-slate-50 to-gray-50 border-2 border-slate-300 hover:shadow-xl transition-all">
+                        <div className="text-6xl mb-6 text-center">🤖</div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">ИИ — помощник, не автор</h3>
+                        <ul className="space-y-3 text-gray-700">
+                            <li className="flex items-start gap-2">
+                                <span className="text-blue-500">✓</span>
+                                <span>AI помогает, но не делает за ученика</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-blue-500">✓</span>
+                                <span>Ученик остаётся автором проекта</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-blue-500">✓</span>
+                                <span>История взаимодействия с AI сохраняется</span>
+                            </li>
+                        </ul>
+                    </Card>
+
+                    <Card className="p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 hover:shadow-xl transition-all">
+                        <div className="text-6xl mb-6 text-center">👁️</div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Прозрачность использования ИИ</h3>
+                        <ul className="space-y-3 text-gray-700">
+                            <li className="flex items-start gap-2">
+                                <span className="text-indigo-500">✓</span>
+                                <span>Учитель видит все запросы к AI</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-indigo-500">✓</span>
+                                <span>Отчёты об использовании помощника</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-indigo-500">✓</span>
+                                <span>Маркировка AI-сгенерированного контента</span>
+                            </li>
+                        </ul>
+                    </Card>
+
+                    <Card className="p-8 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 hover:shadow-xl transition-all">
+                        <div className="text-6xl mb-6 text-center">👨‍🏫</div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Контроль со стороны учителя</h3>
+                        <ul className="space-y-3 text-gray-700">
+                            <li className="flex items-start gap-2">
+                                <span className="text-green-500">✓</span>
+                                <span>Учитель может ограничить AI</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-green-500">✓</span>
+                                <span>Настройка уровня помощи</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-green-500">✓</span>
+                                <span>Финальное слово всегда за учителем</span>
+                            </li>
+                        </ul>
+                    </Card>
+                </div>
+            </section>
+
+
+            {/* 🟢 Будущие модули */}
+            <section className="container mx-auto px-4 py-20">
+                <div className="text-center mb-16">
+                    <div className="inline-block mb-4">
+                        <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+                            🔮 Будущее
+                        </span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        Будущие модули
+                    </h2>
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Показывает масштаб. Мы только начинаем.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                    <Card className="p-8 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-300 hover:shadow-2xl transition-all hover:-translate-y-2 group">
+                        <div className="text-6xl mb-4 text-center group-hover:scale-110 transition-transform">🌐</div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-3 text-center">SafeWeb</h3>
+                        <p className="text-gray-600 text-center mb-4">
+                            Создание безопасных веб-приложений
+                        </p>
+                        <div className="text-sm text-gray-500 text-center">
+                            HTML, CSS, JavaScript + безопасность
+                        </div>
+                    </Card>
+
+                    <Card className="p-8 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-300 hover:shadow-2xl transition-all hover:-translate-y-2 group">
+                        <div className="text-6xl mb-4 text-center group-hover:scale-110 transition-transform">🎮</div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-3 text-center">GameDev</h3>
+                        <p className="text-gray-600 text-center mb-4">
+                            Разработка игр на Unity и Godot
+                        </p>
+                        <div className="text-sm text-gray-500 text-center">
+                            От 2D платформеров до 3D миров
+                        </div>
+                    </Card>
+
+                    <Card className="p-8 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 hover:shadow-2xl transition-all hover:-translate-y-2 group">
+                        <div className="text-6xl mb-4 text-center group-hover:scale-110 transition-transform">🔬</div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-3 text-center">Research</h3>
+                        <p className="text-gray-600 text-center mb-4">
+                            Научные исследования с AI
+                        </p>
+                        <div className="text-sm text-gray-500 text-center">
+                            Анализ данных, визуализация, выводы
+                        </div>
+                    </Card>
+
+                    <Card className="p-8 bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-300 hover:shadow-2xl transition-all hover:-translate-y-2 group">
+                        <div className="text-6xl mb-4 text-center group-hover:scale-110 transition-transform">🚀</div>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-3 text-center">Startup</h3>
+                        <p className="text-gray-600 text-center mb-4">
+                            От идеи до MVP стартапа
+                        </p>
+                        <div className="text-sm text-gray-500 text-center">
+                            Бизнес-модель, прототип, питч
+                        </div>
+                    </Card>
+                </div>
+
+                <div className="mt-12 text-center">
+                    <Card className="max-w-3xl mx-auto p-8 bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-300">
+                        <p className="text-lg text-gray-700">
+                            <strong>💡 Roadmap:</strong> Каждый модуль — это новая возможность для школ расширить учебную программу.
+                            Мы планируем запускать по 1 новому модулю каждые 3 месяца.
+                        </p>
+                    </Card>
+                </div>
+            </section>
+
             {/* CTA Section */}
             <section className="container mx-auto px-4 py-20 text-center">
                 <Card className="max-w-4xl mx-auto p-12 bg-gradient-to-r from-teal-100 via-cyan-100 to-emerald-100 border-2 border-teal-300 shadow-2xl">

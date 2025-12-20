@@ -29,10 +29,35 @@ import { AdminGroupsPage } from './pages/AdminGroupsPage'
 import { MyAssignmentsPage } from './pages/MyAssignmentsPage'
 import { AdminChatPage } from './pages/AdminChatPage'
 import { AdminGroupChatPage } from './pages/AdminGroupChatPage'
-import { AdminRanksPage } from './pages/AdminRanksPage'
 import { StudentChatPage } from './pages/StudentChatPage'
 import { DeveloperSetupPage } from './pages/DeveloperSetupPage'
 import { DeveloperPanel } from './pages/DeveloperPanel'
+import { AssignRankPage } from './pages/AssignRankPage'
+import { ViewRanksPage } from './pages/ViewRanksPage'
+import { PythonLessonPage } from './pages/PythonLessonPage'
+import { FigmaLessonPage } from './pages/FigmaLessonPage'
+import { FeatureFlagsPage } from './pages/developer/FeatureFlagsPage'
+import { ModulesPage } from './pages/developer/ModulesPage'
+import { LiveActivityPage } from './pages/developer/LiveActivityPage'
+import { MaintenancePage } from './pages/developer/MaintenancePage'
+import { BlocksPage } from './pages/developer/BlocksPage'
+import { AccessMatrixPage } from './pages/developer/AccessMatrixPage'
+import { AIControlPage } from './pages/developer/AIControlPage'
+import { AIStatsPage } from './pages/developer/AIStatsPage'
+import { TestDataPage } from './pages/developer/TestDataPage'
+import { ErrorMonitorPage } from './pages/developer/ErrorMonitorPage'
+import { ExportPage } from './pages/developer/ExportPage'
+import { ImportPage } from './pages/developer/ImportPage'
+import { PerformancePage } from './pages/developer/PerformancePage'
+import { EnhancedUsersPage } from './pages/admin/EnhancedUsersPage'
+import { StudentMonitoringPage } from './pages/admin/StudentMonitoringPage'
+import { EnhancedReviewPage } from './pages/admin/EnhancedReviewPage'
+import { EnhancedGroupsPage } from './pages/admin/EnhancedGroupsPage'
+import { LiveRanksPage } from './pages/admin/LiveRanksPage'
+import { AnalyticsPage } from './pages/admin/AnalyticsPage'
+import { EnhancedChatPage } from './pages/admin/EnhancedChatPage'
+import { AdminOpsChat } from './pages/admin/AdminOpsChat'
+import { StudentChatsPage } from './pages/student/StudentChatsPage'
 
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
 import { SubmitAssignmentPage } from './pages/SubmitAssignmentPage'
@@ -261,6 +286,215 @@ function App() {
                     }
                 />
 
+                <Route
+                    path="/developer/assign-rank"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AssignRankPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/developer/feature-flags"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <FeatureFlagsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/developer/modules"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ModulesPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/developer/live-activity"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <LiveActivityPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/developer/maintenance"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <MaintenancePage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route path="/developer/blocks" element={<ProtectedRoute><AppLayout><BlocksPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/access-matrix" element={<ProtectedRoute><AppLayout><AccessMatrixPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/ai-control" element={<ProtectedRoute><AppLayout><AIControlPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/ai-stats" element={<ProtectedRoute><AppLayout><AIStatsPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/test-data" element={<ProtectedRoute><AppLayout><TestDataPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/error-monitor" element={<ProtectedRoute><AppLayout><ErrorMonitorPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/export" element={<ProtectedRoute><AppLayout><ExportPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/import" element={<ProtectedRoute><AppLayout><ImportPage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/performance" element={<ProtectedRoute><AppLayout><PerformancePage /></AppLayout></ProtectedRoute>} />
+
+
+                <Route
+                    path="/admin/ranks"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <ViewRanksPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/enhanced-users"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <EnhancedUsersPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/student-monitoring"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <StudentMonitoringPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/enhanced-review"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <EnhancedReviewPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/enhanced-groups"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <EnhancedGroupsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/live-ranks"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <LiveRanksPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/analytics"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AnalyticsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/enhanced-chat"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <EnhancedChatPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/student/chats"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <StudentChatsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/ops-chat"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AdminOpsChat />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/settings"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <SettingsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/python-tasks/:lessonId"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <PythonLessonPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/figma-tasks/:lessonId"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <FigmaLessonPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
 
                 <Route
                     path="/submissions"
@@ -318,16 +552,6 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <ReviewAssignmentsPage />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/admin/ranks"
-                    element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <AdminRanksPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { PythonTask } from '@/types/pythonTask'
+import { TaskComments } from '@/components/TaskComments'
 
 interface TestQuestion {
     id: number
@@ -12,6 +14,7 @@ interface TestQuestion {
 }
 
 export const PythonTasksPage = () => {
+    const navigate = useNavigate()
     const [tasks, setTasks] = useState<PythonTask[]>([])
     const [selectedTask, setSelectedTask] = useState<PythonTask | null>(null)
     const [filter, setFilter] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all')
@@ -360,7 +363,7 @@ export const PythonTasksPage = () => {
                             <Card
                                 key={task.id}
                                 hover
-                                onClick={() => setSelectedTask(task)}
+                                onClick={() => navigate(`/python-tasks/${task.id}`)}
                                 className={cardClass}
                             >
                                 <div className="flex items-start justify-between mb-2">
@@ -551,6 +554,9 @@ export const PythonTasksPage = () => {
                                         После отправки ваше решение будет проверено преподавателем
                                     </p>
                                 </div>
+
+                                {/* Комментарии к заданию */}
+                                <TaskComments taskId={selectedTask.id} />
                             </div>
                         </Card>
                     ) : (
