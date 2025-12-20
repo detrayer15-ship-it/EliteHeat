@@ -78,7 +78,7 @@ export const StudentChatsPage = () => {
     useEffect(() => {
         if (!selectedStudent || !user) return
 
-        const chatId = [user.uid, selectedStudent.id].sort().join('_')
+        const chatId = [user.id, selectedStudent.id].sort().join('_')
         const messagesRef = collection(db, 'chats', chatId, 'messages')
         const q = query(messagesRef, orderBy('timestamp', 'asc'))
 
@@ -97,11 +97,11 @@ export const StudentChatsPage = () => {
         if (!newMessage.trim() || !selectedStudent || !user) return
 
         try {
-            const chatId = [user.uid, selectedStudent.id].sort().join('_')
+            const chatId = [user.id, selectedStudent.id].sort().join('_')
             const messagesRef = collection(db, 'chats', chatId, 'messages')
 
             await addDoc(messagesRef, {
-                senderId: user.uid,
+                senderId: user.id,
                 senderName: user.name || 'Учитель',
                 text: newMessage,
                 timestamp: Date.now()
@@ -159,8 +159,8 @@ export const StudentChatsPage = () => {
                                         key={student.id}
                                         onClick={() => setSelectedStudent(student)}
                                         className={`w-full text-left p-4 rounded-lg border-2 transition-all ${selectedStudent?.id === student.id
-                                                ? 'border-blue-500 bg-blue-50'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            ? 'border-blue-500 bg-blue-50'
+                                            : 'border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -206,13 +206,13 @@ export const StudentChatsPage = () => {
                                         {messages.map(msg => (
                                             <div
                                                 key={msg.id}
-                                                className={`p-3 rounded-lg max-w-[80%] ${msg.senderId === user.uid
-                                                        ? 'ml-auto bg-blue-500 text-white'
-                                                        : 'bg-white border-2 border-gray-200'
+                                                className={`p-3 rounded-lg max-w-[80%] ${msg.senderId === user.id
+                                                    ? 'ml-auto bg-blue-500 text-white'
+                                                    : 'bg-white border-2 border-gray-200'
                                                     }`}
                                             >
                                                 <div className="text-sm mb-1 font-medium">
-                                                    {msg.senderId === user.uid ? 'Вы' : msg.senderName}
+                                                    {msg.senderId === user.id ? 'Вы' : msg.senderName}
                                                 </div>
                                                 <div>{msg.text}</div>
                                                 <div className="text-xs mt-1 opacity-70">
