@@ -148,6 +148,21 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
+                        {/* AI Activity Monitor - для админов и разработчиков */}
+                        {(user?.role === 'admin' || user?.role === 'developer') && (
+                            <Link
+                                to="/admin/ai-activity"
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 ${location.pathname === '/admin/ai-activity'
+                                    ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg transform scale-105'
+                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-100 hover:shadow-md'
+                                    }`}
+                            >
+                                <span className="text-xl">🛡️</span>
+                                <span className="font-medium">AI Мониторинг</span>
+                            </Link>
+                        )}
+
                         {/* Админ-панель - для админов и разработчиков */}
                         {(user?.role === 'admin' || user?.role === 'developer') && (
                             <Link

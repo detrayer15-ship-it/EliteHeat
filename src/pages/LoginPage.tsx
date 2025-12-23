@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/authStore'
+import { FloatingParticles } from '@/components/FloatingParticles'
 
 export const LoginPage = () => {
     const navigate = useNavigate()
@@ -45,8 +46,9 @@ export const LoginPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-white to-ai-blue/5 py-12 px-4">
-            <Card className="w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-50 via-purple-50 to-pink-50 py-12 px-4 relative overflow-hidden">
+            <FloatingParticles />
+            <Card className="w-full max-w-md relative z-10 animate-fade-in shadow-2xl">
                 <div className="text-center mb-6">
                     <div className="text-4xl font-bold text-primary mb-2">EliteHeat</div>
                     <h1 className="text-2xl font-bold text-text mb-2">Вход</h1>
@@ -66,6 +68,7 @@ export const LoginPage = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="your@email.com"
+                        autoComplete="email"
                         required
                     />
 
@@ -75,6 +78,7 @@ export const LoginPage = () => {
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         placeholder="Введите пароль"
+                        autoComplete="current-password"
                         required
                     />
 

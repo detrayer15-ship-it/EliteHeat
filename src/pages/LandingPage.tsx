@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { useAuthStore } from '@/store/authStore'
 import { useEffect } from 'react'
+import { Typewriter } from '@/components/Typewriter'
+import { FloatingParticles } from '@/components/FloatingParticles'
 
 export const LandingPage = () => {
     const navigate = useNavigate()
@@ -15,9 +17,12 @@ export const LandingPage = () => {
     }, [isAuthenticated, navigate])
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-teal-50">
+        <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-teal-50 relative overflow-hidden">
+            {/* Floating Particles Background */}
+            <FloatingParticles />
+            
             {/* Header */}
-            <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+            <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 relative">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -37,7 +42,7 @@ export const LandingPage = () => {
             </header>
 
             {/* Hero Section */}
-            <section className="container mx-auto px-4 py-20 text-center">
+            <section className="container mx-auto px-4 py-20 text-center relative z-10">
                 <div className="max-w-5xl mx-auto animate-fade-in">
                     <div className="inline-block mb-6">
                         <span className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
@@ -51,9 +56,21 @@ export const LandingPage = () => {
                             <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Heat</span>
                         </span>
                     </h1>
-                    <p className="text-2xl md:text-3xl text-gray-700 mb-6 animate-slide-up font-medium" style={{ animationDelay: '0.1s' }}>
-                        Изучайте программирование и дизайн с лучшими онлайн-курсами
-                    </p>
+                    <div className="text-2xl md:text-4xl text-gray-700 mb-6 animate-slide-up font-medium min-h-[100px] flex items-center justify-center" style={{ animationDelay: '0.1s' }}>
+                        <Typewriter
+                            texts={[
+                                'Изучайте программирование 🐍',
+                                'Создавайте дизайны в Figma 🎨',
+                                'Работайте с AI-помощником 🤖',
+                                'Получайте сертификаты 🎓',
+                                'Развивайте свои навыки 🚀'
+                            ]}
+                            speed={80}
+                            deleteSpeed={40}
+                            pauseTime={2000}
+                            className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent"
+                        />
+                    </div>
                     <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
                         Получите доступ к профессиональным курсам по Python, Figma и AI-технологиям.
                         Учитесь в удобном темпе с персональным AI-помощником и получайте сертификаты.
@@ -838,6 +855,184 @@ export const LandingPage = () => {
                         Выбрать тариф
                     </Button>
                 </Card>
+            </section>
+
+            {/* 🎓 Наши ученики */}
+            <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <div className="inline-block mb-4">
+                            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+                                🎓 Наши ученики
+                            </span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            Истории успеха наших учеников
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Реальные студенты, которые учатся в нашей школе и достигают впечатляющих результатов
+                        </p>
+                    </div>
+
+                    {/* Отзывы учеников */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                        {/* Ученик 1 */}
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-indigo-200">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                    А
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-800">Алия К.</h3>
+                                    <p className="text-sm text-gray-600">11 класс</p>
+                                    <div className="flex gap-1 mt-1">
+                                        <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="text-gray-700 mb-4 italic">
+                                "Раньше я боялась программирования, но благодаря AI-помощнику и пошаговым урокам, я создала свой первый сайт! Теперь хочу стать веб-разработчиком."
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
+                                    Python
+                                </span>
+                                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                                    Figma
+                                </span>
+                            </div>
+                        </Card>
+
+                        {/* Ученик 2 */}
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-purple-200">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                    Д
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-800">Данияр Б.</h3>
+                                    <p className="text-sm text-gray-600">10 класс</p>
+                                    <div className="flex gap-1 mt-1">
+                                        <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="text-gray-700 mb-4 italic">
+                                "Я создал игру на Python за одну четверть! AI-помощник объяснял сложные концепции простым языком. Защита проекта прошла на отлично!"
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                                    Python
+                                </span>
+                                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                                    Проект
+                                </span>
+                            </div>
+                        </Card>
+
+                        {/* Ученик 3 */}
+                        <Card className="p-8 bg-white hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 border-pink-200">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-red-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                    А
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-800">Айым С.</h3>
+                                    <p className="text-sm text-gray-600">9 класс</p>
+                                    <div className="flex gap-1 mt-1">
+                                        <span className="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="text-gray-700 mb-4 italic">
+                                "Figma стал моим любимым инструментом! Я создала дизайн мобильного приложения для школьного проекта. Учитель был в восторге!"
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-semibold">
+                                    Figma
+                                </span>
+                                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                                    UI/UX
+                                </span>
+                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Достижения */}
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 border-2 border-indigo-200">
+                        <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">
+                            🏆 Достижения наших учеников
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                                <div className="text-5xl font-bold text-green-600 mb-2">156</div>
+                                <div className="text-gray-700 font-medium">Завершенных проектов</div>
+                            </div>
+                            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl">
+                                <div className="text-5xl font-bold text-blue-600 mb-2">89%</div>
+                                <div className="text-gray-700 font-medium">Успеваемость</div>
+                            </div>
+                            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                                <div className="text-5xl font-bold text-purple-600 mb-2">42</div>
+                                <div className="text-gray-700 font-medium">Активных студента</div>
+                            </div>
+                            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-red-50 rounded-xl">
+                                <div className="text-5xl font-bold text-orange-600 mb-2">4.8/5</div>
+                                <div className="text-gray-700 font-medium">Средняя оценка</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Галерея проектов */}
+                    <div className="mt-16">
+                        <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">
+                            📱 Проекты наших учеников
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <Card className="p-6 bg-white hover:shadow-xl transition-all">
+                                <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <div className="text-6xl">🎮</div>
+                                </div>
+                                <h4 className="text-xl font-bold text-gray-800 mb-2">Игра "Змейка"</h4>
+                                <p className="text-gray-600 text-sm mb-3">Python игра с графикой</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                        Д
+                                    </div>
+                                    <span className="text-sm text-gray-600">Данияр Б.</span>
+                                </div>
+                            </Card>
+
+                            <Card className="p-6 bg-white hover:shadow-xl transition-all">
+                                <div className="w-full h-48 bg-gradient-to-br from-pink-100 to-red-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <div className="text-6xl">📱</div>
+                                </div>
+                                <h4 className="text-xl font-bold text-gray-800 mb-2">Дизайн приложения</h4>
+                                <p className="text-gray-600 text-sm mb-3">Мобильное приложение в Figma</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                        А
+                                    </div>
+                                    <span className="text-sm text-gray-600">Айым С.</span>
+                                </div>
+                            </Card>
+
+                            <Card className="p-6 bg-white hover:shadow-xl transition-all">
+                                <div className="w-full h-48 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <div className="text-6xl">🌐</div>
+                                </div>
+                                <h4 className="text-xl font-bold text-gray-800 mb-2">Личный сайт</h4>
+                                <p className="text-gray-600 text-sm mb-3">Портфолио на HTML/CSS</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                        А
+                                    </div>
+                                    <span className="text-sm text-gray-600">Алия К.</span>
+                                </div>
+                            </Card>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             {/* Footer */}

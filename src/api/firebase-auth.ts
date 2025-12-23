@@ -108,9 +108,32 @@ export const firebaseAuthAPI = {
                 }
             }
         } catch (error: any) {
+            console.error('Firebase Login Error:', error)
+            console.error('Error code:', error.code)
+            console.error('Error message:', error.message)
+
+            let userMessage = 'Неверный email или пароль'
+
+            // Обработка специфичных ошибок Firebase Auth
+            if (error.code === 'auth/invalid-credential') {
+                userMessage = 'Неверный email или пароль. Проверьте правильность введенных данных.'
+            } else if (error.code === 'auth/user-not-found') {
+                userMessage = 'Пользователь с таким email не найден'
+            } else if (error.code === 'auth/wrong-password') {
+                userMessage = 'Неверный пароль'
+            } else if (error.code === 'auth/invalid-email') {
+                userMessage = 'Неверный формат email'
+            } else if (error.code === 'auth/user-disabled') {
+                userMessage = 'Этот аккаунт был заблокирован'
+            } else if (error.code === 'auth/too-many-requests') {
+                userMessage = 'Слишком много попыток входа. Попробуйте позже.'
+            } else if (error.code === 'auth/network-request-failed') {
+                userMessage = 'Ошибка сети. Проверьте подключение к интернету.'
+            }
+
             return {
                 success: false,
-                message: error.message || 'Неверный email или пароль'
+                message: userMessage
             }
         }
     },

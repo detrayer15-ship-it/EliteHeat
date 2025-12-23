@@ -6,8 +6,8 @@ const API_KEY = 'AIzaSyCk7v9spUdCGeT9P1Blfopia1_Brc9lb08'
 // Инициализация Gemini AI
 const genAI = new GoogleGenerativeAI(API_KEY)
 
-// Используем рабочую модель
-const WORKING_MODEL = 'gemini-pro'
+// Используем актуальную модель (gemini-pro устарела)
+const WORKING_MODEL = 'gemini-1.5-flash'
 
 /**
  * Отправка текстового запроса к Gemini AI
@@ -182,7 +182,7 @@ export async function sendImageMessage(
 ): Promise<string> {
     try {
         const model = genAI.getGenerativeModel({
-            model: 'gemini-pro-vision',
+            model: 'gemini-1.5-flash', // gemini-pro-vision устарела
         })
 
         const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg'

@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/authStore'
+import { FloatingParticles } from '@/components/FloatingParticles'
 
 export const RegisterPage = () => {
     const navigate = useNavigate()
@@ -47,8 +48,9 @@ export const RegisterPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-white to-ai-blue/5 py-4 sm:py-12 px-4">
-            <Card className="w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-4 sm:py-12 px-4 relative overflow-hidden">
+            <FloatingParticles />
+            <Card className="w-full max-w-md relative z-10 animate-fade-in shadow-2xl">
                 <div className="text-center mb-4 sm:mb-6">
                     <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">EliteHeat</div>
                     <h1 className="text-xl sm:text-2xl font-bold text-text mb-1 sm:mb-2">Регистрация</h1>
@@ -67,6 +69,7 @@ export const RegisterPage = () => {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Иван Иванов"
+                        autoComplete="name"
                         required
                     />
 
@@ -76,6 +79,7 @@ export const RegisterPage = () => {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="your@email.com"
+                        autoComplete="email"
                         required
                     />
 
@@ -85,6 +89,7 @@ export const RegisterPage = () => {
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         placeholder="Минимум 6 символов"
+                        autoComplete="new-password"
                         minLength={6}
                         required
                     />

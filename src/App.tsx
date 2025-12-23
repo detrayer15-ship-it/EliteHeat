@@ -57,6 +57,7 @@ import { LiveRanksPage } from './pages/admin/LiveRanksPage'
 import { AnalyticsPage } from './pages/admin/AnalyticsPage'
 import { EnhancedChatPage } from './pages/admin/EnhancedChatPage'
 import { AdminOpsChat } from './pages/admin/AdminOpsChat'
+import { AIActivityMonitorPage } from './pages/admin/AIActivityMonitorPage'
 import { StudentChatsPage } from './pages/student/StudentChatsPage'
 
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
@@ -121,7 +122,12 @@ function App() {
     }, [])
 
     return (
-        <BrowserRouter>
+        <BrowserRouter
+            future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true
+            }}
+        >
             <Routes>
                 {/* Public routes - без AppLayout */}
                 <Route path="/" element={<LandingPage />} />
@@ -457,6 +463,17 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <AdminOpsChat />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/ai-activity"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AIActivityMonitorPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }
