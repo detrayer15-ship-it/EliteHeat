@@ -317,6 +317,97 @@ export const Dashboard = () => {
                     </div>
                 </div>
 
+                {/* Gamification Widget */}
+                <div className="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 rounded-2xl shadow-xl p-6 mb-12 border-2 border-yellow-200">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <span className="text-3xl">🏆</span>
+                            Твой прогресс
+                        </h2>
+                        <button
+                            onClick={() => navigate('/student/achievements')}
+                            className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-xl font-medium hover:shadow-lg transition-all hover:scale-105"
+                        >
+                            Все достижения →
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Уровень */}
+                        <div className="bg-white rounded-xl p-6 shadow-md">
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="text-4xl">💻</span>
+                                <div>
+                                    <div className="text-sm text-gray-600">Уровень</div>
+                                    <div className="text-xl font-bold text-purple-600">Практик</div>
+                                </div>
+                            </div>
+                            <div className="text-3xl font-bold text-gray-900 mb-2">1250 XP</div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500" style={{ width: '83%' }} />
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">До Эксперта: 250 XP</div>
+                        </div>
+
+                        {/* Streak */}
+                        <div className="bg-white rounded-xl p-6 shadow-md">
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="text-4xl animate-pulse">🔥</span>
+                                <div>
+                                    <div className="text-sm text-gray-600">Серия</div>
+                                    <div className="text-xl font-bold text-orange-600">12 дней подряд</div>
+                                </div>
+                            </div>
+                            <div className="text-sm text-gray-700 mb-2">Невероятно! Так держать!</div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-red-500" style={{ width: '40%' }} />
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">До месяца: 18 дней</div>
+                        </div>
+
+                        {/* Достижения */}
+                        <div className="bg-white rounded-xl p-6 shadow-md">
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="text-4xl">🎖️</span>
+                                <div>
+                                    <div className="text-sm text-gray-600">Достижения</div>
+                                    <div className="text-xl font-bold text-blue-600">4 из 14</div>
+                                </div>
+                            </div>
+                            <div className="flex gap-2 mb-2">
+                                <span className="text-2xl">📖</span>
+                                <span className="text-2xl">🥇</span>
+                                <span className="text-2xl">🔥</span>
+                                <span className="text-2xl">👨‍🏫</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500" style={{ width: '28%' }} />
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">28% завершено</div>
+                        </div>
+                    </div>
+
+                    {/* Следующее достижение */}
+                    <div className="mt-6 bg-white rounded-xl p-4 border-2 border-yellow-300">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <span className="text-3xl">🤖</span>
+                                <div>
+                                    <div className="font-bold text-gray-900">Близко к получению: AI Мастер</div>
+                                    <div className="text-sm text-gray-600">50 запросов к AI</div>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-2xl font-bold text-blue-600">90%</div>
+                                <div className="text-xs text-gray-500">45/50</div>
+                            </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                            <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500" style={{ width: '90%' }} />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Project Creation Chat */}
                 <div className="mb-12">
                     <ProjectCreationChat />

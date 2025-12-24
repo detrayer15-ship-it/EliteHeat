@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && firebase deploy",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "firebase:login": "firebase login",
+    "firebase:init": "firebase init"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

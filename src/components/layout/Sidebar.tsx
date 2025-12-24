@@ -101,6 +101,24 @@ export const Sidebar = () => {
                             </Link>
                         )}
 
+                        {/* Достижения - только для учеников */}
+                        {user?.role === 'student' && (
+                            <Link
+                                to="/student/achievements"
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 group ${location.pathname === '/student/achievements'
+                                    ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg transform scale-105'
+                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-orange-100 hover:shadow-md hover:scale-105'
+                                    }`}
+                            >
+                                <span className={`text-xl transition-transform duration-300 ${location.pathname === '/student/achievements' ? 'animate-bounce' : 'group-hover:scale-125'}`}>🏆</span>
+                                <span className="font-medium">Достижения</span>
+                                {location.pathname === '/student/achievements' && (
+                                    <span className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
+                                )}
+                            </Link>
+                        )}
+
 
 
                         {/* Чаты - для админов и разработчиков */}

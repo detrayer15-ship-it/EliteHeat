@@ -1,10 +1,16 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-// API ключ Gemini
-const API_KEY = 'AIzaSyCk7v9spUdCGeT9P1Blfopia1_Brc9lb08'
+// API ключ Gemini из переменных окружения
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
+
+// Проверка наличия API ключа
+if (!API_KEY) {
+    console.error('❌ VITE_GEMINI_API_KEY не найден в .env.local файле!')
+    console.warn('⚠️ Gemini AI будет работать в режиме fallback (без реального AI)')
+}
 
 // Инициализация Gemini AI
-const genAI = new GoogleGenerativeAI(API_KEY)
+const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null
 
 // Используем актуальную модель (gemini-pro устарела)
 const WORKING_MODEL = 'gemini-1.5-flash'
@@ -14,6 +20,12 @@ const WORKING_MODEL = 'gemini-1.5-flash'
  */
 export async function sendTextMessage(message: string): Promise<string> {
     try {
+        // Проверка наличия API ключа
+        if (!genAI) {
+            console.warn('⚠️ Gemini API недоступен, используем fallback')
+            return getFallbackResponse(message)
+        }
+
         const model = genAI.getGenerativeModel({
             model: WORKING_MODEL,
         })
@@ -181,6 +193,20 @@ export async function sendImageMessage(
     imageBase64: string
 ): Promise<string> {
     try {
+        // Проверка наличия API ключа
+        if (!genAI) {
+            return `🖼️ **Анализ изображений**
+
+Функция анализа изображений недоступна (нет API ключа).
+
+**Что можно сделать:**
+1. Добавьте VITE_GEMINI_API_KEY в .env.local
+2. Опишите что на изображении текстом
+3. Скопируйте код с изображения
+
+Я помогу на основе описания!`
+        }
+
         const model = genAI.getGenerativeModel({
             model: 'gemini-1.5-flash', // gemini-pro-vision устарела
         })
@@ -264,6 +290,11 @@ export async function helpWithPresentation(topic: string, details: string): Prom
  */
 export async function checkAPIStatus(): Promise<boolean> {
     try {
+        if (!genAI) {
+            console.warn('⚠️ Gemini API недоступен (нет API ключа)')
+            return true // Возвращаем true чтобы показать что fallback работает
+        }
+
         const model = genAI.getGenerativeModel({ model: WORKING_MODEL })
         const result = await model.generateContent('Test')
         await result.response

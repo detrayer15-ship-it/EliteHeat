@@ -59,6 +59,8 @@ import { EnhancedChatPage } from './pages/admin/EnhancedChatPage'
 import { AdminOpsChat } from './pages/admin/AdminOpsChat'
 import { AIActivityMonitorPage } from './pages/admin/AIActivityMonitorPage'
 import { StudentChatsPage } from './pages/student/StudentChatsPage'
+import AchievementsPage from './pages/student/AchievementsPage'
+import APITestPage from './pages/developer/APITestPage'
 
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
 import { SubmitAssignmentPage } from './pages/SubmitAssignmentPage'
@@ -356,6 +358,7 @@ function App() {
                 <Route path="/developer/export" element={<ProtectedRoute><AppLayout><ExportPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/developer/import" element={<ProtectedRoute><AppLayout><ImportPage /></AppLayout></ProtectedRoute>} />
                 <Route path="/developer/performance" element={<ProtectedRoute><AppLayout><PerformancePage /></AppLayout></ProtectedRoute>} />
+                <Route path="/developer/api-test" element={<ProtectedRoute><AppLayout><APITestPage /></AppLayout></ProtectedRoute>} />
 
 
                 <Route
@@ -452,6 +455,17 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <StudentChatsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/student/achievements"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AchievementsPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }
