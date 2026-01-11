@@ -17,15 +17,26 @@ export const Header = () => {
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
     const [showDropdown, setShowDropdown] = useState(false)
-    const [showSubscriptionDetails, setShowSubscriptionDetails] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
-    // TODO: Get from user data - for now using 'monthly' as default
+    // Subscription info - only for students
     const subscriptionType: SubscriptionType = 'monthly'
-    const subscriptionStartDate = new Date('2026-01-01') // TODO: Get from user data
+    const subscriptionStartDate = new Date('2026-01-01')
+    const [subscriptionInfo, setSubscriptionInfo] = useState(getSubscriptionInfo(subscriptionType, subscriptionStartDate))
+    const [progress, setProgress] = useState(calculateProgress(subscriptionInfo.startDate, subscriptionInfo.expiryDate))
 
-    const subscriptionInfo = getSubscriptionInfo(subscriptionType, subscriptionStartDate)
-    const progress = calculateProgress(subscriptionInfo.startDate, subscriptionInfo.expiryDate)
+    // Real-time countdown for students
+    useEffect(() => {
+        if (user?.role === 'student') {
+            const interval = setInterval(() => {
+                const newInfo = getSubscriptionInfo(subscriptionType, subscriptionStartDate)
+                setSubscriptionInfo(newInfo)
+                setProgress(calculateProgress(newInfo.startDate, newInfo.expiryDate))
+            }, 1000) // Update every second
+
+            return () => clearInterval(interval)
+        }
+    }, [user?.role])
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -68,26 +79,25 @@ export const Header = () => {
                                         <div className="text-xs text-gray-600">{user.email}</div>
                                     </div>
                                     <svg
-                                        className={`w-4 h-4 text-gray-600 transition-transform ${showDropdown ? 'rotate-180' : ''
-                                            }`}
+                                        className={`w-4 h-4 text-gray-600 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 9l-7 7-7-7"
-                                        />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
 
                                 {showDropdown && (
-                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
                                         <div className="px-4 py-3 border-b border-gray-200">
                                             <div className="font-semibold text-text">{user.name}</div>
                                             <div className="text-sm text-gray-600">{user.email}</div>
+                                            <div className="text-xs text-purple-600 font-medium mt-1">
+                                                {user.role === 'student' && '👨‍🎓 Ученик'}
+                                                {user.role === 'admin' && '👨‍🏫 Учитель'}
+                                                {user.role === 'developer' && '👨‍💻 Разработчик'}
+                                            </div>
                                         </div>
 
                                         <button
@@ -101,48 +111,76 @@ export const Header = () => {
                                             <span>Настройки</span>
                                         </button>
 
-                                        {/* Subscription Info - Collapsible */}
-                                        <div className="border-t border-b border-purple-200">
-                                            <button
-                                                onClick={() => setShowSubscriptionDetails(!showSubscriptionDetails)}
-                                                className="w-full px-4 py-3 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors flex items-center justify-between"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-lg">💎</span>
-                                                    <p className="text-xs font-semibold text-purple-700">Подписка</p>
-                                                </div>
-                                                <svg
-                                                    className={`w-4 h-4 text-purple-700 transition-transform ${showSubscriptionDetails ? 'rotate-180' : ''}`}
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                </svg>
-                                            </button>
-
-                                            {showSubscriptionDetails && (
-                                                <div className="px-4 py-3 bg-gradient-to-r from-purple-50 to-pink-50 border-t border-purple-100">
-                                                    <div className="space-y-1">
-                                                        <p className="text-xs text-gray-700">
-                                                            <span className="font-medium">Тип:</span> {getSubscriptionTypeLabel(subscriptionInfo.type)}
-                                                        </p>
-                                                        <p className="text-xs text-gray-700">
-                                                            <span className="font-medium">Активна до:</span> <span className="font-bold text-purple-700">{formatExpiryDate(subscriptionInfo.expiryDate)}</span>
-                                                        </p>
-                                                        <p className="text-xs text-gray-700">
-                                                            <span className="font-medium">Осталось:</span> <span className="font-bold text-green-600">{formatDaysRemaining(subscriptionInfo.daysRemaining)}</span>
-                                                        </p>
+                                        {/* Subscription Info - Role-based */}
+                                        {user.role === 'student' && (
+                                            <div className="border-t border-b border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                                                <div className="px-4 py-3">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <span className="text-lg">💎</span>
+                                                        <p className="text-sm font-bold text-purple-700">Ваша подписка</p>
                                                     </div>
-                                                    <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+
+                                                    <div className="space-y-2">
+                                                        <div className="bg-white/60 rounded-lg p-3">
+                                                            <p className="text-xs text-gray-600 mb-1">Тип подписки</p>
+                                                            <p className="text-sm font-bold text-purple-700">{getSubscriptionTypeLabel(subscriptionInfo.type)}</p>
+                                                        </div>
+
+                                                        <div className="bg-white/60 rounded-lg p-3">
+                                                            <p className="text-xs text-gray-600 mb-1">Действует до</p>
+                                                            <p className="text-sm font-bold text-purple-700">{formatExpiryDate(subscriptionInfo.expiryDate)}</p>
+                                                        </div>
+
+                                                        {/* Real-time Countdown Timer */}
+                                                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-200">
+                                                            <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                                                                <span>⏰</span>
+                                                                <span>Осталось времени (обновляется каждую секунду)</span>
+                                                            </p>
+                                                            <p className="text-2xl font-black text-green-600 animate-pulse">
+                                                                {formatDaysRemaining(subscriptionInfo.daysRemaining)}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Progress bar */}
+                                                    <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
                                                         <div
-                                                            className="bg-gradient-to-r from-purple-600 to-pink-600 h-1.5 rounded-full transition-all"
+                                                            className="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full transition-all duration-1000"
                                                             style={{ width: `${progress}%` }}
                                                         ></div>
                                                     </div>
+                                                    <p className="text-xs text-gray-600 mt-1 text-center">
+                                                        Осталось {Math.round(progress)}% времени
+                                                    </p>
                                                 </div>
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
+
+                                        {user.role === 'admin' && (
+                                            <div className="border-t border-b border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50">
+                                                <div className="px-4 py-3">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-lg">👨‍🏫</span>
+                                                        <p className="text-sm font-bold text-blue-700">Управление учениками</p>
+                                                    </div>
+                                                    <p className="text-xs text-gray-600">
+                                                        Вы можете просматривать и управлять подписками ваших учеников в разделе администратора.
+                                                    </p>
+                                                    <button
+                                                        onClick={() => {
+                                                            navigate('/admin')
+                                                            setShowDropdown(false)
+                                                        }}
+                                                        className="mt-2 w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
+                                                    >
+                                                        Перейти в админ-панель
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Developers don't see subscription section */}
 
                                         <button
                                             onClick={() => {

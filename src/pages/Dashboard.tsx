@@ -12,17 +12,13 @@ export const Dashboard = () => {
     const [studentCount, setStudentCount] = useState(0)
     const [hoveredCountry, setHoveredCountry] = useState<string | null>(null)
 
-    const stats = {
-        total: projects.length,
-        inProgress: projects.filter((p) => p.stage !== 'completed').length,
-        completed: projects.filter((p) => p.stage === 'completed').length,
-    }
-
     const recentProjects = projects.slice(-3).reverse()
 
-    // Countries with student data
+    // Cities with student data - Kazakhstan cities
     const countries = [
-        { name: 'Казахстан', lat: 48, lon: 68, students: 243, color: '#fbbf24' },
+        { name: 'Актау', lat: 43.65, lon: 51.2, students: 80, color: '#fbbf24' },      // Aktau - Yellow/Gold
+        { name: 'Алматы', lat: 43.25, lon: 76.95, students: 95, color: '#22c55e' },    // Almaty - Green
+        { name: 'Астана', lat: 51.17, lon: 71.47, students: 68, color: '#3b82f6' },    // Astana - Blue
     ]
 
     // Animated student counter
@@ -46,7 +42,7 @@ export const Dashboard = () => {
         return () => clearInterval(timer)
     }, [])
 
-    // Realistic Earth with continents
+    // Enhanced Realistic Earth with continents
     useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
@@ -83,15 +79,16 @@ export const Dashboard = () => {
 
             ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-            // Outer glow
-            const glowGradient = ctx.createRadialGradient(centerX, centerY, radius, centerX, centerY, radius + 40)
-            glowGradient.addColorStop(0, 'rgba(59, 130, 246, 0)')
-            glowGradient.addColorStop(0.8, 'rgba(59, 130, 246, 0.3)')
-            glowGradient.addColorStop(1, 'rgba(59, 130, 246, 0)')
-            ctx.fillStyle = glowGradient
+            // Outer atmospheric glow - enhanced
+            const atmosphereGradient = ctx.createRadialGradient(centerX, centerY, radius, centerX, centerY, radius + 50)
+            atmosphereGradient.addColorStop(0, 'rgba(59, 130, 246, 0)')
+            atmosphereGradient.addColorStop(0.7, 'rgba(59, 130, 246, 0.4)')
+            atmosphereGradient.addColorStop(0.9, 'rgba(139, 92, 246, 0.3)')
+            atmosphereGradient.addColorStop(1, 'rgba(59, 130, 246, 0)')
+            ctx.fillStyle = atmosphereGradient
             ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-            // Ocean (blue gradient)
+            // Ocean (enhanced blue gradient with depth)
             const oceanGradient = ctx.createRadialGradient(
                 centerX - radius / 3,
                 centerY - radius / 3,
@@ -100,19 +97,27 @@ export const Dashboard = () => {
                 centerY,
                 radius
             )
-            oceanGradient.addColorStop(0, '#3b82f6')
-            oceanGradient.addColorStop(0.5, '#2563eb')
-            oceanGradient.addColorStop(1, '#1e40af')
+            oceanGradient.addColorStop(0, '#60a5fa')
+            oceanGradient.addColorStop(0.3, '#3b82f6')
+            oceanGradient.addColorStop(0.7, '#2563eb')
+            oceanGradient.addColorStop(1, '#1e3a8a')
 
             ctx.beginPath()
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
             ctx.fillStyle = oceanGradient
             ctx.fill()
 
-            // Draw continents (green)
-            ctx.fillStyle = '#22c55e'
-            ctx.strokeStyle = '#16a34a'
-            ctx.lineWidth = 1
+            // Add subtle shadow for 3D effect
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+            ctx.shadowBlur = 20
+            ctx.shadowOffsetX = 5
+            ctx.shadowOffsetY = 5
+
+            // Draw continents (vibrant green with better shading)
+            ctx.fillStyle = '#10b981'
+            ctx.strokeStyle = '#059669'
+            ctx.lineWidth = 1.5
+            ctx.shadowColor = 'transparent'
 
             continents.forEach(continent => {
                 ctx.beginPath()
@@ -139,9 +144,9 @@ export const Dashboard = () => {
                 ctx.stroke()
             })
 
-            // Grid lines (subtle)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
-            ctx.lineWidth = 1
+            // Grid lines (more visible)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'
+            ctx.lineWidth = 0.8
 
             // Latitude lines
             for (let lat = -60; lat <= 60; lat += 30) {
@@ -163,7 +168,7 @@ export const Dashboard = () => {
                 ctx.stroke()
             }
 
-            // Student markers
+            // Enhanced city markers with labels
             countries.forEach((country) => {
                 const adjustedLon = country.lon + rotation
                 const x = centerX + radius * Math.cos(country.lat * Math.PI / 180) * Math.sin(adjustedLon * Math.PI / 180)
@@ -171,32 +176,66 @@ export const Dashboard = () => {
                 const z = radius * Math.cos(country.lat * Math.PI / 180) * Math.cos(adjustedLon * Math.PI / 180)
 
                 if (z > 0) {
-                    const size = 6 + (z / radius) * 4
-                    const opacity = 0.6 + (z / radius) * 0.4
+                    const size = 8 + (z / radius) * 6
+                    const opacity = 0.7 + (z / radius) * 0.3
+                    const pulseSize = Math.sin(Date.now() / 400) * 3
 
-                    // Glow
-                    const pointGradient = ctx.createRadialGradient(x, y, 0, x, y, size * 4)
-                    pointGradient.addColorStop(0, country.color)
-                    pointGradient.addColorStop(1, 'transparent')
-                    ctx.fillStyle = pointGradient
+                    // Connection line from city to edge
+                    ctx.strokeStyle = country.color
+                    ctx.lineWidth = 2
+                    ctx.globalAlpha = opacity * 0.4
                     ctx.beginPath()
-                    ctx.arc(x, y, size * 4, 0, Math.PI * 2)
+                    ctx.moveTo(x, y)
+                    ctx.lineTo(x, y - 40)
+                    ctx.stroke()
+
+                    // Large outer glow
+                    const largeGlow = ctx.createRadialGradient(x, y, 0, x, y, size * 6)
+                    largeGlow.addColorStop(0, country.color)
+                    largeGlow.addColorStop(0.5, country.color + '40')
+                    largeGlow.addColorStop(1, 'transparent')
+                    ctx.fillStyle = largeGlow
+                    ctx.globalAlpha = opacity * 0.6
+                    ctx.beginPath()
+                    ctx.arc(x, y, size * 6, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Point
-                    ctx.fillStyle = country.color
+                    // Main point with gradient
+                    const pointGradient = ctx.createRadialGradient(x, y, 0, x, y, size)
+                    pointGradient.addColorStop(0, '#ffffff')
+                    pointGradient.addColorStop(0.5, country.color)
+                    pointGradient.addColorStop(1, country.color)
+                    ctx.fillStyle = pointGradient
                     ctx.globalAlpha = opacity
                     ctx.beginPath()
                     ctx.arc(x, y, size, 0, Math.PI * 2)
                     ctx.fill()
 
-                    // Pulse ring
-                    ctx.strokeStyle = country.color
-                    ctx.lineWidth = 2
-                    ctx.globalAlpha = opacity * 0.5
+                    // Animated pulse rings
+                    for (let i = 0; i < 2; i++) {
+                        ctx.strokeStyle = country.color
+                        ctx.lineWidth = 3
+                        ctx.globalAlpha = opacity * (0.6 - i * 0.3)
+                        ctx.beginPath()
+                        ctx.arc(x, y, size + pulseSize + i * 8, 0, Math.PI * 2)
+                        ctx.stroke()
+                    }
+
+                    // City label with background
+                    ctx.globalAlpha = opacity
+                    ctx.font = 'bold 12px Inter, sans-serif'
+                    const text = `${country.name} (${country.students})`
+                    const textWidth = ctx.measureText(text).width
+
+                    // Label background
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
                     ctx.beginPath()
-                    ctx.arc(x, y, size + 3 + Math.sin(Date.now() / 500) * 2, 0, Math.PI * 2)
-                    ctx.stroke()
+                    ctx.roundRect(x - textWidth / 2 - 6, y - 55, textWidth + 12, 20, 8)
+                    ctx.fill()
+
+                    // Label text
+                    ctx.fillStyle = country.color
+                    ctx.fillText(text, x - textWidth / 2, y - 42)
 
                     ctx.globalAlpha = 1
                 }
@@ -213,104 +252,78 @@ export const Dashboard = () => {
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Hero Section with Realistic Earth */}
-                <div className="mb-12 relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl p-12">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        {/* Text Content */}
-                        <div className="relative z-10">
-                            <h1 className="text-5xl font-bold text-white mb-4">
-                                Добро пожаловать в EliteHeat
-                            </h1>
-                            <p className="text-2xl text-blue-100 mb-6">
-                                Образовательная платформа, которая объединяет учеников по всему миру
-                            </p>
+                <div className="mb-12 relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl">
+                    {/* Animated background particles */}
+                    <div className="absolute inset-0 opacity-30">
+                        <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                        <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-pink-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+                    </div>
 
-                            {/* Student Counter */}
-                            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 mb-6">
-                                <div className="text-6xl font-bold text-white mb-2">
-                                    {studentCount.toLocaleString()}
-                                </div>
-                                <p className="text-xl text-blue-100">учеников по всему миру 🌍</p>
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center p-12">
+                        {/* Text Content */}
+                        <div className="space-y-6">
+                            <div className="inline-block">
+                                <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold">
+                                    🚀 Образование будущего
+                                </span>
                             </div>
 
-                            {/* Country List */}
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 max-h-48 overflow-y-auto">
-                                <h3 className="text-lg font-bold text-white mb-3">Где учатся наши студенты:</h3>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {countries.map((country) => (
-                                        <div key={country.name} className="flex items-center gap-2 text-white text-sm">
-                                            <div
-                                                className="w-3 h-3 rounded-full animate-pulse"
-                                                style={{ backgroundColor: country.color }}
-                                            />
-                                            <span>{country.name}: <strong>{country.students}</strong></span>
+                            <h1 className="text-6xl font-black text-white leading-tight">
+                                Добро пожаловать в
+                                <span className="block bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
+                                    EliteHeat
+                                </span>
+                            </h1>
+
+                            <p className="text-xl text-blue-100 leading-relaxed">
+                                Платформа нового поколения для обучения и развития.
+                                Создавайте проекты, учитесь с AI и достигайте целей вместе с нами.
+                            </p>
+
+                            {/* Student Counter - Redesigned */}
+                            <div className="relative group">
+                                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                                <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <div className="text-7xl font-black text-white mb-2 tabular-nums">
+                                                {studentCount.toLocaleString()}
+                                            </div>
+                                            <p className="text-lg text-blue-100 font-medium">учеников по всему миру 🌍</p>
                                         </div>
-                                    ))}
+                                        <div className="text-6xl animate-bounce">
+                                            🎓
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Realistic Earth Canvas */}
                         <div className="relative flex items-center justify-center">
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-3xl opacity-30 animate-pulse"></div>
                             <canvas
                                 ref={canvasRef}
-                                className="drop-shadow-2xl"
+                                className="drop-shadow-2xl relative z-10"
                                 style={{ maxWidth: '100%', height: 'auto' }}
                             />
 
-                            {/* Floating Icons */}
+                            {/* Floating Icons - Redesigned */}
                             <div className="absolute inset-0 pointer-events-none">
                                 <div className="absolute top-0 left-1/4 animate-float">
-                                    <div className="text-4xl">📚</div>
+                                    <div className="text-5xl drop-shadow-lg">📚</div>
                                 </div>
                                 <div className="absolute top-1/4 right-0 animate-float-delay-1">
-                                    <div className="text-4xl">🎧</div>
+                                    <div className="text-5xl drop-shadow-lg">🎧</div>
                                 </div>
                                 <div className="absolute bottom-1/4 left-0 animate-float-delay-2">
-                                    <div className="text-4xl">💻</div>
+                                    <div className="text-5xl drop-shadow-lg">💻</div>
                                 </div>
                                 <div className="absolute bottom-0 right-1/4 animate-float-delay-3">
-                                    <div className="text-4xl">🧠</div>
+                                    <div className="text-5xl drop-shadow-lg">🧠</div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-blue-100 hover:scale-105 transition-transform">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-700">Всего проектов</h3>
-                            <div className="p-3 bg-blue-100 rounded-xl">
-                                <FolderKanban className="w-6 h-6 text-blue-600" />
-                            </div>
-                        </div>
-                        <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                            {stats.total}
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-100 hover:scale-105 transition-transform">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-700">В работе</h3>
-                            <div className="p-3 bg-purple-100 rounded-xl">
-                                <TrendingUp className="w-6 h-6 text-purple-600" />
-                            </div>
-                        </div>
-                        <div className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                            {stats.inProgress}
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-100 hover:scale-105 transition-transform">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-700">Завершено</h3>
-                            <div className="p-3 bg-green-100 rounded-xl">
-                                <BarChart3 className="w-6 h-6 text-green-600" />
-                            </div>
-                        </div>
-                        <div className="text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                            {stats.completed}
                         </div>
                     </div>
                 </div>
@@ -323,17 +336,58 @@ export const Dashboard = () => {
                         <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
                     </div>
 
+                    {/* Floating Particles */}
+                    <div className="absolute inset-0 overflow-hidden">
+                        {[...Array(15)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-2 h-2 bg-white rounded-full opacity-30"
+                                style={{
+                                    left: `${Math.random() * 100}%`,
+                                    top: `${Math.random() * 100}%`,
+                                    animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+                                    animationDelay: `${Math.random() * 2}s`
+                                }}
+                            />
+                        ))}
+                    </div>
+
                     <div className="relative z-10">
-                        {/* AI Avatar - Centered at top with fade-in animation */}
+                        {/* AI Avatar - Centered at top with effects */}
                         <div className="flex justify-center mb-8">
-                            <div className="relative animate-fade-in-scale">
-                                <AIAvatar size={180} state="idle" />
+                            <div className="relative group">
+                                {/* Pulsing glow effect */}
+                                <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse group-hover:opacity-75 transition-opacity"></div>
+
+                                {/* Rotating rings */}
+                                <div className="absolute inset-0 animate-spin-slow">
+                                    <div className="absolute inset-0 border-4 border-white/20 rounded-full"></div>
+                                </div>
+                                <div className="absolute inset-4 animate-spin-reverse">
+                                    <div className="absolute inset-0 border-4 border-white/10 rounded-full"></div>
+                                </div>
+
+                                {/* Waving hand animation inside circles */}
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                                    <div className="animate-wave-person">
+                                        <span className="text-6xl">👋</span>
+                                    </div>
+                                </div>
+
+                                {/* Avatar */}
+                                <div className="relative animate-fade-in-scale group-hover:scale-110 transition-transform duration-300 z-20">
+                                    <AIAvatar size={180} state="idle" />
+                                </div>
+
+                                {/* Sparkles around avatar */}
+                                <div className="absolute -top-4 -right-4 text-3xl animate-bounce">✨</div>
+                                <div className="absolute -bottom-4 -left-4 text-3xl animate-bounce" style={{ animationDelay: '0.5s' }}>💫</div>
                             </div>
                         </div>
 
                         {/* Title */}
                         <div className="text-center mb-8">
-                            <h2 className="text-5xl font-bold text-white mb-3">✨ Ellie</h2>
+                            <h2 className="text-5xl font-bold text-white mb-3 animate-pulse">✨ Ellie</h2>
                             <p className="text-blue-100 text-xl">Ваш умный AI-помощник в обучении</p>
                         </div>
 
@@ -391,6 +445,103 @@ export const Dashboard = () => {
 
                         .animate-fade-in-scale {
                             animation: fade-in-scale 1s ease-out;
+                        }
+                        
+                        @keyframes spin-slow {
+                            from { transform: rotate(0deg); }
+                            to { transform: rotate(360deg); }
+                        }
+                        
+                        @keyframes spin-reverse {
+                            from { transform: rotate(360deg); }
+                            to { transform: rotate(0deg); }
+                        }
+                        
+                        @keyframes wave-person {
+                            0% {
+                                opacity: 0;
+                                transform: scale(0) rotate(-20deg);
+                            }
+                            10% {
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            20% {
+                                transform: scale(1) rotate(20deg);
+                            }
+                            30% {
+                                transform: scale(1) rotate(-10deg);
+                            }
+                            40% {
+                                transform: scale(1) rotate(15deg);
+                            }
+                            50% {
+                                transform: scale(1) rotate(0deg);
+                            }
+                            70% {
+                                opacity: 1;
+                                transform: scale(1) rotate(0deg);
+                            }
+                            100% {
+                                opacity: 0;
+                                transform: scale(0) rotate(20deg);
+                            }
+                        }
+                        
+                        @keyframes robot-appear-spin {
+                            0% {
+                                opacity: 0;
+                                transform: scale(0.5) translateY(20px);
+                            }
+                            10% {
+                                opacity: 1;
+                                transform: scale(1.1) translateY(-5px);
+                            }
+                            15% {
+                                transform: scale(1) translateY(0);
+                            }
+                            25% {
+                                transform: scale(1.05) translateY(-3px);
+                            }
+                            30% {
+                                transform: scale(1) translateY(0);
+                            }
+                            40% {
+                                transform: scale(1.05) translateY(-3px);
+                            }
+                            45% {
+                                transform: scale(1) translateY(0);
+                            }
+                            55% {
+                                transform: scale(1.03) translateY(-2px);
+                            }
+                            60% {
+                                transform: scale(1) translateY(0);
+                            }
+                            80% {
+                                opacity: 1;
+                                transform: scale(1) translateY(0);
+                            }
+                            100% {
+                                opacity: 0;
+                                transform: scale(0.5) translateY(20px);
+                            }
+                        }
+                        
+                        .animate-spin-slow {
+                            animation: spin-slow 8s linear infinite;
+                        }
+                        
+                        .animate-spin-reverse {
+                            animation: spin-reverse 6s linear infinite;
+                        }
+                        
+                        .animate-wave-person {
+                            animation: wave-person 6s ease-in-out infinite;
+                        }
+                        
+                        .animate-robot-appear-spin {
+                            animation: robot-appear-spin 8s ease-in-out infinite;
                         }
                     `}</style>
                 </div>
@@ -468,53 +619,100 @@ export const Dashboard = () => {
                 )}
 
                 {/* Quick Actions */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Быстрые действия</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button
-                            onClick={() => navigate('/projects')}
-                            className="p-6 bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-xl transition-all hover:scale-105 text-left"
-                        >
-                            <FolderKanban className="w-8 h-8 mb-3" />
-                            <h3 className="font-bold text-lg mb-1">Мои проекты</h3>
-                            <p className="text-sm text-blue-100">Управляйте проектами</p>
-                        </button>
+                <div className="bg-gradient-to-br from-white via-purple-50 to-blue-50 rounded-2xl shadow-xl p-8 relative overflow-hidden">
+                    {/* Floating decorative circles */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-10 left-10 w-32 h-32 bg-purple-300 rounded-full opacity-20 blur-2xl animate-float"></div>
+                        <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-300 rounded-full opacity-20 blur-2xl animate-float-delay-1"></div>
+                        <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-pink-300 rounded-full opacity-20 blur-2xl animate-float-delay-2"></div>
+                    </div>
 
-                        <button
-                            onClick={() => navigate('/tasks')}
-                            className="p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl hover:shadow-xl transition-all hover:scale-105 text-left"
-                        >
-                            <BookOpen className="w-8 h-8 mb-3" />
-                            <h3 className="font-bold text-lg mb-1">Курсы</h3>
-                            <p className="text-sm text-purple-100">Обучение и развитие</p>
-                        </button>
+                    <div className="relative z-10">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+                            <span className="text-4xl animate-bounce">🚀</span>
+                            Быстрые действия
+                        </h2>
+                        <p className="text-gray-600 mb-6">Выберите, чем хотите заняться</p>
 
-                        <button
-                            onClick={() => navigate('/progress')}
-                            className="p-6 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-xl transition-all hover:scale-105 text-left"
-                        >
-                            <TrendingUp className="w-8 h-8 mb-3" />
-                            <h3 className="font-bold text-lg mb-1">Трекер прогресса</h3>
-                            <p className="text-sm text-green-100">Отслеживайте успехи</p>
-                        </button>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <button
+                                onClick={() => navigate('/projects')}
+                                className="group p-6 bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
+                                style={{ animationDelay: '0.1s' }}
+                            >
+                                {/* Hover glow effect */}
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
 
-                        <button
-                            onClick={() => navigate('/ai-assistant')}
-                            className="p-6 bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-xl hover:shadow-xl transition-all hover:scale-105 text-left"
-                        >
-                            <Bot className="w-8 h-8 mb-3" />
-                            <h3 className="font-bold text-lg mb-1">AI Помощник</h3>
-                            <p className="text-sm text-orange-100">Умный ассистент</p>
-                        </button>
+                                {/* Pulsing circle */}
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
 
-                        <button
-                            onClick={() => navigate('/analyzer')}
-                            className="p-6 bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-xl hover:shadow-xl transition-all hover:scale-105 text-left"
-                        >
-                            <BarChart3 className="w-8 h-8 mb-3" />
-                            <h3 className="font-bold text-lg mb-1">Анализ презентаций</h3>
-                            <p className="text-sm text-yellow-100">Улучшайте навыки</p>
-                        </button>
+                                <div className="relative z-10">
+                                    <FolderKanban className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
+                                    <h3 className="font-bold text-xl mb-2">Мои проекты</h3>
+                                    <p className="text-sm text-blue-100">Управляйте проектами</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => navigate('/tasks')}
+                                className="group p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
+                                style={{ animationDelay: '0.2s' }}
+                            >
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+
+                                <div className="relative z-10">
+                                    <BookOpen className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
+                                    <h3 className="font-bold text-xl mb-2">Курсы</h3>
+                                    <p className="text-sm text-purple-100">Обучение и развитие</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => navigate('/progress')}
+                                className="group p-6 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
+                                style={{ animationDelay: '0.3s' }}
+                            >
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+
+                                <div className="relative z-10">
+                                    <TrendingUp className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
+                                    <h3 className="font-bold text-xl mb-2">Трекер прогресса</h3>
+                                    <p className="text-sm text-green-100">Отслеживайте успехи</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => navigate('/ai-assistant')}
+                                className="group p-6 bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
+                                style={{ animationDelay: '0.4s' }}
+                            >
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+
+                                <div className="relative z-10">
+                                    <Bot className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
+                                    <h3 className="font-bold text-xl mb-2">AI Помощник</h3>
+                                    <p className="text-sm text-orange-100">Умный ассистент</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => navigate('/analyzer')}
+                                className="group p-6 bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
+                                style={{ animationDelay: '0.5s' }}
+                            >
+                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+
+                                <div className="relative z-10">
+                                    <BarChart3 className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
+                                    <h3 className="font-bold text-xl mb-2">Анализ презентаций</h3>
+                                    <p className="text-sm text-yellow-100">Улучшайте навыки</p>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -529,8 +727,21 @@ export const Dashboard = () => {
                         transform: translateY(-20px);
                     }
                 }
+                @keyframes fade-in-up {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
                 .animate-float {
                     animation: float 3s ease-in-out infinite;
+                }
+                .animate-fade-in-up {
+                    animation: fade-in-up 0.6s ease-out backwards;
                 }
                 .animate-float-delay-1 {
                     animation: float 3s ease-in-out infinite;

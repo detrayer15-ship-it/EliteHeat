@@ -1,14 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import {
-    getSubscriptionInfo,
-    formatExpiryDate,
-    formatDaysRemaining,
-    getSubscriptionTypeLabel,
-    calculateProgress,
-    type SubscriptionType
-} from '@/utils/subscription'
 import { EliteHeatLogo } from '@/components/ui/EliteHeatLogo'
 
 const navItems = [
@@ -24,13 +16,6 @@ export const Sidebar = () => {
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
     const [isOpen, setIsOpen] = useState(false)
-
-    // TODO: Get from user data - for now using 'monthly' as default
-    const subscriptionType: SubscriptionType = 'monthly'
-    const subscriptionStartDate = new Date('2026-01-01')
-
-    const subscriptionInfo = getSubscriptionInfo(subscriptionType, subscriptionStartDate)
-    const progress = calculateProgress(subscriptionInfo.startDate, subscriptionInfo.expiryDate)
 
     return (
         <>
@@ -208,66 +193,16 @@ export const Sidebar = () => {
                     </ul>
                 </nav>
 
-                {/* User Profile */}
+                {/* User Profile - Minimal */}
                 <div className="p-4 border-t border-gray-200 bg-white">
                     {user ? (
-                        <div className="space-y-3">
-                            {/* User Info */}
-                            <div className="flex items-center gap-3 pb-3 border-b border-gray-200">
-                                <div className="w-10 h-10 bg-gradient-to-br from-primary to-ai-blue rounded-full flex items-center justify-center text-white font-bold">
-                                    {user.name.charAt(0).toUpperCase()}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-text truncate">{user.name}</p>
-                                    <p className="text-xs text-gray-600 truncate">{user.email}</p>
-                                </div>
-                            </div>
-
-                            {/* Subscription Info (Read-only) */}
-                            <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-lg">💎</span>
-                                    <p className="text-xs font-semibold text-purple-700">Подписка</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-gray-700">
-                                        <span className="font-medium">Тип:</span> {getSubscriptionTypeLabel(subscriptionInfo.type)}
-                                    </p>
-                                    <p className="text-xs text-gray-700">
-                                        <span className="font-medium">Активна до:</span> <span className="font-bold text-purple-700">{formatExpiryDate(subscriptionInfo.expiryDate)}</span>
-                                    </p>
-                                    <p className="text-xs text-gray-700">
-                                        <span className="font-medium">Осталось:</span> <span className="font-bold text-green-600">{formatDaysRemaining(subscriptionInfo.daysRemaining)}</span>
-                                    </p>
-                                </div>
-                                {/* Progress bar */}
-                                <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
-                                    <div
-                                        className="bg-gradient-to-r from-purple-600 to-pink-600 h-1.5 rounded-full transition-all"
-                                        style={{ width: `${progress}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-
-                            {/* About Link */}
-                            <Link
-                                to="/about"
-                                onClick={() => setIsOpen(false)}
-                                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                                <span>ℹ️</span>
-                                <span>О нас</span>
-                            </Link>
-
-                            {/* Logout Button */}
-                            <button
-                                onClick={logout}
-                                className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-smooth flex items-center justify-center gap-2"
-                            >
-                                <span>🚪</span>
-                                Выйти
-                            </button>
-                        </div>
+                        <button
+                            onClick={logout}
+                            className="w-full px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-xl font-medium transition-all hover:shadow-lg flex items-center justify-center gap-2"
+                        >
+                            <span>🚪</span>
+                            Выйти
+                        </button>
                     ) : (
                         <Link
                             to="/login"
