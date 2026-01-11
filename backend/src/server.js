@@ -11,6 +11,7 @@ import { limiter } from './middleware/rateLimiter.js'
 import authRoutes from './routes/auth.routes.js'
 import adminRoutes from './routes/admin.routes.js'
 import chatRoutes from './routes/chat.routes.js'
+import aiRoutes from './routes/ai.routes.js'
 
 // Load env vars
 dotenv.config()
@@ -41,6 +42,7 @@ app.use('/api/', limiter)
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/chat', chatRoutes)
+app.use('/api/ai', aiRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

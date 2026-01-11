@@ -1,87 +1,96 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+// Backend API URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-// API ключ Gemini из переменных окружения
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-
-// Проверка наличия API ключа
-if (!API_KEY) {
-    console.error('❌ VITE_GEMINI_API_KEY не найден в .env.local файле!')
-    console.warn('⚠️ Gemini AI будет работать в режиме fallback (без реального AI)')
-}
-
-// Инициализация Gemini AI
-const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null
-
-// Используем актуальную модель (gemini-pro устарела)
-const WORKING_MODEL = 'gemini-1.5-flash'
+// Session ID management
+const SESSION_ID_KEY = 'eliteheat_ai_session_id'
 
 /**
- * Отправка текстового запроса к Gemini AI
+ * Get or create session ID
+ */
+export function getSessionId(): string {
+    let sessionId = localStorage.getItem(SESSION_ID_KEY)
+
+    if (!sessionId) {
+        sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`
+        localStorage.setItem(SESSION_ID_KEY, sessionId)
+    }
+
+    return sessionId
+}
+
+/**
+ * Clear session ID (for new chat)
+ */
+export function clearSessionId(): void {
+    localStorage.removeItem(SESSION_ID_KEY)
+}
+
+/**
+ * Отправка текстового запроса к AI через backend с session_id
  */
 export async function sendTextMessage(message: string): Promise<string> {
     try {
-        // Проверка наличия API ключа
-        if (!genAI) {
-            console.warn('⚠️ Gemini API недоступен, используем fallback')
-            return getFallbackResponse(message)
-        }
+        const session_id = getSessionId()
 
-        const model = genAI.getGenerativeModel({
-            model: WORKING_MODEL,
+        const response = await fetch(`${API_URL}/api/ai/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message, session_id })
         })
 
-        const prompt = `Ты - умный AI-помощник образовательной платформы EliteHeat. 
+        const data = await response.json()
 
-Ты эксперт во всех областях и можешь помочь с:
-- 💻 Программирование (Python, JavaScript, HTML, CSS, React, Node.js, любые языки)
-- 🎨 Дизайн (Figma, UI/UX, графический дизайн)
-- 📊 Анализ данных и математика
-- 🌐 Веб-разработка (frontend, backend, базы данных)
-- 📱 Мобильная разработка
-- 🤖 Искусственный интеллект и машинное обучение
-- 📝 Написание текстов и презентаций
-- 🔧 Отладка кода и поиск ошибок
-- 💡 Генерация идей для проектов
-- 📚 Объяснение любых концепций простым языком
-- ❓ Ответы на ЛЮБЫЕ вопросы студента
+        if (!response.ok) {
+            throw new Error(data.error || 'Ошибка AI')
+        }
 
-Твой стиль общения:
-- Дружелюбный и понятный
-- Конкретный и полезный
-- С примерами кода когда нужно
-- На русском языке
-- Помогаешь студенту ДУМАТЬ, а не просто даёшь ответы
-
-Если студент спрашивает что-то вне программирования - тоже помогай!
-
-Вопрос студента: ${message}`
-
-        const result = await model.generateContent(prompt)
-        const response = await result.response
-        return response.text()
+        return data.reply
     } catch (error: any) {
-        console.error('Gemini API Error:', error)
+        console.error('AI API Error:', error)
 
-        // Если модель не найдена, используем fallback
-        if (error?.message?.includes('not found') || error?.message?.includes('404')) {
+        // Fallback response if backend is unavailable
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
             return getFallbackResponse(message)
         }
 
-        // Детальная обработка других ошибок
-        if (error?.message?.includes('API_KEY_INVALID')) {
-            throw new Error('❌ API ключ недействителен')
-        }
+        throw error
+    }
+}
 
-        if (error?.message?.includes('PERMISSION_DENIED') || error?.message?.includes('403')) {
-            throw new Error('❌ Доступ запрещён. Проверьте права доступа API ключа.')
-        }
+/**
+ * Clear session history
+ */
+export async function clearSessionHistory(): Promise<void> {
+    try {
+        const session_id = getSessionId()
 
-        if (error?.message?.includes('RESOURCE_EXHAUSTED') || error?.message?.includes('429')) {
-            throw new Error('⏱️ Превышен лимит запросов. Подождите немного.')
-        }
+        await fetch(`${API_URL}/api/ai/session/${session_id}`, {
+            method: 'DELETE',
+        })
 
-        // Если другая ошибка - используем fallback
-        return getFallbackResponse(message)
+        // Create new session
+        clearSessionId()
+    } catch (error) {
+        console.error('Clear Session Error:', error)
+    }
+}
+
+/**
+ * Get session history
+ */
+export async function getSessionHistory(): Promise<Array<{ role: string, content: string }>> {
+    try {
+        const session_id = getSessionId()
+
+        const response = await fetch(`${API_URL}/api/ai/session/${session_id}/history`)
+        const data = await response.json()
+
+        return data.history || []
+    } catch (error) {
+        console.error('Get History Error:', error)
+        return []
     }
 }
 
@@ -186,57 +195,15 @@ function Counter() {
 }
 
 /**
- * Отправка изображения с текстом к Gemini AI
+ * Отправка изображения с текстом к AI
+ * Note: Image analysis currently not implemented in backend
  */
 export async function sendImageMessage(
     message: string,
     imageBase64: string
 ): Promise<string> {
-    try {
-        // Проверка наличия API ключа
-        if (!genAI) {
-            return `🖼️ **Анализ изображений**
-
-Функция анализа изображений недоступна (нет API ключа).
-
-**Что можно сделать:**
-1. Добавьте VITE_GEMINI_API_KEY в .env.local
-2. Опишите что на изображении текстом
-3. Скопируйте код с изображения
-
-Я помогу на основе описания!`
-        }
-
-        const model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash', // gemini-pro-vision устарела
-        })
-
-        const mimeType = imageBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg'
-        const base64Data = imageBase64.split(',')[1]
-
-        const imagePart = {
-            inlineData: {
-                data: base64Data,
-                mimeType: mimeType
-            }
-        }
-
-        const prompt = message || `Проанализируй это изображение детально:
-
-1. Если это код - найди все ошибки и предложи исправления
-2. Если это дизайн - дай рекомендации по улучшению
-3. Если это задание или задача - помоги решить её пошагово
-4. Если это скриншот ошибки - объясни причину и как исправить
-
-Отвечай на русском языке подробно и понятно.`
-
-        const result = await model.generateContent([prompt, imagePart])
-        const response = await result.response
-        return response.text()
-    } catch (error: any) {
-        console.error('Gemini Vision API Error:', error)
-
-        return `🖼️ **Анализ изображений**
+    // TODO: Implement image analysis endpoint in backend
+    return `🖼️ **Анализ изображений**
 
 Функция анализа изображений временно недоступна.
 
@@ -246,7 +213,6 @@ export async function sendImageMessage(
 3. Задайте вопрос о содержимом
 
 Я помогу на основе описания!`
-    }
 }
 
 /**
@@ -290,17 +256,11 @@ export async function helpWithPresentation(topic: string, details: string): Prom
  */
 export async function checkAPIStatus(): Promise<boolean> {
     try {
-        if (!genAI) {
-            console.warn('⚠️ Gemini API недоступен (нет API ключа)')
-            return true // Возвращаем true чтобы показать что fallback работает
-        }
-
-        const model = genAI.getGenerativeModel({ model: WORKING_MODEL })
-        const result = await model.generateContent('Test')
-        await result.response
-        return true
+        const response = await fetch(`${API_URL}/api/ai/status`)
+        const data = await response.json()
+        return data.success && data.available
     } catch (error) {
         console.error('API Status Check Failed:', error)
-        return true // Возвращаем true чтобы показать что fallback работает
+        return false
     }
 }

@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes.memory.js'
 import adminRoutes from './routes/admin.routes.memory.js'
 import submissionsRoutes from './routes/submissions.routes.memory.js'
 import chatRoutes from './routes/chat.routes.memory.js'
+import aiRoutes from './routes/ai.routes.js'
 
 // Load env vars
 dotenv.config()
@@ -53,6 +54,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/submissions', submissionsRoutes)
 app.use('/api/chats', chatRoutes)
+app.use('/api/ai', aiRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

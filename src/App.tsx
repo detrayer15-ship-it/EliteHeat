@@ -16,6 +16,7 @@ import { RegisterPage } from './pages/RegisterPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { ProfileEditPage } from './pages/ProfileEditPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
+import { AboutPage } from './pages/AboutPage'
 import { LocationsPage } from './pages/LocationsPage'
 import { PaymentPage } from './pages/PaymentPage'
 import { AdminDashboardPage } from './pages/AdminDashboardPage'
@@ -278,6 +279,16 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <ProfileEditPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/about"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AboutPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

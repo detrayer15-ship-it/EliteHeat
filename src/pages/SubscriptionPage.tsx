@@ -78,10 +78,17 @@ export const SubscriptionPage = () => {
                     <div className="container mx-auto px-4 py-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                                    EliteHeat
+                                <img
+                                    src="/eliteheat-logo.png"
+                                    alt="EliteHeat"
+                                    className="w-12 h-12 object-contain"
+                                />
+                                <div>
+                                    <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                        EliteHeat
+                                    </div>
+                                    <div className="hidden md:block text-sm text-gray-600">Образовательная платформа</div>
                                 </div>
-                                <div className="hidden md:block text-sm text-gray-600">Образовательная платформа</div>
                             </div>
                             <div className="flex gap-3">
                                 <Button variant="ghost" onClick={() => navigate('/')}>
@@ -232,10 +239,14 @@ export const SubscriptionPage = () => {
                                 </div>
                             </div>
                             <div className="flex gap-4 items-start">
-                                <div className="text-4xl">🤖</div>
+                                <img
+                                    src="/ellie-logo.png"
+                                    alt="Ellie"
+                                    className="w-12 h-12 object-contain"
+                                />
                                 <div>
-                                    <div className="font-bold text-lg mb-1">AI-помощник</div>
-                                    <div className="text-sm text-gray-600">Персональный помощник 24/7</div>
+                                    <div className="font-bold text-lg mb-1">Ellie</div>
+                                    <div className="text-sm text-gray-600">Персональный AI помощник 24/7</div>
                                 </div>
                             </div>
                             <div className="flex gap-4 items-start">

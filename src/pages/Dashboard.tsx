@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useProjectStore } from '@/store/projectStore'
 import { useNavigate } from 'react-router-dom'
 import { ProjectCreationChat } from '@/components/project/ProjectCreationChat'
+import { AIAvatar } from '@/components/ui/AIAvatar'
 import { Sparkles, FolderKanban, BookOpen, TrendingUp, Bot, BarChart3 } from 'lucide-react'
 
 export const Dashboard = () => {
@@ -201,7 +202,7 @@ export const Dashboard = () => {
                 }
             })
 
-            rotation += 0.15
+            rotation += 0.05
         }
 
         const interval = setInterval(drawEarth, 1000 / 60)
@@ -216,12 +217,9 @@ export const Dashboard = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                         {/* Text Content */}
                         <div className="relative z-10">
-                            <div className="flex items-center gap-3 mb-4">
-                                <Sparkles className="w-12 h-12 text-yellow-300 animate-pulse" />
-                                <h1 className="text-5xl font-bold text-white">
-                                    Добро пожаловать в EliteHeat
-                                </h1>
-                            </div>
+                            <h1 className="text-5xl font-bold text-white mb-4">
+                                Добро пожаловать в EliteHeat
+                            </h1>
                             <p className="text-2xl text-blue-100 mb-6">
                                 Образовательная платформа, которая объединяет учеников по всему миру
                             </p>
@@ -317,93 +315,115 @@ export const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Gamification Widget */}
-                <div className="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 rounded-2xl shadow-xl p-6 mb-12 border-2 border-yellow-200">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                            <span className="text-3xl">🏆</span>
-                            Твой прогресс
+                {/* Ellie AI Showcase */}
+                <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl p-8 mb-12 relative overflow-hidden">
+                    {/* Animated background */}
+                    <div className="absolute inset-0 opacity-20">
+                        <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                    </div>
+
+                    <div className="relative z-10">
+                        {/* AI Avatar - Centered at top with fade-in animation */}
+                        <div className="flex justify-center mb-8">
+                            <div className="relative animate-fade-in-scale">
+                                <AIAvatar size={180} state="idle" />
+                            </div>
+                        </div>
+
+                        {/* Title */}
+                        <div className="text-center mb-8">
+                            <h2 className="text-5xl font-bold text-white mb-3">✨ Ellie</h2>
+                            <p className="text-blue-100 text-xl">Ваш умный AI-помощник в обучении</p>
+                        </div>
+
+                        {/* Features Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 hover:bg-white/30 transition-all">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-3xl">💬</span>
+                                    <span className="text-white text-lg">Отвечает на любые вопросы</span>
+                                </div>
+                            </div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 hover:bg-white/30 transition-all">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-3xl">🎯</span>
+                                    <span className="text-white text-lg">Помогает с проектами</span>
+                                </div>
+                            </div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 hover:bg-white/30 transition-all">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-3xl">🔧</span>
+                                    <span className="text-white text-lg">Находит ошибки в коде</span>
+                                </div>
+                            </div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 hover:bg-white/30 transition-all">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-3xl">📚</span>
+                                    <span className="text-white text-lg">Объясняет сложные темы</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* CTA Button */}
+                        <div className="text-center">
+                            <button
+                                onClick={() => navigate('/ai-assistant')}
+                                className="bg-white text-purple-600 px-10 py-4 rounded-xl font-bold text-xl hover:shadow-2xl transition-all hover:scale-105 inline-flex items-center justify-center gap-3"
+                            >
+                                <Bot className="w-7 h-7" />
+                                Попробовать AI прямо сейчас →
+                            </button>
+                        </div>
+                    </div>
+
+                    <style>{`
+                        @keyframes fade-in-scale {
+                            from {
+                                opacity: 0;
+                                transform: scale(0.8);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: scale(1);
+                            }
+                        }
+
+                        .animate-fade-in-scale {
+                            animation: fade-in-scale 1s ease-out;
+                        }
+                    `}</style>
+                </div>
+
+                {/* Project Statistics */}
+                <div className="mb-12">
+                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-xl p-8 text-white">
+                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                            <FolderKanban className="w-6 h-6" />
+                            Статистика проектов
                         </h2>
-                        <button
-                            onClick={() => navigate('/student/achievements')}
-                            className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-xl font-medium hover:shadow-lg transition-all hover:scale-105"
-                        >
-                            Все достижения →
-                        </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Уровень */}
-                        <div className="bg-white rounded-xl p-6 shadow-md">
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="text-4xl">💻</span>
-                                <div>
-                                    <div className="text-sm text-gray-600">Уровень</div>
-                                    <div className="text-xl font-bold text-purple-600">Практик</div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-white/80 text-sm">Всего проектов</span>
+                                    <span className="text-3xl">📁</span>
                                 </div>
+                                <p className="text-4xl font-bold">{projects.length}</p>
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-2">1250 XP</div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500" style={{ width: '83%' }} />
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">До Эксперта: 250 XP</div>
-                        </div>
-
-                        {/* Streak */}
-                        <div className="bg-white rounded-xl p-6 shadow-md">
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="text-4xl animate-pulse">🔥</span>
-                                <div>
-                                    <div className="text-sm text-gray-600">Серия</div>
-                                    <div className="text-xl font-bold text-orange-600">12 дней подряд</div>
+                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-white/80 text-sm">В работе</span>
+                                    <span className="text-3xl">⚡</span>
                                 </div>
+                                <p className="text-4xl font-bold">{projects.filter(p => p.status === 'active').length}</p>
                             </div>
-                            <div className="text-sm text-gray-700 mb-2">Невероятно! Так держать!</div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-red-500" style={{ width: '40%' }} />
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">До месяца: 18 дней</div>
-                        </div>
-
-                        {/* Достижения */}
-                        <div className="bg-white rounded-xl p-6 shadow-md">
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="text-4xl">🎖️</span>
-                                <div>
-                                    <div className="text-sm text-gray-600">Достижения</div>
-                                    <div className="text-xl font-bold text-blue-600">4 из 14</div>
+                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-white/80 text-sm">Завершено</span>
+                                    <span className="text-3xl">✅</span>
                                 </div>
+                                <p className="text-4xl font-bold">{projects.filter(p => p.status === 'completed').length}</p>
                             </div>
-                            <div className="flex gap-2 mb-2">
-                                <span className="text-2xl">📖</span>
-                                <span className="text-2xl">🥇</span>
-                                <span className="text-2xl">🔥</span>
-                                <span className="text-2xl">👨‍🏫</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500" style={{ width: '28%' }} />
-                            </div>
-                            <div className="text-xs text-gray-500 mt-1">28% завершено</div>
-                        </div>
-                    </div>
-
-                    {/* Следующее достижение */}
-                    <div className="mt-6 bg-white rounded-xl p-4 border-2 border-yellow-300">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <span className="text-3xl">🤖</span>
-                                <div>
-                                    <div className="font-bold text-gray-900">Близко к получению: AI Мастер</div>
-                                    <div className="text-sm text-gray-600">50 запросов к AI</div>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-2xl font-bold text-blue-600">90%</div>
-                                <div className="text-xs text-gray-500">45/50</div>
-                            </div>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                            <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500" style={{ width: '90%' }} />
                         </div>
                     </div>
                 </div>
@@ -561,64 +581,7 @@ export const Dashboard = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Описание AI-помощника */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 md:p-6 border-2 border-blue-200 mb-6">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="text-3xl md:text-4xl">🤖</div>
-                    <h2 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        AI-помощник в IdeaMarket
-                    </h2>
-                </div>
-
-                <p className="text-sm md:text-base text-gray-700 mb-4 leading-relaxed">
-                    В IdeaMarket подключён умный AI-помощник, который помогает ученикам создавать и улучшать свои проекты.
-                </p>
-
-                <div className="bg-white rounded-lg p-4 mb-4">
-                    <h3 className="font-bold mb-3 text-base md:text-lg">Что делает AI:</h3>
-                    <ul className="space-y-2 text-sm md:text-base text-gray-700">
-                        <li className="flex items-start gap-2">
-                            <span className="text-blue-500 mt-1 text-xl">•</span>
-                            <span>помогает создать проект с нуля по краткому описанию идеи</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-blue-500 mt-1 text-xl">•</span>
-                            <div>
-                                <span>автоматически формирует:</span>
-                                <ul className="ml-6 mt-1 space-y-1 text-sm">
-                                    <li>- название проекта</li>
-                                    <li>- проблему</li>
-                                    <li>- решение</li>
-                                    <li>- для кого проект</li>
-                                    <li>- короткий pitch</li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-blue-500 mt-1 text-xl">•</span>
-                            <span>улучшает и проверяет тексты, чтобы они были понятны учителям и менторам</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg p-4 mb-4">
-                    <p className="text-sm md:text-base text-gray-700 italic text-center">
-                        <strong>AI не заменяет ученика</strong> — он помогает думать, структурировать и развивать идею, как настоящий наставник.
-                    </p>
-                </div>
-
-                <div className="bg-white rounded-lg p-4 text-center">
-                    <p className="font-bold text-sm md:text-lg">
-                        👉 Всё просто:
-                        <span className="text-blue-600 mx-1 md:mx-2">Идея</span>
-                        →
-                        <span className="text-purple-600 mx-1 md:mx-2">AI</span>
-                        →
-                        <span className="text-green-600 mx-1 md:mx-2">Готовый мини-стартап</span>
-                    </p>
-                </div>
-            </div>
         </div>
+
     )
 }

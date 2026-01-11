@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/Button'
 import { useAIAssistant } from '@/hooks/useAIAssistant'
 import { useAIContext } from '@/store/aiContextStore'
 import { useProjectStore } from '@/store/projectStore'
-import { sendImageMessage, checkAPIStatus } from '@/api/gemini'
+import { sendImageMessage, checkAPIStatus, clearSessionHistory } from '@/api/gemini'
 import { Sparkles, Image as ImageIcon, Lightbulb, Code, BookOpen, Zap, Trash2, Send } from 'lucide-react'
 
 export const AIAssistantPage = () => {
@@ -121,7 +121,11 @@ export const AIAssistantPage = () => {
         }
     }
 
-    const handleNewChat = () => {
+    const handleNewChat = async () => {
+        // Clear backend session
+        await clearSessionHistory()
+
+        // Clear frontend state
         clearConversation()
         startConversation('New AI Chat')
         setShowSuggestions(true)
@@ -139,7 +143,7 @@ export const AIAssistantPage = () => {
                             </div>
                             <div>
                                 <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                                    AI Помощник
+                                    Ellie
                                 </h1>
                                 <p className="text-gray-600">
                                     {apiStatus === null ? 'Проверка...' : apiStatus ? '🟢 Онлайн' : '🔴 Оффлайн'}
@@ -148,9 +152,10 @@ export const AIAssistantPage = () => {
                         </div>
                         <button
                             onClick={handleNewChat}
-                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all flex items-center gap-2"
                         >
-                            Новый чат
+                            <Trash2 className="w-5 h-5" />
+                            Очистить диалог
                         </button>
                     </div>
                 </div>
@@ -165,7 +170,7 @@ export const AIAssistantPage = () => {
                                 <div className="text-center py-8">
                                     <div className="text-6xl mb-4">🤖</div>
                                     <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                                        Привет! Я твой AI помощник
+                                        Привет! Я Ellie, твой AI помощник
                                     </h2>
                                     <p className="text-gray-600">
                                         Задай мне любой вопрос или выбери один из вариантов ниже
@@ -217,12 +222,12 @@ export const AIAssistantPage = () => {
                                     >
                                         <div
                                             className={`max-w-[80%] p-4 rounded-xl ${msg.role === 'user'
-                                                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
-                                                    : 'bg-gray-100 text-gray-900'
+                                                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                                                : 'bg-gray-100 text-gray-900'
                                                 }`}
                                         >
                                             <div className="text-sm font-medium mb-1">
-                                                {msg.role === 'user' ? 'Вы' : '🤖 AI Помощник'}
+                                                {msg.role === 'user' ? 'Вы' : '🤖 Ellie'}
                                             </div>
                                             <div className="whitespace-pre-wrap">{msg.content}</div>
                                         </div>
@@ -282,7 +287,7 @@ export const AIAssistantPage = () => {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                                placeholder="Задайте вопрос AI помощнику..."
+                                placeholder="Задайте вопрос Ellie..."
                                 className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
                             <button

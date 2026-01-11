@@ -1,14 +1,21 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import {
+    getSubscriptionInfo,
+    formatExpiryDate,
+    formatDaysRemaining,
+    getSubscriptionTypeLabel,
+    calculateProgress,
+    type SubscriptionType
+} from '@/utils/subscription'
 import { EliteHeatLogo } from '@/components/ui/EliteHeatLogo'
 
 const navItems = [
     { path: '/dashboard', label: 'Главная', icon: '🏠' },
     { path: '/projects', label: 'Проекты', icon: '📁' },
     { path: '/tasks', label: 'Курсы', icon: '🎓' },
-    { path: '/progress', label: 'Трекер Прогресса', icon: '📊' },
-    { path: '/ai-assistant', label: 'AI Помощник', icon: '✨' },
+    { path: '/ai-assistant', label: 'Ellie', icon: '✨' },
     { path: '/settings', label: 'Настройки', icon: '⚙️' },
 ]
 
@@ -17,6 +24,13 @@ export const Sidebar = () => {
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
     const [isOpen, setIsOpen] = useState(false)
+
+    // TODO: Get from user data - for now using 'monthly' as default
+    const subscriptionType: SubscriptionType = 'monthly'
+    const subscriptionStartDate = new Date('2026-01-01')
+
+    const subscriptionInfo = getSubscriptionInfo(subscriptionType, subscriptionStartDate)
+    const progress = calculateProgress(subscriptionInfo.startDate, subscriptionInfo.expiryDate)
 
     return (
         <>
@@ -100,25 +114,6 @@ export const Sidebar = () => {
                                 <span className="font-medium">Связаться с ментором</span>
                             </Link>
                         )}
-
-                        {/* Достижения - только для учеников */}
-                        {user?.role === 'student' && (
-                            <Link
-                                to="/student/achievements"
-                                onClick={() => setIsOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-1 transition-all duration-300 group ${location.pathname === '/student/achievements'
-                                    ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg transform scale-105'
-                                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-yellow-50 hover:to-orange-100 hover:shadow-md hover:scale-105'
-                                    }`}
-                            >
-                                <span className={`text-xl transition-transform duration-300 ${location.pathname === '/student/achievements' ? 'animate-bounce' : 'group-hover:scale-125'}`}>🏆</span>
-                                <span className="font-medium">Достижения</span>
-                                {location.pathname === '/student/achievements' && (
-                                    <span className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
-                                )}
-                            </Link>
-                        )}
-
 
 
                         {/* Чаты - для админов и разработчиков */}
@@ -217,7 +212,8 @@ export const Sidebar = () => {
                 <div className="p-4 border-t border-gray-200 bg-white">
                     {user ? (
                         <div className="space-y-3">
-                            <div className="flex items-center gap-3">
+                            {/* User Info */}
+                            <div className="flex items-center gap-3 pb-3 border-b border-gray-200">
                                 <div className="w-10 h-10 bg-gradient-to-br from-primary to-ai-blue rounded-full flex items-center justify-center text-white font-bold">
                                     {user.name.charAt(0).toUpperCase()}
                                 </div>
@@ -226,10 +222,49 @@ export const Sidebar = () => {
                                     <p className="text-xs text-gray-600 truncate">{user.email}</p>
                                 </div>
                             </div>
+
+                            {/* Subscription Info (Read-only) */}
+                            <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-lg">💎</span>
+                                    <p className="text-xs font-semibold text-purple-700">Подписка</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-xs text-gray-700">
+                                        <span className="font-medium">Тип:</span> {getSubscriptionTypeLabel(subscriptionInfo.type)}
+                                    </p>
+                                    <p className="text-xs text-gray-700">
+                                        <span className="font-medium">Активна до:</span> <span className="font-bold text-purple-700">{formatExpiryDate(subscriptionInfo.expiryDate)}</span>
+                                    </p>
+                                    <p className="text-xs text-gray-700">
+                                        <span className="font-medium">Осталось:</span> <span className="font-bold text-green-600">{formatDaysRemaining(subscriptionInfo.daysRemaining)}</span>
+                                    </p>
+                                </div>
+                                {/* Progress bar */}
+                                <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                                    <div
+                                        className="bg-gradient-to-r from-purple-600 to-pink-600 h-1.5 rounded-full transition-all"
+                                        style={{ width: `${progress}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+
+                            {/* About Link */}
+                            <Link
+                                to="/about"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                <span>ℹ️</span>
+                                <span>О нас</span>
+                            </Link>
+
+                            {/* Logout Button */}
                             <button
                                 onClick={logout}
-                                className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-smooth"
+                                className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-smooth flex items-center justify-center gap-2"
                             >
+                                <span>🚪</span>
                                 Выйти
                             </button>
                         </div>
