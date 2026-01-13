@@ -16,8 +16,10 @@ import aiRoutes from './routes/ai.routes.js'
 // Load env vars
 dotenv.config()
 
-// Connect to database
-connectDB()
+// Connect to database (optional - not needed for AI Assistant)
+// MongoDB is only used for auth, chat, and submissions
+// AI Assistant uses Firebase Firestore
+// connectDB()
 
 // Create Express app
 const app = express()
@@ -82,7 +84,7 @@ server.listen(PORT, () => {
 ║                                                       ║
 ║   📡 Server running on port ${PORT}                     ║
 ║   🌍 Environment: ${process.env.NODE_ENV || 'development'}                    ║
-║   💾 Database: Connected                             ║
+║   🤖 AI Assistant: Ready (Firestore)                 ║
 ║   🔌 Socket.io: Active                               ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝

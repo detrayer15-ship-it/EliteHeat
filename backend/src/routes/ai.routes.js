@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { sendAIMessage, clearSession, getSessionHistory, checkAIStatus } from '../controllers/ai.controller.js';
+import { sendAIMessage, sendAIChatMessage, clearSession, getSessionHistory, checkAIStatus } from '../controllers/ai.controller.js';
 import { validate } from '../middleware/validator.js';
 
 const router = express.Router();
@@ -35,7 +35,33 @@ const rateLimit = (req, res, next) => {
 };
 
 /**
- * POST /api/ai/chat
+ * POST /api/ai/chat/message (NEW - Firestore-based)
+ * Send message to AI with history from frontend
+ */
+router.post(
+    '/chat/message',
+    rateLimit,
+    [
+        body('message')
+            .trim()
+            .notEmpty()
+            .withMessage('Сообщение обязательно')
+            .isLength({ max: 5000 })
+            .withMessage('Сообщение слишком длинное'),
+        body('history')
+            .isArray()
+            .withMessage('История должна быть массивом'),
+        body('mode')
+            .optional()
+            .isIn(['tutor', 'developer', 'debug', 'product'])
+            .withMessage('Неверный режим')
+    ],
+    validate,
+    sendAIChatMessage
+);
+
+/**
+ * POST /api/ai/chat (LEGACY - session-based)
  * Send message to AI
  */
 router.post(

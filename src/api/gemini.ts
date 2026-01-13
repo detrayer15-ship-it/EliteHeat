@@ -1,5 +1,12 @@
+import { getAIChatMessages, addUserMessage, addAssistantMessage } from './aiMessages'
+import { touchAIChat } from './aiChats'
+import type { ChatMode } from './aiChats'
+
 // Backend API URL
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+// Export ChatMode type
+export type { ChatMode }
 
 // Session ID management
 const SESSION_ID_KEY = 'eliteheat_ai_session_id'
@@ -91,6 +98,82 @@ export async function getSessionHistory(): Promise<Array<{ role: string, content
     } catch (error) {
         console.error('Get History Error:', error)
         return []
+    }
+}
+
+/**
+ * AI Usage metadata interface
+ */
+export interface AIUsage {
+    model: string;
+    inputTokens: number;
+    outputTokens: number;
+    latencyMs: number;
+}
+
+/**
+ * Send AI chat message with history from Firestore (NEW)
+ * This is the new way to send messages - uses Firestore for persistence
+ */
+export async function sendAIChatMessage(
+    chatId: string,
+    message: string,
+    mode: ChatMode = 'tutor'
+): Promise<{ reply: string; usage: AIUsage }> {
+    try {
+        // 1. Add user message to Firestore
+        await addUserMessage(chatId, message)
+
+        // 2. Get chat history from Firestore
+        const messages = await getAIChatMessages(chatId)
+
+        // Convert to history format for backend (last 25 messages)
+        const history = messages.slice(-25).map(msg => ({
+            role: msg.role,
+            content: msg.content
+        }))
+
+        // 3. Call backend with history
+        const response = await fetch(`${API_URL}/api/ai/chat/message`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message, history, mode })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Ошибка AI')
+        }
+
+        // 4. Add assistant response to Firestore
+        await addAssistantMessage(chatId, data.reply, data.usage)
+
+        // 5. Update chat's updatedAt timestamp
+        await touchAIChat(chatId)
+
+        return {
+            reply: data.reply,
+            usage: data.usage || { model: 'gemini-1.5-flash', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
+        }
+
+    } catch (error: any) {
+        console.error('AI Chat Message Error:', error)
+
+        // Fallback response if backend is unavailable
+        if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+            const fallbackReply = getFallbackResponse(message)
+            await addAssistantMessage(chatId, fallbackReply)
+            await touchAIChat(chatId)
+            return {
+                reply: fallbackReply,
+                usage: { model: 'fallback', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
+            }
+        }
+
+        throw error
     }
 }
 

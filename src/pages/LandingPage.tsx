@@ -18,22 +18,33 @@ export const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-teal-50 relative overflow-hidden">
+            {/* ULTRA PREMIUM Background Effects */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full blur-3xl opacity-10 animate-float-mega-slow"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full blur-3xl opacity-10 animate-float-mega-slow animation-delay-4000"></div>
+                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-10 animate-pulse-mega-slow"></div>
+            </div>
+
             {/* Floating Particles Background */}
             <FloatingParticles />
-            
-            {/* Header */}
-            <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 relative">
+
+            {/* PREMIUM Header */}
+            <header className="bg-white/90 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-50 relative shadow-lg">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="text-3xl font-bold flex items-center">
+                        <div className="flex items-center gap-3 group">
+                            <div className="text-3xl font-bold flex items-center transform group-hover:scale-105 transition-transform">
                                 <span className="text-blue-700">Elite</span>
                                 <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Heat</span>
                             </div>
-                            <div className="hidden md:block text-sm text-gray-600">Образовательная платформа</div>
+                            <div className="hidden md:block text-sm text-gray-600 font-medium">Образовательная платформа</div>
                         </div>
                         <div className="flex gap-3">
-                            <Button variant="ghost" onClick={() => navigate('/login')}>
+                            <Button
+                                variant="ghost"
+                                onClick={() => navigate('/login')}
+                                className="transform hover:scale-105 transition-all hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50"
+                            >
                                 Войти
                             </Button>
                         </div>
@@ -41,21 +52,26 @@ export const LandingPage = () => {
                 </div>
             </header>
 
-            {/* Hero Section */}
+            {/* ULTRA PREMIUM Hero Section */}
             <section className="container mx-auto px-4 py-20 text-center relative z-10">
                 <div className="max-w-5xl mx-auto animate-fade-in">
-                    <div className="inline-block mb-6">
-                        <span className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
-                            ✨ Новая эра онлайн-образования
+                    {/* Premium Badge */}
+                    <div className="inline-block mb-6 group">
+                        <span className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-2xl transform group-hover:scale-110 transition-all relative overflow-hidden">
+                            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></span>
+                            <span className="relative z-10">✨ Новая эра онлайн-образования</span>
                         </span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-slide-up">
-                        Добро пожаловать в{' '}
+
+                    {/* Main Title with 3D effect */}
+                    <h1 className="text-6xl md:text-8xl font-black mb-6 animate-slide-up transform hover:scale-105 transition-transform">
                         <span className="inline-flex items-center">
-                            <span className="text-blue-700">Elite</span>
-                            <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Heat</span>
+                            <span className="text-blue-700 drop-shadow-lg">Elite</span>
+                            <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent drop-shadow-lg">Heat</span>
                         </span>
                     </h1>
+
+                    {/* Typewriter */}
                     <div className="text-2xl md:text-4xl text-gray-700 mb-6 animate-slide-up font-medium min-h-[100px] flex items-center justify-center" style={{ animationDelay: '0.1s' }}>
                         <Typewriter
                             texts={[
@@ -71,18 +87,27 @@ export const LandingPage = () => {
                             className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent"
                         />
                     </div>
-                    <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
+
+                    {/* Description */}
+                    <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl mx-auto animate-slide-up leading-relaxed" style={{ animationDelay: '0.2s' }}>
                         Получите доступ к профессиональным курсам по Python, Figma и AI-технологиям.
                         Учитесь в удобном темпе с персональным AI-помощником и получайте сертификаты.
                     </p>
+
+                    {/* PREMIUM CTA Button */}
                     <div className="flex flex-col items-center gap-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                        <Button
-                            size="lg"
-                            onClick={() => navigate('/subscription')}
-                            className="w-72 text-base py-5 font-semibold shadow-xl hover:shadow-2xl transition-all bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700"
-                        >
-                            🚀 Начать обучение
-                        </Button>
+                        <div className="relative group">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                            <Button
+                                size="lg"
+                                onClick={() => navigate('/subscription')}
+                                className="relative w-72 text-lg py-6 font-bold shadow-2xl hover:shadow-3xl transition-all bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 transform hover:scale-110 hover:-translate-y-1"
+                            >
+                                <span className="flex items-center gap-2">
+                                    🚀 Начать обучение
+                                </span>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </section>

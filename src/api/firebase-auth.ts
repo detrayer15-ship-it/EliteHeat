@@ -24,6 +24,11 @@ export interface UserData {
     phone?: string
     birthday?: string
     bio?: string
+    // Subscription fields
+    subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family'
+    subscriptionStartDate?: Date
+    subscriptionEndDate?: Date
+    subscriptionStatus?: 'active' | 'expired' | 'cancelled'
     createdAt: Date
 }
 

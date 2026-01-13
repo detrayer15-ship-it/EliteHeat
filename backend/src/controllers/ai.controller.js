@@ -18,38 +18,44 @@ const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS_PER_WINDOW = 30;
 
 /**
- * System prompt for Ellie AI Assistant
+ * Build system prompt for Ellie AI Assistant with Teacher Format
  */
-const SYSTEM_PROMPT = `Ты — Ellie, AI-помощник образовательной платформы EliteHeat.
+function buildSystemPrompt(mode = 'tutor') {
+    const modeHint =
+        mode === 'tutor' ? 'Режим: Учитель (подсказки и обучение).'
+            : mode === 'developer' ? 'Режим: Разработчик (больше кода, но объясняй).'
+                : mode === 'debug' ? 'Режим: Debug (ищи ошибки, предлагай фиксы).'
+                    : 'Режим: Product (идеи и улучшения проекта).';
 
-Твоя задача:
-— помогать ученикам, учителям и администраторам
-— отвечать простыми и понятными словами
-— если вопрос касается сайта — объясняй как им пользоваться
-— если вопрос общий — отвечай как обычный AI
-— если ты не знаешь точный ответ — скажи честно и предложи вариант решения
+    return `Ты AI-помощник-наставник сайта EliteHeat. ${modeHint}
 
-Ты эксперт во всех областях и можешь помочь с:
-- 💻 Программирование (Python, JavaScript, HTML, CSS, React, Node.js, любые языки)
-- 🎨 Дизайн (Figma, UI/UX, графический дизайн)
-- 📊 Анализ данных и математика
-- 🌐 Веб-разработка (frontend, backend, базы данных)
-- 📱 Мобильная разработка
-- 🤖 Искусственный интеллект и машинное обучение
-- 📝 Написание текстов и презентаций
-- 🔧 Отладка кода и поиск ошибок
-- 💡 Генерация идей для проектов
-- 📚 Объяснение любых концепций простым языком
+ЖЁСТКИЕ ПРАВИЛА:
+1. Всегда анализируй только ПОСЛЕДНЕЕ сообщение ученика.
+2. Используй историю диалога только как контекст, но НЕ отвечай по старой теме.
+3. В начале ответа обязательно напиши "Вопрос: …" — перефразируй вопрос ученика.
+4. Потом напиши "Тема: …".
+5. Затем "Ответ: …" — строго по теме вопроса.
+6. Если вопрос неполный/неясный — НЕ придумывай, а спроси уточнение.
+7. Если ученик пишет "привет/салам" — поздоровайся и спроси, что нужно.
+8. Запрещено менять тему без запроса ученика.
 
-Правила ответов:
-1. Если вопрос из 1-2 слов — попроси уточнение
-2. Структурируй ответ: короткий ответ → пояснение → что делать дальше
-3. Если вопрос неясен — задай 1 уточняющий вопрос
-4. Если просят взлом/мошенничество/вред — откажи и предложи безопасное решение
+ФОРМАТ ОТВЕТА (обязательный):
+Вопрос: [перефразировать вопрос ученика]
+Тема: [определить предмет/раздел]
+Ответ: [чёткий ответ строго по вопросу]
+Пример: [если применимо, дать 1 пример]
 
-Не используй сложные термины без объяснения.
-Отвечай кратко, но полезно.
-Всегда на русском языке.`;
+Если вопрос неясен:
+Не хватает данных: [что именно]
+Уточни: 1) … 2) …
+
+Пиши ясно, кратко, по делу.`;
+}
+
+/**
+ * Legacy system prompt (for backward compatibility)
+ */
+const SYSTEM_PROMPT = buildSystemPrompt('tutor');
 
 /**
  * Generation config for better responses
@@ -274,6 +280,117 @@ export const sendAIMessage = async (req, res) => {
             success: true,
             reply: getFallbackResponse(req.body.message),
             session_id: req.body.session_id
+        });
+    }
+};
+
+/**
+ * Send AI chat message with history from frontend (NEW - Firestore-based)
+ */
+export const sendAIChatMessage = async (req, res) => {
+    try {
+        const { message, history, mode } = req.body;
+
+        // Validation
+        if (!message || typeof message !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Сообщение обязательно'
+            });
+        }
+
+        if (!Array.isArray(history)) {
+            return res.status(400).json({
+                success: false,
+                error: 'История должна быть массивом'
+            });
+        }
+
+        if (message.length > 5000) {
+            return res.status(400).json({
+                success: false,
+                error: 'Сообщение слишком длинное (максимум 5000 символов)'
+            });
+        }
+
+        // Check if API is available
+        if (!genAI) {
+            console.warn('⚠️ Gemini API недоступен, используем fallback');
+            return res.json({
+                success: true,
+                reply: getFallbackResponse(message)
+            });
+        }
+
+        // Build history for Gemini (last 25 messages)
+        const recentHistory = history.slice(-25).map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
+        }));
+
+        // Generate AI response with history
+        const startTime = Date.now();
+        const model = genAI.getGenerativeModel({
+            model: WORKING_MODEL,
+            generationConfig,
+            safetySettings,
+            systemInstruction: buildSystemPrompt(mode || 'tutor')
+        });
+
+        const chat = model.startChat({
+            history: recentHistory,
+        });
+
+        const result = await chat.sendMessage(message);
+        const response = await result.response;
+        const aiReply = response.text();
+        const latencyMs = Date.now() - startTime;
+
+        // Comprehensive logging
+        console.log({
+            endpoint: '/api/ai/chat/message',
+            messageCount: history.length,
+            lastMessage: message.substring(0, 100),
+            mode: mode || 'tutor',
+            model: WORKING_MODEL,
+            inputTokens: result.response?.usageMetadata?.promptTokenCount || 0,
+            outputTokens: result.response?.usageMetadata?.candidatesTokenCount || 0,
+            latencyMs
+        });
+
+        res.json({
+            success: true,
+            reply: aiReply,
+            usage: {
+                model: WORKING_MODEL,
+                inputTokens: result.response?.usageMetadata?.promptTokenCount || 0,
+                outputTokens: result.response?.usageMetadata?.candidatesTokenCount || 0,
+                latencyMs
+            }
+        });
+
+    } catch (error) {
+        console.error('AI Chat Message Error:', error);
+
+        // Handle specific errors
+        if (error?.message?.includes('API_KEY_INVALID')) {
+            return res.status(500).json({
+                success: false,
+                error: 'Ошибка конфигурации API'
+            });
+        }
+
+        if (error?.message?.includes('RESOURCE_EXHAUSTED') || error?.message?.includes('429')) {
+            return res.status(429).json({
+                success: false,
+                error: 'Превышен лимит запросов. Попробуйте позже.'
+            });
+        }
+
+        // Fallback response for other errors
+        res.json({
+            success: true,
+            reply: getFallbackResponse(req.body.message)
         });
     }
 };

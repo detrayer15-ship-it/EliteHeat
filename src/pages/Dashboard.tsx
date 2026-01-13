@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import { ProjectCreationChat } from '@/components/project/ProjectCreationChat'
 import { AIAvatar } from '@/components/ui/AIAvatar'
 import { Sparkles, FolderKanban, BookOpen, TrendingUp, Bot, BarChart3 } from 'lucide-react'
+import { useAuthStore } from '@/store/authStore'
 
 export const Dashboard = () => {
     const projects = useProjectStore((state) => state.projects)
     const navigate = useNavigate()
+    const user = useAuthStore((state) => state.user)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const [studentCount, setStudentCount] = useState(0)
     const [hoveredCountry, setHoveredCountry] = useState<string | null>(null)
@@ -248,51 +250,87 @@ export const Dashboard = () => {
         return () => clearInterval(interval)
     }, [])
 
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Hero Section with Realistic Earth */}
-                <div className="mb-12 relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl">
-                    {/* Animated background particles */}
-                    <div className="absolute inset-0 opacity-30">
-                        <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-                        <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-pink-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-6 relative overflow-hidden">
+            {/* Ultra Premium Background Effects */}
+            <div className="fixed inset-0 pointer-events-none">
+                <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl opacity-10 animate-float-slow"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-10 animate-float-slow animation-delay-3000"></div>
+                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full blur-3xl opacity-10 animate-pulse-ultra-slow"></div>
+            </div>
+
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                {/* ULTRA PREMIUM Hero Section */}
+                <div className="mb-8 relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
+                    {/* Animated mesh gradient background */}
+                    <div className="absolute inset-0 opacity-40">
+                        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-yellow-400 to-pink-500 rounded-full blur-3xl animate-blob"></div>
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+                        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
                     </div>
 
-                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center p-12">
+                    {/* Floating particles */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        {[...Array(30)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="absolute w-1 h-1 bg-white rounded-full opacity-60"
+                                style={{
+                                    left: `${Math.random() * 100}%`,
+                                    top: `${Math.random() * 100}%`,
+                                    animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+                                    animationDelay: `${Math.random() * 2}s`
+                                }}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-8">
                         {/* Text Content */}
-                        <div className="space-y-6">
-                            <div className="inline-block">
-                                <span className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold">
-                                    🚀 Образование будущего
+                        <div className="space-y-5 animate-slide-in-left">
+                            {/* Badge */}
+                            <div className="inline-block animate-bounce-slow">
+                                <span className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg border border-white/30 flex items-center gap-2">
+                                    <span className="text-base">🚀</span>
+                                    Образование будущего
                                 </span>
                             </div>
 
-                            <h1 className="text-6xl font-black text-white leading-tight">
+                            {/* Main Title */}
+                            <h1 className="text-4xl font-black text-white leading-tight animate-fade-in-up">
                                 Добро пожаловать в
-                                <span className="block bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
+                                <span className="block mt-1 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent animate-gradient-x">
                                     EliteHeat
                                 </span>
                             </h1>
 
-                            <p className="text-xl text-blue-100 leading-relaxed">
+                            {/* Description */}
+                            <p className="text-base text-blue-100 leading-relaxed animate-fade-in-up animation-delay-200">
                                 Платформа нового поколения для обучения и развития.
-                                Создавайте проекты, учитесь с AI и достигайте целей вместе с нами.
+                                <span className="block mt-1 text-white font-semibold">
+                                    Создавайте проекты, учитесь с AI и достигайте целей! 🎯
+                                </span>
                             </p>
 
-                            {/* Student Counter - Redesigned */}
-                            <div className="relative group">
-                                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                                <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                            {/* Student Counter - Enhanced */}
+                            <div className="relative group animate-fade-in-up animation-delay-400">
+                                {/* Glow effect */}
+                                <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 rounded-2xl blur-lg opacity-60 group-hover:opacity-100 transition-all duration-500 animate-pulse-slow"></div>
+
+                                {/* Card */}
+                                <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl p-5 border-2 border-white/30 shadow-xl transform group-hover:scale-105 transition-all duration-300">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <div className="text-7xl font-black text-white mb-2 tabular-nums">
+                                            <div className="text-5xl font-black text-white mb-2 tabular-nums drop-shadow-xl animate-count-up">
                                                 {studentCount.toLocaleString()}
                                             </div>
-                                            <p className="text-lg text-blue-100 font-medium">учеников по всему миру 🌍</p>
+                                            <p className="text-sm text-blue-100 font-bold flex items-center gap-2">
+                                                <span className="text-xl animate-spin-slow">🌍</span>
+                                                учеников по всему миру
+                                            </p>
                                         </div>
-                                        <div className="text-6xl animate-bounce">
+                                        <div className="text-5xl animate-bounce-custom">
                                             🎓
                                         </div>
                                     </div>
@@ -300,36 +338,132 @@ export const Dashboard = () => {
                             </div>
                         </div>
 
-                        {/* Realistic Earth Canvas */}
-                        <div className="relative flex items-center justify-center">
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+                        {/* Earth Canvas with Enhanced Effects */}
+                        <div className="relative flex items-center justify-center animate-slide-in-right scale-75">
+                            {/* Outer glow rings */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-full h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-2xl opacity-40 animate-pulse-slow"></div>
+                            </div>
+
+                            {/* Rotating rings */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-[120%] h-[120%] border-2 border-white/20 rounded-full animate-spin-very-slow"></div>
+                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-[110%] h-[110%] border border-white/10 rounded-full animate-spin-reverse-slow"></div>
+                            </div>
+
                             <canvas
                                 ref={canvasRef}
-                                className="drop-shadow-2xl relative z-10"
+                                className="drop-shadow-xl relative z-10 transform hover:scale-105 transition-transform duration-500"
                                 style={{ maxWidth: '100%', height: 'auto' }}
                             />
 
-                            {/* Floating Icons - Redesigned */}
+                            {/* Enhanced Floating Icons */}
                             <div className="absolute inset-0 pointer-events-none">
-                                <div className="absolute top-0 left-1/4 animate-float">
-                                    <div className="text-5xl drop-shadow-lg">📚</div>
+                                <div className="absolute top-0 left-1/4 animate-float-smooth">
+                                    <div className="text-4xl drop-shadow-xl transform hover:scale-125 transition-transform">📚</div>
                                 </div>
-                                <div className="absolute top-1/4 right-0 animate-float-delay-1">
-                                    <div className="text-5xl drop-shadow-lg">🎧</div>
+                                <div className="absolute top-1/4 right-0 animate-float-smooth animation-delay-1000">
+                                    <div className="text-4xl drop-shadow-xl transform hover:scale-125 transition-transform">🎧</div>
                                 </div>
-                                <div className="absolute bottom-1/4 left-0 animate-float-delay-2">
-                                    <div className="text-5xl drop-shadow-lg">💻</div>
+                                <div className="absolute bottom-1/4 left-0 animate-float-smooth animation-delay-2000">
+                                    <div className="text-4xl drop-shadow-xl transform hover:scale-125 transition-transform">💻</div>
                                 </div>
-                                <div className="absolute bottom-0 right-1/4 animate-float-delay-3">
-                                    <div className="text-5xl drop-shadow-lg">🧠</div>
+                                <div className="absolute bottom-0 right-1/4 animate-float-smooth animation-delay-3000">
+                                    <div className="text-4xl drop-shadow-xl transform hover:scale-125 transition-transform">🧠</div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Enhanced CSS Animations */}
+                    <style>{`
+                        @keyframes blob {
+                            0%, 100% { transform: translate(0, 0) scale(1); }
+                            25% { transform: translate(20px, -50px) scale(1.1); }
+                            50% { transform: translate(-20px, 20px) scale(0.9); }
+                            75% { transform: translate(50px, 50px) scale(1.05); }
+                        }
+                        @keyframes twinkle {
+                            0%, 100% { opacity: 0.3; transform: scale(1); }
+                            50% { opacity: 1; transform: scale(1.5); }
+                        }
+                        @keyframes gradient-x {
+                            0%, 100% { background-position: 0% 50%; }
+                            50% { background-position: 100% 50%; }
+                        }
+                        @keyframes slide-in-left {
+                            from { opacity: 0; transform: translateX(-50px); }
+                            to { opacity: 1; transform: translateX(0); }
+                        }
+                        @keyframes slide-in-right {
+                            from { opacity: 0; transform: translateX(50px); }
+                            to { opacity: 1; transform: translateX(0); }
+                        }
+                        @keyframes fade-in-up {
+                            from { opacity: 0; transform: translateY(30px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        @keyframes bounce-slow {
+                            0%, 100% { transform: translateY(0); }
+                            50% { transform: translateY(-10px); }
+                        }
+                        @keyframes bounce-custom {
+                            0%, 100% { transform: translateY(0) rotate(0deg); }
+                            25% { transform: translateY(-20px) rotate(-5deg); }
+                            75% { transform: translateY(-10px) rotate(5deg); }
+                        }
+                        @keyframes pulse-slow {
+                            0%, 100% { opacity: 0.6; }
+                            50% { opacity: 1; }
+                        }
+                        @keyframes spin-very-slow {
+                            from { transform: rotate(0deg); }
+                            to { transform: rotate(360deg); }
+                        }
+                        @keyframes spin-reverse-slow {
+                            from { transform: rotate(360deg); }
+                            to { transform: rotate(0deg); }
+                        }
+                        @keyframes float-smooth {
+                            0%, 100% { transform: translateY(0px) translateX(0px); }
+                            25% { transform: translateY(-20px) translateX(10px); }
+                            50% { transform: translateY(-10px) translateX(-10px); }
+                            75% { transform: translateY(-30px) translateX(5px); }
+                        }
+                        @keyframes count-up {
+                            from { opacity: 0; transform: scale(0.5); }
+                            to { opacity: 1; transform: scale(1); }
+                        }
+                        
+                        .animate-blob { animation: blob 7s ease-in-out infinite; }
+                        .animate-gradient-x { 
+                            background-size: 200% 200%;
+                            animation: gradient-x 3s ease infinite;
+                        }
+                        .animate-slide-in-left { animation: slide-in-left 0.8s ease-out; }
+                        .animate-slide-in-right { animation: slide-in-right 0.8s ease-out; }
+                        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out backwards; }
+                        .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+                        .animate-bounce-custom { animation: bounce-custom 2s ease-in-out infinite; }
+                        .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+                        .animate-spin-very-slow { animation: spin-very-slow 20s linear infinite; }
+                        .animate-spin-reverse-slow { animation: spin-reverse-slow 15s linear infinite; }
+                        .animate-float-smooth { animation: float-smooth 6s ease-in-out infinite; }
+                        .animate-count-up { animation: count-up 1s ease-out; }
+                        
+                        .animation-delay-200 { animation-delay: 0.2s; }
+                        .animation-delay-400 { animation-delay: 0.4s; }
+                        .animation-delay-1000 { animation-delay: 1s; }
+                        .animation-delay-2000 { animation-delay: 2s; }
+                        .animation-delay-3000 { animation-delay: 3s; }
+                        .animation-delay-4000 { animation-delay: 4s; }
+                    `}</style>
                 </div>
 
-                {/* Ellie AI Showcase */}
-                <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl p-8 mb-12 relative overflow-hidden">
+                {/* PREMIUM Ellie AI Showcase */}
+                <div className="group bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-6 mb-8 relative overflow-hidden transform hover:scale-[1.01] transition-all duration-500">
                     {/* Animated background */}
                     <div className="absolute inset-0 opacity-20">
                         <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse"></div>
@@ -354,7 +488,7 @@ export const Dashboard = () => {
 
                     <div className="relative z-10">
                         {/* AI Avatar - Centered at top with effects */}
-                        <div className="flex justify-center mb-8">
+                        <div className="flex justify-center mb-6">
                             <div className="relative group">
                                 {/* Pulsing glow effect */}
                                 <div className="absolute inset-0 bg-white rounded-full blur-2xl opacity-50 animate-pulse group-hover:opacity-75 transition-opacity"></div>
@@ -370,12 +504,12 @@ export const Dashboard = () => {
                                 {/* Waving hand animation inside circles */}
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
                                     <div className="animate-wave-person">
-                                        <span className="text-6xl">👋</span>
+                                        <span className="text-4xl">👋</span>
                                     </div>
                                 </div>
 
                                 {/* Avatar */}
-                                <div className="relative animate-fade-in-scale group-hover:scale-110 transition-transform duration-300 z-20">
+                                <div className="relative animate-fade-in-scale group-hover:scale-110 transition-transform duration-300 z-20 scale-75">
                                     <AIAvatar size={180} state="idle" />
                                 </div>
 
@@ -386,17 +520,17 @@ export const Dashboard = () => {
                         </div>
 
                         {/* Title */}
-                        <div className="text-center mb-8">
-                            <h2 className="text-5xl font-bold text-white mb-3 animate-pulse">✨ Ellie</h2>
-                            <p className="text-blue-100 text-xl">Ваш умный AI-помощник в обучении</p>
+                        <div className="text-center mb-6">
+                            <h2 className="text-3xl font-bold text-white mb-2 animate-pulse">✨ Ellie</h2>
+                            <p className="text-blue-100 text-base">Ваш умный AI-помощник в обучении</p>
                         </div>
 
                         {/* Features Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 hover:bg-white/30 transition-all">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 hover:bg-white/30 transition-all">
                                 <div className="flex items-center gap-3">
-                                    <span className="text-3xl">💬</span>
-                                    <span className="text-white text-lg">Отвечает на любые вопросы</span>
+                                    <span className="text-2xl">💬</span>
+                                    <span className="text-white text-sm">Отвечает на любые вопросы</span>
                                 </div>
                             </div>
                             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 hover:bg-white/30 transition-all">
@@ -425,7 +559,7 @@ export const Dashboard = () => {
                                 onClick={() => navigate('/ai-assistant')}
                                 className="bg-white text-purple-600 px-10 py-4 rounded-xl font-bold text-xl hover:shadow-2xl transition-all hover:scale-105 inline-flex items-center justify-center gap-3"
                             >
-                                <Bot className="w-7 h-7" />
+                                <Bot className="w-5 h-5" />
                                 Попробовать AI прямо сейчас →
                             </button>
                         </div>
@@ -546,20 +680,22 @@ export const Dashboard = () => {
                     `}</style>
                 </div>
 
-                {/* Project Statistics */}
-                <div className="mb-12">
-                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-xl p-8 text-white">
-                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            <FolderKanban className="w-6 h-6" />
+                {/* PREMIUM Project Statistics */}
+                <div className="mb-8">
+                    <div className="group bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl shadow-2xl p-6 text-white relative overflow-hidden transform hover:scale-[1.01] transition-all duration-500">
+                        {/* Shine effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                            <FolderKanban className="w-5 h-5" />
                             Статистика проектов
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-white/80 text-sm">Всего проектов</span>
-                                    <span className="text-3xl">📁</span>
+                                    <span className="text-2xl">📁</span>
                                 </div>
-                                <p className="text-4xl font-bold">{projects.length}</p>
+                                <p className="text-3xl font-bold">{projects.length}</p>
                             </div>
                             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                                 <div className="flex items-center justify-between mb-2">
@@ -580,18 +716,18 @@ export const Dashboard = () => {
                 </div>
 
                 {/* Project Creation Chat */}
-                <div className="mb-12">
+                <div className="mb-8">
                     <ProjectCreationChat />
                 </div>
 
                 {/* Recent Projects */}
                 {recentProjects.length > 0 && (
-                    <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <FolderKanban className="w-6 h-6 text-purple-600" />
+                    <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+                        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <FolderKanban className="w-5 h-5 text-purple-600" />
                             Последние проекты
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                             {recentProjects.map((project) => (
                                 <div
                                     key={project.id}
@@ -618,8 +754,10 @@ export const Dashboard = () => {
                     </div>
                 )}
 
-                {/* Quick Actions */}
-                <div className="bg-gradient-to-br from-white via-purple-50 to-blue-50 rounded-2xl shadow-xl p-8 relative overflow-hidden">
+                {/* ULTRA PREMIUM Quick Actions */}
+                <div className="group bg-gradient-to-br from-white via-purple-50 to-blue-50 rounded-xl shadow-2xl p-6 relative overflow-hidden transform hover:scale-[1.01] transition-all duration-500">
+                    {/* Animated border */}
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
                     {/* Floating decorative circles */}
                     <div className="absolute inset-0 pointer-events-none">
                         <div className="absolute top-10 left-10 w-32 h-32 bg-purple-300 rounded-full opacity-20 blur-2xl animate-float"></div>
@@ -628,61 +766,74 @@ export const Dashboard = () => {
                     </div>
 
                     <div className="relative z-10">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-                            <span className="text-4xl animate-bounce">🚀</span>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <span className="text-3xl animate-bounce">🚀</span>
                             Быстрые действия
                         </h2>
-                        <p className="text-gray-600 mb-6">Выберите, чем хотите заняться</p>
+                        <p className="text-gray-600 mb-4">Выберите, чем хотите заняться</p>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <button
-                                onClick={() => navigate('/projects')}
-                                className="group p-6 bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
-                                style={{ animationDelay: '0.1s' }}
-                            >
-                                {/* Hover glow effect */}
-                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Проекты - только для учеников */}
+                            {user?.role === 'student' && (
+                                <button
+                                    onClick={() => navigate('/projects')}
+                                    className="group p-5 bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up transform hover:-translate-y-1"
+                                    style={{ animationDelay: '0.1s' }}
+                                >
+                                    {/* Shine effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
 
-                                {/* Pulsing circle */}
-                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+                                    {/* Hover glow effect */}
+                                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
 
-                                <div className="relative z-10">
-                                    <FolderKanban className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
-                                    <h3 className="font-bold text-xl mb-2">Мои проекты</h3>
-                                    <p className="text-sm text-blue-100">Управляйте проектами</p>
-                                </div>
-                            </button>
+                                    {/* Pulsing circle */}
+                                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
 
-                            <button
-                                onClick={() => navigate('/tasks')}
-                                className="group p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
-                                style={{ animationDelay: '0.2s' }}
-                            >
-                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+                                    <div className="relative z-10">
+                                        <FolderKanban className="w-8 h-8 mb-2 group-hover:scale-110 group-hover:rotate-3 transition-transform" />
+                                        <h3 className="font-bold text-lg mb-1">Мои проекты</h3>
+                                        <p className="text-sm text-blue-100">Управляйте проектами</p>
+                                    </div>
+                                </button>
+                            )}
 
-                                <div className="relative z-10">
-                                    <BookOpen className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
-                                    <h3 className="font-bold text-xl mb-2">Курсы</h3>
-                                    <p className="text-sm text-purple-100">Обучение и развитие</p>
-                                </div>
-                            </button>
+                            {/* Курсы - только для учеников */}
+                            {user?.role === 'student' && (
+                                <button
+                                    onClick={() => navigate('/tasks')}
+                                    className="group p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
+                                    style={{ animationDelay: '0.2s' }}
+                                >
+                                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
 
-                            <button
-                                onClick={() => navigate('/progress')}
-                                className="group p-6 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
-                                style={{ animationDelay: '0.3s' }}
-                            >
-                                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+                                    <div className="relative z-10">
+                                        <BookOpen className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
+                                        <h3 className="font-bold text-xl mb-2">Курсы</h3>
+                                        <p className="text-sm text-purple-100">Обучение и развитие</p>
+                                    </div>
+                                </button>
+                            )}
 
-                                <div className="relative z-10">
-                                    <TrendingUp className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
-                                    <h3 className="font-bold text-xl mb-2">Трекер прогресса</h3>
-                                    <p className="text-sm text-green-100">Отслеживайте успехи</p>
-                                </div>
-                            </button>
+                            {/* Трекер прогресса - только для учеников */}
+                            {user?.role === 'student' && (
+                                <button
+                                    onClick={() => navigate('/progress')}
+                                    className="group p-6 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
+                                    style={{ animationDelay: '0.3s' }}
+                                >
+                                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-white rounded-full opacity-10 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
 
+                                    <div className="relative z-10">
+                                        <TrendingUp className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" />
+                                        <h3 className="font-bold text-xl mb-2">Трекер прогресса</h3>
+                                        <p className="text-sm text-green-100">Отслеживайте успехи</p>
+                                    </div>
+                                </button>
+                            )}
+
+                            {/* AI Помощник - для всех */}
                             <button
                                 onClick={() => navigate('/ai-assistant')}
                                 className="group p-6 bg-gradient-to-br from-orange-500 to-red-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
@@ -698,6 +849,7 @@ export const Dashboard = () => {
                                 </div>
                             </button>
 
+                            {/* Анализ презентаций - для всех */}
                             <button
                                 onClick={() => navigate('/analyzer')}
                                 className="group p-6 bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-2xl hover:shadow-2xl transition-all hover:scale-105 text-left relative overflow-hidden animate-fade-in-up"
@@ -757,16 +909,16 @@ export const Dashboard = () => {
                 }
             `}</style>
 
-            {/* Новости */}
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="text-2xl">📰</div>
-                    <h2 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {/* Новости - 80% */}
+            <div className="bg-white rounded-lg shadow-md p-5 mb-5">
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="text-xl">📰</div>
+                    <h2 className="text-lg md:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         Новости
                     </h2>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                     <div className="border-l-4 border-blue-500 pl-4 hover:bg-blue-50 p-3 rounded-r-lg transition-all cursor-pointer group">
                         <h3 className="font-bold text-base md:text-lg group-hover:text-blue-600 transition-colors">🚀 Скоро новый курс по React!</h3>
                         <p className="text-sm text-gray-600">Готовим для вас курс по React. Следите за обновлениями!</p>

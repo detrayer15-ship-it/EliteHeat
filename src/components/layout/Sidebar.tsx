@@ -4,11 +4,12 @@ import { useAuthStore } from '@/store/authStore'
 import { EliteHeatLogo } from '@/components/ui/EliteHeatLogo'
 
 const navItems = [
-    { path: '/dashboard', label: 'Главная', icon: '🏠' },
-    { path: '/projects', label: 'Проекты', icon: '📁' },
-    { path: '/tasks', label: 'Курсы', icon: '🎓' },
-    { path: '/ai-assistant', label: 'Ellie', icon: '✨' },
-    { path: '/settings', label: 'Настройки', icon: '⚙️' },
+    { path: '/dashboard', label: 'Главная', icon: '🏠', roles: ['student', 'admin', 'developer'] },
+    { path: '/projects', label: 'Проекты', icon: '📁', roles: ['student'] }, // Только для учеников
+    { path: '/tasks', label: 'Курсы', icon: '🎓', roles: ['student'] }, // Только для учеников
+    { path: '/progress', label: 'Трекер прогресса', icon: '📊', roles: ['student'] }, // Только для учеников
+    { path: '/ai-assistant', label: 'Ellie', icon: '✨', roles: ['student', 'admin', 'developer'] },
+    { path: '/settings', label: 'Настройки', icon: '⚙️', roles: ['student', 'admin', 'developer'] },
 ]
 
 export const Sidebar = () => {
@@ -16,6 +17,11 @@ export const Sidebar = () => {
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
     const [isOpen, setIsOpen] = useState(false)
+
+    // Фильтруем навигацию по роли пользователя
+    const filteredNavItems = navItems.filter(item =>
+        !item.roles || item.roles.includes(user?.role || 'student')
+    )
 
     return (
         <>
@@ -61,7 +67,7 @@ export const Sidebar = () => {
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto p-4">
                     <ul className="space-y-2">
-                        {navItems.map((item, index) => {
+                        {filteredNavItems.map((item, index) => {
                             const isActive = location.pathname === item.path
                             return (
                                 <Link
