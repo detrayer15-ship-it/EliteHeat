@@ -42,11 +42,11 @@ export function parseTeacherFormat(content: string): TeacherFormatSections {
     };
 
     // Extract main sections
-    sections.question = extractSection(content, 'Вопрос:');
-    sections.topic = extractSection(content, 'Тема:');
-    sections.answer = extractSection(content, 'Ответ:');
-    sections.example = extractSection(content, 'Пример:');
-    sections.missingData = extractSection(content, 'Не хватает данных:');
+    sections.question = extractSection(content, 'Вопрос:') || undefined;
+    sections.topic = extractSection(content, 'Тема:') || undefined;
+    sections.answer = extractSection(content, 'Ответ:') || undefined;
+    sections.example = extractSection(content, 'Пример:') || undefined;
+    sections.missingData = extractSection(content, 'Не хватает данных:') || undefined;
 
     // Extract clarifications
     const clarifications = extractClarifications(content);
