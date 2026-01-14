@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { collection, addDoc, query, orderBy, onSnapshot, Timestamp } from 'firebase/firestore'
-import { db } from '@/config/firebase'
+import { db, auth } from '@/config/firebase'
 import { Send, Users, MessageCircle } from 'lucide-react'
 
 interface AdminMessage {
@@ -20,7 +20,8 @@ export const AdminGroupChatPage = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        if (!user || (user.role !== 'admin' && user.role !== 'developer')) return
+        const currentUser = auth.currentUser
+        if (!user || !currentUser || (user.role !== 'admin' && user.role !== 'developer')) return
 
         // Subscribe to admin group chat messages
         const q = query(
@@ -41,6 +42,8 @@ export const AdminGroupChatPage = () => {
                 })
             })
             setMessages(msgs)
+        }, (error) => {
+            console.error("Firestore Admin Chat Listener Error:", error);
         })
 
         return () => unsubscribe()
@@ -62,7 +65,7 @@ export const AdminGroupChatPage = () => {
         try {
             await addDoc(collection(db, 'adminGroupChat'), {
                 senderId: user.id,
-                senderName: user.name,
+                senderName: user.name || 'Админ',
                 message: newMessage.trim(),
                 timestamp: Timestamp.now(),
             })
@@ -131,8 +134,8 @@ export const AdminGroupChatPage = () => {
                                     >
                                         <div
                                             className={`max-w-[70%] rounded-2xl px-5 py-3 shadow-md ${isCurrentUser
-                                                    ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white'
-                                                    : 'bg-white border-2 border-gray-100 text-gray-800'
+                                                ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white'
+                                                : 'bg-white border-2 border-gray-100 text-gray-800'
                                                 }`}
                                         >
                                             {!isCurrentUser && (

@@ -1,15 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/authStore'
-import { FloatingParticles } from '@/components/FloatingParticles'
+import { Sparkles, CheckCircle2, Crown } from 'lucide-react'
 
 export const RegisterPage = () => {
     const navigate = useNavigate()
     const register = useAuthStore((state) => state.register)
     const loginWithGoogle = useAuthStore((state) => state.loginWithGoogle)
+
     const [formData, setFormData] = useState({
         email: '',
         name: '',
@@ -18,16 +19,38 @@ export const RegisterPage = () => {
     })
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedPlan, setSelectedPlan] = useState<any>(null)
+
+    // Check for selected subscription plan from localStorage
+    useEffect(() => {
+        const savedPlan = localStorage.getItem('selectedPlan')
+        if (savedPlan) {
+            try {
+                setSelectedPlan(JSON.parse(savedPlan))
+            } catch (e) {
+                console.error('Error parsing saved plan:', e)
+            }
+        }
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
 
         setIsLoading(true)
-        const result = await register(formData.email, formData.password, formData.name, '', formData.role)
+        const result = await register(
+            formData.email,
+            formData.password,
+            formData.name,
+            '',
+            formData.role,
+            selectedPlan?.id
+        )
         setIsLoading(false)
 
         if (result.success) {
+            // Clear saved plan
+            localStorage.removeItem('selectedPlan')
             navigate('/dashboard')
         } else {
             setError(result.message)
@@ -41,6 +64,7 @@ export const RegisterPage = () => {
         setIsLoading(false)
 
         if (result.success) {
+            localStorage.removeItem('selectedPlan')
             navigate('/dashboard')
         } else {
             setError(result.message)
@@ -48,17 +72,43 @@ export const RegisterPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-4 sm:py-12 px-4 relative overflow-hidden">
-            <FloatingParticles />
-            <Card className="w-full max-w-md relative z-10 animate-fade-in shadow-2xl">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-4 sm:py-12 px-4 relative overflow-hidden">
+            {/* Animated Background */}
+            <div className="fixed inset-0 pointer-events-none">
+                <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-20 animate-float-slow"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl opacity-20 animate-float-slow animation-delay-3000"></div>
+            </div>
+
+            <Card className="w-full max-w-md relative z-10 animate-fade-in shadow-2xl bg-white/95 backdrop-blur-xl border-2 border-white/50">
+                {/* Header */}
                 <div className="text-center mb-4 sm:mb-6">
-                    <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">EliteHeat</div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-text mb-1 sm:mb-2">Регистрация</h1>
+                    <div className="inline-block mb-3">
+                        <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
+                            EliteHeat
+                        </div>
+                    </div>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">Регистрация</h1>
                     <p className="text-sm sm:text-base text-gray-600">Создайте свой личный кабинет</p>
                 </div>
 
+                {/* Selected Plan Display */}
+                {selectedPlan && (
+                    <div className="mb-4 p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white animate-slide-down">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Crown className="w-5 h-5" />
+                            <span className="font-bold">Выбранный тариф</span>
+                        </div>
+                        <div className="text-sm opacity-90">
+                            {selectedPlan.name} - {selectedPlan.price.toLocaleString()}₸
+                        </div>
+                        <div className="text-xs opacity-75 mt-1">
+                            Срок: {selectedPlan.duration}
+                        </div>
+                    </div>
+                )}
+
                 {error && (
-                    <div className="mb-4 p-3 bg-error/10 border border-error/20 rounded-lg text-error text-sm">
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm animate-shake">
                         {error}
                     </div>
                 )}
@@ -71,6 +121,7 @@ export const RegisterPage = () => {
                         placeholder="Иван Иванов"
                         autoComplete="name"
                         required
+                        className="transition-all focus:scale-[1.02]"
                     />
 
                     <Input
@@ -81,6 +132,7 @@ export const RegisterPage = () => {
                         placeholder="your@email.com"
                         autoComplete="email"
                         required
+                        className="transition-all focus:scale-[1.02]"
                     />
 
                     <Input
@@ -92,9 +144,8 @@ export const RegisterPage = () => {
                         autoComplete="new-password"
                         minLength={6}
                         required
+                        className="transition-all focus:scale-[1.02]"
                     />
-
-
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -104,9 +155,9 @@ export const RegisterPage = () => {
                             <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, role: 'student' })}
-                                className={`p-3 sm:p-4 border-2 rounded-lg transition-all ${formData.role === 'student'
-                                    ? 'border-primary bg-primary/5 text-primary'
-                                    : 'border-gray-200 hover:border-gray-300'
+                                className={`p-3 sm:p-4 border-2 rounded-xl transition-all transform hover:scale-105 ${formData.role === 'student'
+                                        ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50 text-purple-700 shadow-lg'
+                                        : 'border-gray-200 hover:border-gray-300 bg-white'
                                     }`}
                             >
                                 <div className="text-xl sm:text-2xl mb-1">🎒</div>
@@ -115,9 +166,9 @@ export const RegisterPage = () => {
                             <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, role: 'admin' })}
-                                className={`p-3 sm:p-4 border-2 rounded-lg transition-all ${formData.role === 'admin'
-                                    ? 'border-primary bg-primary/5 text-primary'
-                                    : 'border-gray-200 hover:border-gray-300'
+                                className={`p-3 sm:p-4 border-2 rounded-xl transition-all transform hover:scale-105 ${formData.role === 'admin'
+                                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-700 shadow-lg'
+                                        : 'border-gray-200 hover:border-gray-300 bg-white'
                                     }`}
                             >
                                 <div className="text-xl sm:text-2xl mb-1">👨‍🏫</div>
@@ -126,10 +177,15 @@ export const RegisterPage = () => {
                         </div>
                     </div>
 
-
-
-                    <Button type="submit" className="w-full" loading={isLoading}>
-                        Создать аккаунт
+                    <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all shadow-lg"
+                        loading={isLoading}
+                    >
+                        <span className="flex items-center justify-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            Создать аккаунт
+                        </span>
                     </Button>
 
                     {/* Divider */}
@@ -146,7 +202,7 @@ export const RegisterPage = () => {
                     <Button
                         type="button"
                         variant="secondary"
-                        className="w-full flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
+                        className="w-full flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base hover:shadow-lg transition-all"
                         onClick={handleGoogleRegister}
                         disabled={isLoading}
                     >
@@ -165,7 +221,7 @@ export const RegisterPage = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/login')}
-                            className="text-primary hover:underline font-semibold"
+                            className="text-purple-600 hover:text-purple-700 font-semibold hover:underline"
                         >
                             Войти
                         </button>
@@ -175,13 +231,47 @@ export const RegisterPage = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/')}
-                            className="text-sm text-gray-500 hover:text-gray-700"
+                            className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
                         >
                             ← Вернуться на главную
                         </button>
                     </div>
                 </form>
             </Card>
+
+            <style>{`
+                @keyframes float-slow {
+                    0%, 100% { transform: translate(0, 0); }
+                    50% { transform: translate(30px, -30px); }
+                }
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes slide-down {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-10px); }
+                    75% { transform: translateX(10px); }
+                }
+                @keyframes gradient-x {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                }
+                
+                .animate-float-slow { animation: float-slow 20s ease-in-out infinite; }
+                .animate-fade-in { animation: fade-in 0.8s ease-out; }
+                .animate-slide-down { animation: slide-down 0.5s ease-out; }
+                .animate-shake { animation: shake 0.5s ease-in-out; }
+                .animate-gradient-x { 
+                    background-size: 200% 200%;
+                    animation: gradient-x 3s ease infinite;
+                }
+                .animation-delay-3000 { animation-delay: 3s; }
+            `}</style>
         </div>
     )
 }

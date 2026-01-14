@@ -62,6 +62,8 @@ import { AIActivityMonitorPage } from './pages/admin/AIActivityMonitorPage'
 import { StudentChatsPage } from './pages/student/StudentChatsPage'
 import AchievementsPage from './pages/student/AchievementsPage'
 import APITestPage from './pages/developer/APITestPage'
+import { TeacherDashboard } from './pages/teacher/TeacherDashboard'
+import { AppealsPage } from './pages/admin/AppealsPage'
 
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
 import { SubmitAssignmentPage } from './pages/SubmitAssignmentPage'
@@ -499,6 +501,28 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <AIActivityMonitorPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/appeals"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <AppealsPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/teacher/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <TeacherDashboard />
                             </AppLayout>
                         </ProtectedRoute>
                     }

@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/authStore'
-import { FloatingParticles } from '@/components/FloatingParticles'
+import { LogIn, Sparkles } from 'lucide-react'
 
 export const LoginPage = () => {
     const navigate = useNavigate()
@@ -46,17 +46,27 @@ export const LoginPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-50 via-purple-50 to-pink-50 py-12 px-4 relative overflow-hidden">
-            <FloatingParticles />
-            <Card className="w-full max-w-md relative z-10 animate-fade-in shadow-2xl">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 relative overflow-hidden">
+            {/* Animated Background */}
+            <div className="fixed inset-0 pointer-events-none">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl opacity-20 animate-float-slow"></div>
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-20 animate-float-slow animation-delay-3000"></div>
+            </div>
+
+            <Card className="w-full max-w-md relative z-10 animate-fade-in shadow-2xl bg-white/95 backdrop-blur-xl border-2 border-white/50">
+                {/* Header */}
                 <div className="text-center mb-6">
-                    <div className="text-4xl font-bold text-primary mb-2">EliteHeat</div>
-                    <h1 className="text-2xl font-bold text-text mb-2">Вход</h1>
+                    <div className="inline-block mb-3">
+                        <div className="text-4xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-gradient-x">
+                            EliteHeat
+                        </div>
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Вход</h1>
                     <p className="text-gray-600">Войдите в свой личный кабинет</p>
                 </div>
 
                 {error && (
-                    <div className="mb-4 p-3 bg-error/10 border border-error/20 rounded-lg text-error text-sm">
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm animate-shake">
                         {error}
                     </div>
                 )}
@@ -70,6 +80,7 @@ export const LoginPage = () => {
                         placeholder="your@email.com"
                         autoComplete="email"
                         required
+                        className="transition-all focus:scale-[1.02]"
                     />
 
                     <Input
@@ -80,10 +91,18 @@ export const LoginPage = () => {
                         placeholder="Введите пароль"
                         autoComplete="current-password"
                         required
+                        className="transition-all focus:scale-[1.02]"
                     />
 
-                    <Button type="submit" className="w-full" loading={isLoading}>
-                        Войти
+                    <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all shadow-lg"
+                        loading={isLoading}
+                    >
+                        <span className="flex items-center justify-center gap-2">
+                            <LogIn className="w-4 h-4" />
+                            Войти
+                        </span>
                     </Button>
 
                     {/* Divider */}
@@ -100,7 +119,7 @@ export const LoginPage = () => {
                     <Button
                         type="button"
                         variant="secondary"
-                        className="w-full flex items-center justify-center gap-3"
+                        className="w-full flex items-center justify-center gap-3 hover:shadow-lg transition-all"
                         onClick={handleGoogleLogin}
                         disabled={isLoading}
                     >
@@ -118,7 +137,7 @@ export const LoginPage = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/register')}
-                            className="text-primary hover:underline font-semibold"
+                            className="text-blue-600 hover:text-blue-700 font-semibold hover:underline"
                         >
                             Зарегистрироваться
                         </button>
@@ -128,13 +147,42 @@ export const LoginPage = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/')}
-                            className="text-sm text-gray-500 hover:text-gray-700"
+                            className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
                         >
                             ← Вернуться на главную
                         </button>
                     </div>
                 </form>
             </Card>
+
+            <style>{`
+                @keyframes float-slow {
+                    0%, 100% { transform: translate(0, 0); }
+                    50% { transform: translate(30px, -30px); }
+                }
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-10px); }
+                    75% { transform: translateX(10px); }
+                }
+                @keyframes gradient-x {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                }
+                
+                .animate-float-slow { animation: float-slow 20s ease-in-out infinite; }
+                .animate-fade-in { animation: fade-in 0.8s ease-out; }
+                .animate-shake { animation: shake 0.5s ease-in-out; }
+                .animate-gradient-x { 
+                    background-size: 200% 200%;
+                    animation: gradient-x 3s ease infinite;
+                }
+                .animation-delay-3000 { animation-delay: 3s; }
+            `}</style>
         </div>
     )
 }

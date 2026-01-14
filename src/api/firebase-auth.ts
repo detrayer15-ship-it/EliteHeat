@@ -12,6 +12,7 @@ export interface UserData {
     id: string
     email: string
     name: string
+    displayName?: string
     city: string
     role: 'student' | 'admin' | 'developer'
     level?: number
@@ -27,18 +28,28 @@ export interface UserData {
     // Subscription fields
     subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family'
     subscriptionStartDate?: Date
-    subscriptionEndDate?: Date
+    subscriptionEndDate?: Date | null
+    subscriptionDaysRemaining?: number
     subscriptionStatus?: 'active' | 'expired' | 'cancelled'
     createdAt: Date
 }
 
 export const firebaseAuthAPI = {
     // Register new user
-    register: async (email: string, password: string, name: string, city: string, role: 'student' | 'admin' = 'student') => {
+    register: async (
+        email: string,
+        password: string,
+        name: string,
+        city: string,
+        role: 'student' | 'admin' = 'student',
+        subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family'
+    ) => {
         try {
             // Create auth user
             const userCredential = await createUserWithEmailAndPassword(auth, email, password)
             const user = userCredential.user
+
+            const now = Timestamp.now()
 
             // Create user document in Firestore
             const userData: any = {
@@ -47,7 +58,19 @@ export const firebaseAuthAPI = {
                 name,
                 city,
                 role,
-                createdAt: Timestamp.now()
+                createdAt: now
+            }
+
+            // Add subscription fields if plan is selected
+            if (subscriptionPlan) {
+                const { createSubscriptionInfo } = await import('@/utils/subscriptionUtils')
+                const subInfo = createSubscriptionInfo(subscriptionPlan, now.toDate())
+
+                userData.subscriptionPlan = subscriptionPlan
+                userData.subscriptionStartDate = now
+                userData.subscriptionEndDate = subInfo.endDate ? Timestamp.fromDate(subInfo.endDate) : null
+                userData.subscriptionDaysRemaining = subInfo.daysRemaining
+                userData.subscriptionStatus = subInfo.status
             }
 
             // Add admin fields only if role is admin

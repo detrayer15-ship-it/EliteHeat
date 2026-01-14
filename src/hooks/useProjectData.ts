@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore'
-import { db } from '@/config/firebase'
+import { db, auth } from '@/config/firebase'
 import type { Project } from '@/types/project'
 
 interface UseProjectDataReturn {
@@ -16,8 +16,9 @@ export function useProjectData(projectId: string): UseProjectDataReturn {
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        if (!projectId) {
-            setError('Project ID is required')
+        const currentUser = auth.currentUser
+        if (!projectId || !currentUser) {
+            if (!projectId) setError('Project ID is required')
             setLoading(false)
             return
         }

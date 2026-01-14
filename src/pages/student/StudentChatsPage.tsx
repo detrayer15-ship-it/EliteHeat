@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { auth } from '@/config/firebase'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -76,7 +77,8 @@ export const StudentChatsPage = () => {
 
     // Загружаем сообщения при выборе ученика
     useEffect(() => {
-        if (!selectedStudent || !user) return
+        const currentUser = auth.currentUser
+        if (!selectedStudent || !user || !currentUser) return
 
         const chatId = [user.id, selectedStudent.id].sort().join('_')
         const messagesRef = collection(db, 'chats', chatId, 'messages')
@@ -88,6 +90,8 @@ export const StudentChatsPage = () => {
                 ...doc.data()
             } as Message))
             setMessages(msgs)
+        }, (error) => {
+            console.error("Firestore Chat Listener Error:", error);
         })
 
         return () => unsubscribe()

@@ -145,8 +145,8 @@ export const SubscriptionPage = () => {
 
                                 <Card
                                     className={`relative h-full flex flex-col transition-all duration-300 hover:scale-105 cursor-pointer bg-white/90 backdrop-blur-lg ${selectedPlan === plan.id
-                                            ? 'ring-4 ring-purple-500 shadow-2xl scale-105'
-                                            : 'hover:shadow-xl'
+                                        ? 'ring-4 ring-purple-500 shadow-2xl scale-105'
+                                        : 'hover:shadow-xl'
                                         }`}
                                     onClick={() => setSelectedPlan(plan.id as any)}
                                 >
@@ -258,7 +258,7 @@ export const SubscriptionPage = () => {
                                 <div className="flex gap-4 items-start bg-white/50 p-4 rounded-xl">
                                     <div className="text-4xl">🤖</div>
                                     <div>
-                                        <div className="font-bold text-lg mb-1">Ellie AI</div>
+                                        <div className="font-bold text-lg mb-1">Мита AI</div>
                                         <div className="text-sm text-gray-600">Персональный AI помощник 24/7</div>
                                     </div>
                                 </div>

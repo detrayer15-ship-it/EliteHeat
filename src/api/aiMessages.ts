@@ -113,5 +113,7 @@ export function subscribeToAIChatMessages(
             ...doc.data()
         } as AIMessage));
         callback(messages);
+    }, (error) => {
+        console.error("AI Message Listener Error:", error);
     });
 }

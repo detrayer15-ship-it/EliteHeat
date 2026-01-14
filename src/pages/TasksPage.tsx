@@ -1,234 +1,171 @@
 import { useState } from 'react'
-
 import { PythonTasksPage } from './PythonTasksPage'
 import { FigmaTasksPage } from './FigmaTasksPage'
-import { BookOpen, Code, Palette, TrendingUp, Award, Users, Sparkles, Zap, Star } from 'lucide-react'
+import {
+    BookOpen,
+    Code,
+    Palette,
+    TrendingUp,
+    Award,
+    Users,
+    Sparkles,
+    Zap,
+    Star,
+    ChevronRight,
+    Trophy,
+    Target
+} from 'lucide-react'
+import { ScrollReveal } from '@/components/ScrollReveal'
+import { AnimatedCounter } from '@/components/AnimatedCounter'
 
 export const TasksPage = () => {
     const [activeTab, setActiveTab] = useState<'python' | 'figma'>('python')
 
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-6">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Premium Header with Animation */}
-                <div className="mb-6 relative">
-                    {/* Floating background elements */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl opacity-20 animate-blob"></div>
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="min-h-full py-2 space-y-12">
+            <ScrollReveal animation="fade">
+                {/* HERO HUB */}
+                <div className="relative overflow-hidden bg-[#0a0a0c] rounded-[3rem] p-12 lg:p-20 shadow-3xl group">
+                    {/* Animated Mesh */}
+                    <div className="absolute inset-0 overflow-hidden opacity-30">
+                        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600/30 rounded-full blur-[120px] animate-pulse-slow"></div>
+                        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-600/20 rounded-full blur-[120px] animate-pulse-slow animation-delay-2000"></div>
                     </div>
 
-                    <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-6 border border-white/50">
-                        <div className="flex items-center gap-4">
-                            {/* Animated Icon */}
-                            <div className="relative group">
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                                <div className="relative p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg transform group-hover:scale-110 transition-transform">
-                                    <BookOpen className="w-8 h-8 text-white" />
-                                </div>
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-5 gap-16 items-center">
+                        <div className="lg:col-span-3 space-y-8">
+                            <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10">
+                                <Trophy className="w-4 h-4 text-yellow-500" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Academy Hub • Phase 2</span>
                             </div>
-
-                            <div>
-                                <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
-                                    Курсы
-                                </h1>
-                                <p className="text-gray-600 flex items-center gap-2 mt-1">
-                                    <Sparkles className="w-4 h-4 text-purple-500" />
-                                    Обучайтесь программированию и дизайну
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Premium Stats Cards with Glassmorphism */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {/* Progress Card */}
-                    <div className="group relative">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
-                        <div className="relative bg-white/90 backdrop-blur-lg rounded-xl shadow-lg p-5 border border-blue-100 transform group-hover:scale-105 transition-all">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-base font-bold text-gray-900">Прогресс</h3>
-                                <div className="p-2 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg group-hover:scale-110 transition-transform">
-                                    <TrendingUp className="w-5 h-5 text-blue-600" />
-                                </div>
-                            </div>
-                            <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-1">
-                                75%
-                            </div>
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                                <Zap className="w-3 h-3 text-blue-500" />
-                                Выполнено уроков
+                            <h1 className="text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
+                                Центр управления <br />
+                                <span className="bg-gradient-to-r from-blue-400 via-white to-purple-400 bg-clip-text text-transparent italic">Развитием</span>
+                            </h1>
+                            <p className="text-xl text-white/40 font-medium max-w-lg leading-relaxed">
+                                Управляй своими курсами, отслеживай прогресс и получай сертификаты в одном месте.
                             </p>
                         </div>
-                    </div>
 
-                    {/* Achievements Card */}
-                    <div className="group relative">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
-                        <div className="relative bg-white/90 backdrop-blur-lg rounded-xl shadow-lg p-5 border border-purple-100 transform group-hover:scale-105 transition-all">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-base font-bold text-gray-900">Достижения</h3>
-                                <div className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg group-hover:scale-110 transition-transform">
-                                    <Award className="w-5 h-5 text-purple-600" />
-                                </div>
-                            </div>
-                            <div className="text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
-                                3
-                            </div>
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                                <Star className="w-3 h-3 text-purple-500 fill-purple-500" />
-                                Получено сертификатов
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Community Card */}
-                    <div className="group relative">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-400 to-rose-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
-                        <div className="relative bg-white/90 backdrop-blur-lg rounded-xl shadow-lg p-5 border border-pink-100 transform group-hover:scale-105 transition-all">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-base font-bold text-gray-900">Сообщество</h3>
-                                <div className="p-2 bg-gradient-to-br from-pink-100 to-rose-100 rounded-lg group-hover:scale-110 transition-transform">
-                                    <Users className="w-5 h-5 text-pink-600" />
-                                </div>
-                            </div>
-                            <div className="text-4xl font-black bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent mb-1">
-                                243
-                            </div>
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                                <Zap className="w-3 h-3 text-pink-500" />
-                                Активных учеников
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Premium Course Tabs */}
-                <div className="relative mb-6">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-20"></div>
-                    <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/50">
-                        <div className="flex border-b border-gray-200 bg-gradient-to-r from-gray-50/50 to-white/50 backdrop-blur-sm">
-                            <button
-                                onClick={() => setActiveTab('python')}
-                                className={`flex-1 px-6 py-5 font-bold transition-all duration-300 relative group ${activeTab === 'python'
-                                    ? 'text-blue-600 bg-white/80'
-                                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50/50'
-                                    }`}
-                            >
-                                <div className="flex items-center justify-center gap-3">
-                                    <div className={`p-2 rounded-lg transition-all ${activeTab === 'python' ? 'bg-blue-100' : 'bg-gray-100 group-hover:bg-blue-50'}`}>
-                                        <Code className="w-5 h-5" />
+                        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+                            {[
+                                { count: 75, suffix: '%', label: 'General Progression', icon: <TrendingUp />, color: 'text-blue-400' },
+                                { count: 3, label: 'Masters Awarded', icon: <Award />, color: 'text-purple-400' },
+                                { count: 243, label: 'Active Cadets', icon: <Users />, color: 'text-pink-400' },
+                                { count: 12, label: 'Daily Streaks', icon: <Star />, color: 'text-amber-400' },
+                            ].map((stat, idx) => (
+                                <div key={idx} className="glass-card-dark p-6 rounded-3xl border border-white/5 hover:border-white/10 transition-colors">
+                                    <div className={`${stat.color} mb-3 group-hover:scale-110 transition-transform`}>{stat.icon}</div>
+                                    <div className="text-2xl font-black text-white">
+                                        <AnimatedCounter end={stat.count} suffix={stat.suffix} />
                                     </div>
-                                    <span className="text-base">Python</span>
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 leading-tight">{stat.label}</div>
                                 </div>
-                                {activeTab === 'python' && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 animate-gradient-x" />
-                                )}
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('figma')}
-                                className={`flex-1 px-6 py-5 font-bold transition-all duration-300 relative group ${activeTab === 'figma'
-                                    ? 'text-purple-600 bg-white/80'
-                                    : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50/50'
-                                    }`}
-                            >
-                                <div className="flex items-center justify-center gap-3">
-                                    <div className={`p-2 rounded-lg transition-all ${activeTab === 'figma' ? 'bg-purple-100' : 'bg-gray-100 group-hover:bg-purple-50'}`}>
-                                        <Palette className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-base">Figma</span>
-                                </div>
-                                {activeTab === 'figma' && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 animate-gradient-x" />
-                                )}
-                            </button>
-                        </div>
-
-                        {/* Course Content */}
-                        <div className="p-6 bg-white/50 backdrop-blur-sm">
-                            {activeTab === 'python' && <PythonTasksPage />}
-                            {activeTab === 'figma' && <FigmaTasksPage />}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Premium Info Banner */}
-                <div className="relative">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur opacity-30"></div>
-                    <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-2xl p-6 text-white overflow-hidden">
-                        {/* Floating particles */}
-                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                            {[...Array(10)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className="absolute w-1 h-1 bg-white rounded-full opacity-40"
-                                    style={{
-                                        left: `${Math.random() * 100}%`,
-                                        top: `${Math.random() * 100}%`,
-                                        animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
-                                        animationDelay: `${Math.random() * 2}s`
-                                    }}
-                                />
                             ))}
                         </div>
+                    </div>
+                </div>
+            </ScrollReveal>
 
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-                                    <Award className="w-7 h-7" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-black">Получайте сертификаты</h2>
-                                    <p className="text-blue-100">Подтвердите свои навыки после прохождения курсов</p>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-                                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
-                                    <h3 className="font-bold mb-2">📚 Практические задания</h3>
-                                    <p className="text-sm text-blue-100">Применяйте знания на реальных проектах</p>
-                                </div>
-                                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
-                                    <h3 className="font-bold mb-2">🎯 Пошаговое обучение</h3>
-                                    <p className="text-sm text-blue-100">От простого к сложному</p>
-                                </div>
-                                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
-                                    <h3 className="font-bold mb-2">💬 Поддержка менторов</h3>
-                                    <p className="text-sm text-blue-100">Помощь на каждом этапе</p>
-                                </div>
-                            </div>
+            {/* INTERACTIVE NAVIGATION */}
+            <ScrollReveal animation="slide-up">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8 px-4">
+                    <div className="flex bg-white/40 backdrop-blur-xl p-2 rounded-[2rem] border border-white shadow-xl">
+                        {[
+                            { id: 'python', label: 'Python Protocol', icon: <Code />, color: 'bg-blue-600' },
+                            { id: 'figma', label: 'Visual Interface', icon: <Palette />, color: 'bg-purple-600' },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`
+                                    flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-[11px] uppercase tracking-widest transition-all duration-500
+                                    ${activeTab === tab.id
+                                        ? `${tab.color} text-white shadow-glow translate-y-[-2px]`
+                                        : 'text-indigo-950/40 hover:text-indigo-950 hover:bg-white/50'
+                                    }
+                                `}
+                            >
+                                <div className={`${activeTab === tab.id ? 'text-white' : 'text-indigo-400'}`}>{tab.icon}</div>
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="hidden lg:flex items-center gap-4">
+                        <div className="flex flex-col text-right">
+                            <span className="text-[10px] font-black text-indigo-950 uppercase tracking-widest">System Load</span>
+                            <span className="text-xs font-medium text-emerald-500 italic">Core Processing Normal</span>
                         </div>
+                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                            <Zap className="w-6 h-6 text-emerald-600 animate-pulse" />
+                        </div>
+                    </div>
+                </div>
+            </ScrollReveal>
+
+            {/* CORE CONTENT FRAME */}
+            <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-[4rem] blur-2xl -z-10 group-hover:opacity-100 transition-opacity opacity-0"></div>
+                <div className="glass-premium rounded-[3.5rem] border border-white/60 shadow-3xl overflow-hidden p-8 lg:p-12">
+                    <div className="animate-fade-in">
+                        {activeTab === 'python' ? <PythonTasksPage /> : <FigmaTasksPage />}
                     </div>
                 </div>
             </div>
 
-            {/* CSS Animations */}
+            {/* ACHIEVEMENT BANNER */}
+            <ScrollReveal animation="fade" delay={500}>
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[3rem] p-12 lg:p-16 text-white shadow-3xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+
+                    <div className="relative z-10 flex flex-col lg:flex-row items-center gap-16">
+                        <div className="space-y-8 lg:w-3/5">
+                            <div className="p-4 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 w-fit">
+                                <Award className="w-12 h-12 text-yellow-300" />
+                            </div>
+                            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter leading-tight">
+                                Твой успех <br /> официально <span className="bg-white text-indigo-700 px-4 py-1 rounded-2xl italic">Подтвержден</span>
+                            </h2>
+                            <p className="text-lg text-white/60 font-medium max-w-xl">
+                                Проходи модули, сдавай практические работы и получай профессиональные сертификаты EliteHeat Academy.
+                            </p>
+                        </div>
+
+                        <div className="lg:w-2/5 flex flex-col gap-4">
+                            {[
+                                { title: 'Practical Driven', desc: 'Учим только тому, что нужно в работе.', icon: '🎯' },
+                                { title: 'Step-by-Step', desc: 'Продуманная траектория от нуля до профи.', icon: '🎓' },
+                                { title: 'Expert Review', desc: 'Обратная связь от практикующих инженеров.', icon: '🧠' },
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 hover:bg-white/10 transition-all flex items-center gap-6">
+                                    <div className="text-3xl">{item.icon}</div>
+                                    <div>
+                                        <h4 className="font-black uppercase tracking-tight text-xs mb-1">{item.title}</h4>
+                                        <p className="text-[11px] text-white/40">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </ScrollReveal>
+
             <style>{`
-                @keyframes blob {
-                    0%, 100% { transform: translate(0, 0) scale(1); }
-                    25% { transform: translate(20px, -30px) scale(1.1); }
-                    50% { transform: translate(-20px, 20px) scale(0.9); }
-                    75% { transform: translate(30px, 30px) scale(1.05); }
+                .glass-premium {
+                    background: rgba(255, 255, 255, 0.4);
+                    backdrop-filter: blur(20px) saturate(180%);
                 }
-                @keyframes gradient-x {
-                    0%, 100% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
+                .glass-card-dark {
+                    background: rgba(255, 255, 255, 0.03);
+                    backdrop-filter: blur(20px);
                 }
-                @keyframes twinkle {
-                    0%, 100% { opacity: 0.2; transform: scale(1); }
-                    50% { opacity: 0.8; transform: scale(1.5); }
+                .shadow-glow {
+                    box-shadow: 0 10px 40px -10px rgba(79, 70, 229, 0.5);
                 }
-                
-                .animate-blob {
-                    animation: blob 7s ease-in-out infinite;
-                }
-                .animate-gradient-x {
-                    background-size: 200% 200%;
-                    animation: gradient-x 3s ease infinite;
-                }
-                .animation-delay-2000 {
-                    animation-delay: 2s;
+                .shadow-3xl {
+                    box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.15);
                 }
             `}</style>
         </div>

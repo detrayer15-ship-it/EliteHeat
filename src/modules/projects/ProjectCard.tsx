@@ -1,9 +1,18 @@
 import { Project } from '@/types/project'
 import { Card } from '@/components/ui/Card'
-import { ProgressBar } from '@/components/ui/ProgressBar'
 import { Button } from '@/components/ui/Button'
 import { formatDate } from '@/utils/date'
 import { useProjectStore } from '@/store/projectStore'
+import {
+    ExternalLink,
+    Trash2,
+    CheckCircle,
+    RotateCcw,
+    Calendar,
+    Layers,
+    ArrowUpRight
+} from 'lucide-react'
+import { AnimatedCounter } from '@/components/AnimatedCounter'
 
 interface ProjectCardProps {
     project: Project
@@ -31,10 +40,8 @@ export const ProjectCard = ({ project, onClick, onDelete }: ProjectCardProps) =>
     const handleCompleteProject = (e: React.MouseEvent) => {
         e.stopPropagation()
         if (project.stage === 'completed') {
-            // Если проект уже завершён, вернуть в работу
             updateProject(project.id, { stage: 'prototype' })
         } else {
-            // Завершить проект
             if (confirm(`Отметить проект "${project.title}" как завершённый?`)) {
                 updateProject(project.id, { stage: 'completed', progress: 100 })
             }
@@ -44,92 +51,132 @@ export const ProjectCard = ({ project, onClick, onDelete }: ProjectCardProps) =>
     const isCompleted = project.stage === 'completed'
 
     return (
-        <Card
-            hover
-            onClick={onClick}
-            className={`relative group cursor-pointer ${isCompleted ? 'border-success border-2 bg-success/5' : ''}`}
-        >
-            {/* Completed Badge */}
-            {isCompleted && (
-                <div className="absolute top-3 left-3 z-10">
-                    <div className="flex items-center gap-1 px-2 py-1 bg-success text-white rounded-full text-xs font-semibold">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Завершён
+        <div className="perspective-1000 group">
+            <Card
+                onClick={onClick}
+                className={`
+                    relative cursor-pointer overflow-hidden transition-all duration-700 transform-3d
+                    group-hover:rotate-x-2 group-hover:rotate-y-[-5deg] group-hover:scale-[1.03]
+                    ${isCompleted
+                        ? 'border-green-400/50 bg-green-50/30'
+                        : 'border-indigo-100/50 glass-card'
+                    }
+                    p-0 border-[1px] shadow-xl hover:shadow-2xl hover:shadow-indigo-500/20
+                `}
+            >
+                {/* Holographic Flash Effect */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 z-20"></div>
+
+                {/* Background Decor */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-colors"></div>
+
+                {/* Card Content Shell */}
+                <div className="p-8 space-y-6">
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isCompleted ? 'bg-green-100 text-green-600' : 'bg-indigo-100 text-indigo-600'}`}>
+                                    {project.stage || 'In Development'}
+                                </div>
+                                {isCompleted && (
+                                    <div className="animate-bounce-subtle">
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                    </div>
+                                )}
+                            </div>
+                            <h3 className="text-xl font-black text-indigo-950 truncate group-hover:text-indigo-600 transition-colors">
+                                {project.title}
+                            </h3>
+                        </div>
+
+                        {onDelete && (
+                            <button
+                                onClick={handleDelete}
+                                className="p-2.5 bg-red-50 text-red-500 rounded-xl opacity-0 group-hover:opacity-100 hover:bg-red-600 hover:text-white transition-all transform hover:rotate-12 active:scale-95 z-30"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-sm text-indigo-900/60 line-clamp-2 min-h-[40px] leading-relaxed">
+                        {project.description || 'Нет описания для этого проекта. Начните работу с Митой, чтобы спланировать его.'}
+                    </p>
+
+                    {/* Progress Engine */}
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black uppercase text-indigo-400 tracking-widest flex items-center gap-1.5">
+                                <Layers className="w-3 h-3" />
+                                Completion
+                            </span>
+                            <span className="text-sm font-black text-indigo-950">
+                                <AnimatedCounter end={project.progress} suffix="%" />
+                            </span>
+                        </div>
+                        <div className="h-2.5 w-full bg-indigo-50 rounded-full overflow-hidden border border-indigo-100/50 p-[2px]">
+                            <div
+                                className={`h-full rounded-full transition-all duration-1000 cubic-bezier(0.4, 0, 0.2, 1) relative overflow-hidden ${isCompleted ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'
+                                    }`}
+                                style={{ width: `${project.progress}%` }}
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer Stats */}
+                    <div className="flex items-center justify-between pt-6 border-t border-indigo-50/50">
+                        <div className="flex items-center gap-2 text-indigo-400">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span className="text-[10px] font-bold">{formatDate(project.updatedAt)}</span>
+                        </div>
+
+                        <div className="flex gap-2">
+                            {project.externalUrl && (
+                                <button
+                                    onClick={handleOpenIDE}
+                                    className="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all transform hover:-translate-y-1 active:scale-95 z-30 shadow-sm"
+                                    title="Open IDE"
+                                >
+                                    <ExternalLink className="w-4 h-4" />
+                                </button>
+                            )}
+                            <button
+                                onClick={handleCompleteProject}
+                                className={`p-2 rounded-lg transition-all transform hover:-translate-y-1 active:scale-95 z-30 shadow-sm ${isCompleted
+                                        ? 'bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white'
+                                        : 'bg-green-50 text-green-600 hover:bg-green-600 hover:text-white'
+                                    }`}
+                                title={isCompleted ? "Return to work" : "Complete Project"}
+                            >
+                                {isCompleted ? <RotateCcw className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Hover Detail Overlay (Partial) */}
+                    <div className="mt-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+                        <div className="flex items-center gap-2 text-indigo-600 font-bold text-xs">
+                            Подробнее <ArrowUpRight className="w-4 h-4" />
+                        </div>
                     </div>
                 </div>
-            )}
+            </Card>
 
-            {/* Delete Button */}
-            {onDelete && (
-                <button
-                    onClick={handleDelete}
-                    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-smooth p-2 hover:bg-error/10 rounded-lg z-10"
-                    title="Удалить проект"
-                >
-                    <svg className="w-5 h-5 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </button>
-            )}
-
-            <div className={`mb-3 ${isCompleted ? 'pr-8 pl-24' : 'pr-8'}`}>
-                <h3 className="text-lg font-semibold text-text line-clamp-1">{project.title}</h3>
-            </div>
-
-            {project.description && (
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p>
-            )}
-
-            <ProgressBar value={project.progress} className="mb-3" />
-
-            <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-                <span>📊 Прогресс: {project.progress}%</span>
-                <span>🕒 {formatDate(project.updatedAt)}</span>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="space-y-2 pt-3 border-t border-gray-200">
-                {/* Complete/Uncomplete Button */}
-                <Button
-                    variant={isCompleted ? "secondary" : "primary"}
-                    size="sm"
-                    className="w-full"
-                    onClick={handleCompleteProject}
-                >
-                    {isCompleted ? (
-                        <>
-                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Вернуть в работу
-                        </>
-                    ) : (
-                        <>
-                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Завершить проект
-                        </>
-                    )}
-                </Button>
-
-                {/* IDE Link Button */}
-                {project.externalUrl && (
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        className="w-full"
-                        onClick={handleOpenIDE}
-                    >
-                        <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        Открыть в IDE
-                    </Button>
-                )}
-            </div>
-        </Card>
+            <style>{`
+                .transform-3d {
+                    transform-style: preserve-3d;
+                }
+                .rotate-x-2 {
+                    transform: perspective(1000px) rotateX(2deg);
+                }
+                .rotate-y-5 {
+                    transform: perspective(1000px) rotateY(-5deg);
+                }
+            `}</style>
+        </div>
     )
 }

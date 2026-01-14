@@ -5,6 +5,8 @@ import { useAuthStore } from '@/store/authStore'
 import { useEffect } from 'react'
 import { Typewriter } from '@/components/Typewriter'
 import { FloatingParticles } from '@/components/FloatingParticles'
+import { ScrollReveal } from '@/components/ScrollReveal'
+import { AnimatedCounter } from '@/components/AnimatedCounter'
 
 export const LandingPage = () => {
     const navigate = useNavigate()
@@ -17,12 +19,14 @@ export const LandingPage = () => {
     }, [isAuthenticated, navigate])
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-teal-50 relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-teal-50 relative overflow-hidden smooth-scroll">
             {/* ULTRA PREMIUM Background Effects */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full blur-3xl opacity-10 animate-float-mega-slow"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full blur-3xl opacity-10 animate-float-mega-slow animation-delay-4000"></div>
-                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-10 animate-pulse-mega-slow"></div>
+                <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full blur-3xl opacity-10 animate-float-mega-slow blob-animated"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full blur-3xl opacity-10 animate-float-mega-slow animation-delay-4000 blob-animated"></div>
+                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-10 animate-pulse-mega-slow blob-animated"></div>
+                {/* Gradient Mesh Background */}
+                <div className="absolute inset-0 gradient-mesh opacity-30"></div>
             </div>
 
             {/* Floating Particles Background */}
@@ -96,12 +100,12 @@ export const LandingPage = () => {
 
                     {/* PREMIUM CTA Button */}
                     <div className="flex flex-col items-center gap-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                        <div className="relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="relative group perspective-1000">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity animate-pulse-slow"></div>
                             <Button
                                 size="lg"
                                 onClick={() => navigate('/subscription')}
-                                className="relative w-72 text-lg py-6 font-bold shadow-2xl hover:shadow-3xl transition-all bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 transform hover:scale-110 hover:-translate-y-1"
+                                className="relative w-72 text-lg py-6 font-bold shadow-2xl hover:shadow-3xl transition-all bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 transform hover:scale-110 hover:-translate-y-1 btn-shimmer ripple gpu-accelerated"
                             >
                                 <span className="flex items-center gap-2">
                                     🚀 Начать обучение
@@ -114,95 +118,103 @@ export const LandingPage = () => {
 
             {/* Features Section */}
             <section className="container mx-auto px-4 py-20">
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                        Что вы получите
-                    </h2>
-                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                        Комплексная образовательная программа для вашего профессионального роста
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <Card className="text-center p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-slide-up bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200" style={{ animationDelay: '0.1s' }}>
-                        <div className="text-7xl mb-6">🐍</div>
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">Python Programming</h3>
-                        <p className="text-gray-600 mb-4 leading-relaxed">
-                            <strong>15 профессиональных уроков</strong> от основ до продвинутых концепций.
-                            Изучите переменные, функции, ООП, работу с данными и создание реальных проектов.
+                <ScrollReveal animation="fade">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent text-glow">
+                            Что вы получите
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                            Комплексная образовательная программа для вашего профессионального роста
                         </p>
-                        <ul className="text-left text-sm text-gray-700 space-y-2">
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Основы синтаксиса и структуры данных</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Объектно-ориентированное программирование</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Работа с файлами и базами данных</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Практические проекты и задачи</span>
-                            </li>
-                        </ul>
-                    </Card>
+                    </div>
+                </ScrollReveal>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 perspective-1000">
+                    <ScrollReveal animation="scale" delay={100}>
+                        <Card className="text-center p-8 card-hover-lift card-tilt glass-card border-gradient border-gradient-animated group gpu-accelerated">
+                            <div className="text-7xl mb-6 animate-bounce-subtle">🐍</div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Python Programming</h3>
+                            <p className="text-gray-600 mb-4 leading-relaxed">
+                                <strong>15 профессиональных уроков</strong> от основ до продвинутых концепций.
+                                Изучите переменные, функции, ООП, работу с данными и создание реальных проектов.
+                            </p>
+                            <ul className="text-left text-sm text-gray-700 space-y-2">
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Основы синтаксиса и структуры данных</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Объектно-ориентированное программирование</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Работа с файлами и базами данных</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Практические проекты и задачи</span>
+                                </li>
+                            </ul>
+                        </Card>
+                    </ScrollReveal>
 
-                    <Card className="text-center p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-slide-up bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-200" style={{ animationDelay: '0.2s' }}>
-                        <div className="text-7xl mb-6">🎨</div>
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">Figma Design</h3>
-                        <p className="text-gray-600 mb-4 leading-relaxed">
-                            <strong>17 детальных уроков</strong> по созданию профессиональных интерфейсов.
-                            Освойте UI/UX дизайн, прототипирование и создание дизайн-систем.
-                        </p>
-                        <ul className="text-left text-sm text-gray-700 space-y-2">
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Основы UI/UX дизайна и композиции</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Создание адаптивных макетов</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Работа с компонентами и Auto Layout</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Прототипирование и анимации</span>
-                            </li>
-                        </ul>
-                    </Card>
+                    <ScrollReveal animation="scale" delay={200}>
+                        <Card className="text-center p-8 card-hover-lift card-tilt glass-card border-gradient border-gradient-animated group gpu-accelerated">
+                            <div className="text-7xl mb-6 animate-bounce-subtle animation-delay-100">🎨</div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Figma Design</h3>
+                            <p className="text-gray-600 mb-4 leading-relaxed">
+                                <strong>17 детальных уроков</strong> по созданию профессиональных интерфейсов.
+                                Освойте UI/UX дизайн, прототипирование и создание дизайн-систем.
+                            </p>
+                            <ul className="text-left text-sm text-gray-700 space-y-2">
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Основы UI/UX дизайна и композиции</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Создание адаптивных макетов</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Работа с компонентами и Auto Layout</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Прототипирование и анимации</span>
+                                </li>
+                            </ul>
+                        </Card>
+                    </ScrollReveal>
 
-                    <Card className="text-center p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-slide-up bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200" style={{ animationDelay: '0.3s' }}>
-                        <div className="text-7xl mb-6">🤖</div>
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">AI-Помощник 24/7</h3>
-                        <p className="text-gray-600 mb-4 leading-relaxed">
-                            <strong>Персональный AI-ассистент</strong> для помощи в обучении.
-                            Получайте мгновенные ответы на вопросы, проверку кода и рекомендации.
-                        </p>
-                        <ul className="text-left text-sm text-gray-700 space-y-2">
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Ответы на вопросы в режиме реального времени</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Проверка и объяснение кода</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Помощь в создании проектов</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-green-500">✓</span>
-                                <span>Персональные рекомендации</span>
-                            </li>
-                        </ul>
-                    </Card>
+                    <ScrollReveal animation="scale" delay={300}>
+                        <Card className="text-center p-8 card-hover-lift card-tilt glass-card border-gradient border-gradient-animated group gpu-accelerated">
+                            <div className="text-7xl mb-6 animate-bounce-subtle animation-delay-200">🤖</div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4">AI-Помощник 24/7</h3>
+                            <p className="text-gray-600 mb-4 leading-relaxed">
+                                <strong>Персональный AI-ассистент</strong> для помощи в обучении.
+                                Получайте мгновенные ответы на вопросы, проверку кода и рекомендации.
+                            </p>
+                            <ul className="text-left text-sm text-gray-700 space-y-2">
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Ответы на вопросы в режиме реального времени</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Проверка и объяснение кода</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Помощь в создании проектов</span>
+                                </li>
+                                <li className="flex items-start gap-2 transition-transform group-hover:translate-x-1">
+                                    <span className="text-green-500">✓</span>
+                                    <span>Персональные рекомендации</span>
+                                </li>
+                            </ul>
+                        </Card>
+                    </ScrollReveal>
                 </div>
             </section>
 
@@ -265,30 +277,38 @@ export const LandingPage = () => {
             {/* Stats Section */}
             <section className="container mx-auto px-4 py-20">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-                    <div className="animate-fade-in">
-                        <div className="text-5xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent mb-2">
-                            32+
+                    <ScrollReveal animation="scale" delay={0}>
+                        <div className="p-6 rounded-2xl glass-card glow-on-hover transition-all">
+                            <div className="text-5xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+                                <AnimatedCounter end={32} suffix="+" />
+                            </div>
+                            <div className="text-gray-600 font-medium">Уроков</div>
                         </div>
-                        <div className="text-gray-600 font-medium">Уроков</div>
-                    </div>
-                    <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                        <div className="text-5xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-2">
-                            24/7
+                    </ScrollReveal>
+                    <ScrollReveal animation="scale" delay={100}>
+                        <div className="p-6 rounded-2xl glass-card glow-on-hover transition-all">
+                            <div className="text-5xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                                24/7
+                            </div>
+                            <div className="text-gray-600 font-medium">AI-Поддержка</div>
                         </div>
-                        <div className="text-gray-600 font-medium">AI-Поддержка</div>
-                    </div>
-                    <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                        <div className="text-5xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
-                            100%
+                    </ScrollReveal>
+                    <ScrollReveal animation="scale" delay={200}>
+                        <div className="p-6 rounded-2xl glass-card glow-on-hover transition-all">
+                            <div className="text-5xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
+                                <AnimatedCounter end={100} suffix="%" />
+                            </div>
+                            <div className="text-gray-600 font-medium">Практика</div>
                         </div>
-                        <div className="text-gray-600 font-medium">Практика</div>
-                    </div>
-                    <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                        <div className="text-5xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-                            ∞
+                    </ScrollReveal>
+                    <ScrollReveal animation="scale" delay={300}>
+                        <div className="p-6 rounded-2xl glass-card glow-on-hover transition-all">
+                            <div className="text-5xl font-bold bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+                                ∞
+                            </div>
+                            <div className="text-gray-600 font-medium">Доступ к материалам</div>
                         </div>
-                        <div className="text-gray-600 font-medium">Доступ к материалам</div>
-                    </div>
+                    </ScrollReveal>
                 </div>
             </section>
 

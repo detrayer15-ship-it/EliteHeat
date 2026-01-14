@@ -19,24 +19,46 @@ export const Header = () => {
     const [showDropdown, setShowDropdown] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
-    // Subscription info - only for students
-    const subscriptionType: SubscriptionType = 'monthly'
-    const subscriptionStartDate = new Date('2026-01-01')
-    const [subscriptionInfo, setSubscriptionInfo] = useState(getSubscriptionInfo(subscriptionType, subscriptionStartDate))
-    const [progress, setProgress] = useState(calculateProgress(subscriptionInfo.startDate, subscriptionInfo.expiryDate))
+    // Helper to convert Firestore Timestamp to Date
+    const toDate = (date: any): Date => {
+        if (!date) return new Date();
+        if (date.toDate && typeof date.toDate === 'function') return date.toDate();
+        if (date instanceof Date) return date;
+        return new Date(date);
+    };
+
+    // Subscription info - logic based on real user data
+    const [subscriptionInfo, setSubscriptionInfo] = useState(() => {
+        if (user?.role === 'student' && user.subscriptionPlan) {
+            const startDate = toDate(user.subscriptionStartDate);
+            return getSubscriptionInfo(user.subscriptionPlan as SubscriptionType, startDate);
+        }
+        return getSubscriptionInfo('monthly', new Date()); // Default fallback
+    });
+
+    const [progress, setProgress] = useState(() => {
+        if (subscriptionInfo.expiryDate && subscriptionInfo.startDate) {
+            return calculateProgress(subscriptionInfo.startDate, subscriptionInfo.expiryDate);
+        }
+        return 0;
+    });
 
     // Real-time countdown for students
     useEffect(() => {
-        if (user?.role === 'student') {
-            const interval = setInterval(() => {
-                const newInfo = getSubscriptionInfo(subscriptionType, subscriptionStartDate)
-                setSubscriptionInfo(newInfo)
-                setProgress(calculateProgress(newInfo.startDate, newInfo.expiryDate))
-            }, 1000) // Update every second
+        if (user?.role === 'student' && user.subscriptionPlan) {
+            const updateInfo = () => {
+                const startDate = toDate(user.subscriptionStartDate);
+                const newInfo = getSubscriptionInfo(user.subscriptionPlan as SubscriptionType, startDate);
+                setSubscriptionInfo(newInfo);
+                setProgress(calculateProgress(newInfo.startDate, newInfo.expiryDate));
+            };
 
-            return () => clearInterval(interval)
+            updateInfo(); // Initial calculation
+            const interval = setInterval(updateInfo, 1000); // Update every second
+
+            return () => clearInterval(interval);
         }
-    }, [user?.role])
+    }, [user?.role, user?.subscriptionPlan, user?.subscriptionStartDate]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -72,10 +94,10 @@ export const Header = () => {
                                     className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-smooth"
                                 >
                                     <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg">
-                                        {user.name.charAt(0).toUpperCase()}
+                                        {(user.name || user.email || 'U').charAt(0).toUpperCase()}
                                     </div>
                                     <div className="hidden md:block text-left">
-                                        <div className="font-semibold text-text text-sm">{user.name}</div>
+                                        <div className="font-semibold text-text text-sm">{user.name || 'User'}</div>
                                         <div className="text-xs text-gray-600">{user.email}</div>
                                     </div>
                                     <svg

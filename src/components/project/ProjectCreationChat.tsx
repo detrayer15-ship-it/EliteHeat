@@ -15,6 +15,8 @@ export const ProjectCreationChat = () => {
     const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([])
     const [isLoading, setIsLoading] = useState(false)
     const [projectContext, setProjectContext] = useState<any>(null)
+    const [suggestedNames, setSuggestedNames] = useState<string[]>([])
+    const [selectedName, setSelectedName] = useState<string | null>(null)
     const navigate = useNavigate()
     const user = useAuthStore((state) => state.user)
 
@@ -101,6 +103,48 @@ export const ProjectCreationChat = () => {
                 features: ['Основной функционал'],
                 needsClarification: idea.length < 20
             }
+        }
+    }
+
+    const generateProjectNames = async (idea: string, type: string): Promise<string[]> => {
+        try {
+            const namePrompt = `Сгенерируй 3 креативных названия для проекта типа "${type}".
+
+Описание проекта: "${idea}"
+
+Требования к названиям:
+- Короткие (1-3 слова)
+- Запоминающиеся
+- Отражают суть проекта
+- Могут быть на английском или русском
+
+Верни только JSON массив из 3 названий:
+["Название 1", "Название 2", "Название 3"]`
+
+            const response = await sendTextMessage(namePrompt)
+
+            // Пытаемся извлечь JSON массив
+            const jsonMatch = response.match(/\[[\s\S]*?\]/)
+            if (jsonMatch) {
+                const names = JSON.parse(jsonMatch[0])
+                if (Array.isArray(names) && names.length === 3) {
+                    return names
+                }
+            }
+
+            // Fallback названия
+            return [
+                `${type === 'app' ? 'App' : type === 'site' ? 'Site' : 'MVP'} Pro`,
+                `Smart ${type === 'app' ? 'Solution' : 'Platform'}`,
+                `${type === 'app' ? 'Quick' : 'Easy'}${type === 'app' ? 'App' : 'Web'}`
+            ]
+        } catch (error) {
+            console.error('Name Generation Error:', error)
+            return [
+                `${type === 'app' ? 'App' : type === 'site' ? 'Site' : 'MVP'} Pro`,
+                `Smart ${type === 'app' ? 'Solution' : 'Platform'}`,
+                `${type === 'app' ? 'Quick' : 'Easy'}${type === 'app' ? 'App' : 'Web'}`
+            ]
         }
     }
 
@@ -262,11 +306,20 @@ export const ProjectCreationChat = () => {
             return
         }
 
-        // Показываем анализ
-        const analysisMsg = `✨ Отлично! Вот что я понял:
+        // Показываем анализ и генерируем названия
+        setMessages(prev => [...prev, {
+            role: 'assistant',
+            content: '🎨 Генерирую варианты названий для проекта...'
+        }])
 
-📝 **Проект:** ${analysis.title}
-🎯 **Тип:** ${analysis.type === 'app' ? 'Приложение' : analysis.type === 'site' ? 'Сайт' : 'MVP'}
+        // Генерируем названия
+        const names = await generateProjectNames(userMessage, analysis.type)
+        setSuggestedNames(names)
+        setProjectContext(analysis)
+
+        const namesMsg = `✨ Отлично! Вот что я понял:
+
+📝 **Тип:** ${analysis.type === 'app' ? 'Приложение' : analysis.type === 'site' ? 'Сайт' : 'MVP'}
 
 **Проблема:** ${analysis.problem}
 **Решение:** ${analysis.solution}
@@ -277,13 +330,13 @@ export const ProjectCreationChat = () => {
 • Backend: ${analysis.techStack.backend}
 • Database: ${analysis.techStack.db}
 
-Создаю проект...`
+🎯 **Выбери название проекта из предложенных вариантов:**`
 
         setMessages(prev => {
             const newMessages = [...prev]
             newMessages[newMessages.length - 1] = {
                 role: 'assistant',
-                content: analysisMsg
+                content: namesMsg
             }
             return newMessages
         })
@@ -291,12 +344,30 @@ export const ProjectCreationChat = () => {
         // Синхронизируем с глобальным контекстом
         addToGlobalContext({
             role: 'assistant',
-            content: analysisMsg,
+            content: namesMsg,
             context: { page: 'dashboard', projectAnalysis: analysis }
         })
 
-        setProjectContext(analysis)
-        await createProject(analysis)
+        setIsLoading(false)
+    }
+
+    const handleNameSelection = async (name: string) => {
+        if (!projectContext) return
+
+        setSelectedName(name)
+        setIsLoading(true)
+
+        // Обновляем анализ с выбранным названием
+        const updatedAnalysis = { ...projectContext, title: name }
+
+        setMessages(prev => [...prev, {
+            role: 'assistant',
+            content: `✅ Отлично! Создаю проект "${name}"...`
+        }])
+
+        await createProject(updatedAnalysis)
+        setSuggestedNames([])
+        setSelectedName(null)
     }
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -367,31 +438,65 @@ export const ProjectCreationChat = () => {
                         </div>
                     </div>
                 )}
+
+                {/* Name suggestions */}
+                {!isLoading && suggestedNames.length > 0 && (
+                    <div className="flex flex-col gap-2 p-4 bg-purple-50 rounded-xl border border-purple-200 animate-fade-in">
+                        <p className="text-sm font-semibold text-purple-700 mb-2">Выберите название:</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            {suggestedNames.map((name, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handleNameSelection(name)}
+                                    className="p-3 text-sm font-medium bg-white border-2 border-purple-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all text-gray-800 shadow-sm hover:shadow-md transform hover:scale-105"
+                                >
+                                    {name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Input */}
-            <div className="flex gap-2">
-                <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Например: Хочу создать приложение для обучения программированию..."
-                    className="flex-1 px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
-                    disabled={isLoading}
-                />
-                <Button
-                    onClick={handleSend}
-                    disabled={!input.trim() || isLoading}
-                    className="px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                >
-                    {isLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                        <Send className="w-5 h-5" />
-                    )}
-                </Button>
-            </div>
+            {!suggestedNames.length && (
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Например: Хочу создать приложение для обучения программированию..."
+                        className="flex-1 px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        disabled={isLoading}
+                    />
+                    <Button
+                        onClick={handleSend}
+                        disabled={!input.trim() || isLoading}
+                        className="px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    >
+                        {isLoading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                            <Send className="w-5 h-5" />
+                        )}
+                    </Button>
+                </div>
+            )}
+
+            {suggestedNames.length > 0 && (
+                <div className="flex justify-center">
+                    <button
+                        onClick={() => {
+                            setSuggestedNames([])
+                            setMessages(prev => [...prev, { role: 'assistant', content: 'Хорошо, давай попробуем другое описание. О чем твой проект?' }])
+                        }}
+                        className="text-sm text-purple-600 hover:underline font-medium"
+                    >
+                        Сгенерировать другие названия
+                    </button>
+                </div>
+            )}
 
             <p className="text-xs text-gray-600 mt-3 text-center">
                 ✨ AI проанализирует идею и создаст полную структуру проекта

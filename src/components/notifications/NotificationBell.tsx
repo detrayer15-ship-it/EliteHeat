@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { collection, query, where, onSnapshot, orderBy, limit } from 'firebase/firestore'
-import { db } from '@/config/firebase'
+import { db, auth } from '@/config/firebase'
 import { useAuthStore } from '@/store/authStore'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,7 +23,8 @@ export const NotificationBell = () => {
     const [unreadCount, setUnreadCount] = useState(0)
 
     useEffect(() => {
-        if (!user) return
+        const currentUser = auth.currentUser
+        if (!user || !currentUser) return
 
         // Subscribe to notifications
         const q = query(
