@@ -1,13 +1,26 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card } from '@/components/ui/Card'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
 import { useAuthStore } from '@/store/authStore'
-import { Sparkles, CheckCircle2, Crown } from 'lucide-react'
+import { useTranslation } from '@/hooks/useTranslation'
+import {
+    Sparkles,
+    Crown,
+    User,
+    Mail,
+    Lock,
+    ArrowRight,
+    CheckCircle2,
+    Zap,
+    ShieldCheck,
+    Globe,
+    Bot
+} from 'lucide-react'
+import { LogoAnimation } from '@/components/ui/LogoAnimation'
+import { motion } from 'framer-motion'
 
 export const RegisterPage = () => {
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const register = useAuthStore((state) => state.register)
     const loginWithGoogle = useAuthStore((state) => state.loginWithGoogle)
 
@@ -21,7 +34,6 @@ export const RegisterPage = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState<any>(null)
 
-    // Check for selected subscription plan from localStorage
     useEffect(() => {
         const savedPlan = localStorage.getItem('selectedPlan')
         if (savedPlan) {
@@ -36,7 +48,6 @@ export const RegisterPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
-
         setIsLoading(true)
         const result = await register(
             formData.email,
@@ -49,7 +60,6 @@ export const RegisterPage = () => {
         setIsLoading(false)
 
         if (result.success) {
-            // Clear saved plan
             localStorage.removeItem('selectedPlan')
             navigate('/dashboard')
         } else {
@@ -72,206 +82,218 @@ export const RegisterPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-4 sm:py-12 px-4 relative overflow-hidden">
-            {/* Animated Background */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-20 animate-float-slow"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full blur-3xl opacity-20 animate-float-slow animation-delay-3000"></div>
-            </div>
+        <div className="min-h-screen bg-white flex items-center justify-center p-6 relative overflow-hidden font-sans">
+            {/* EDUCATIONAL-PREMIUM BACKDROP */}
+            <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] bg-blue-50 rounded-full blur-[150px] -z-10 opacity-60"></div>
+            <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[50%] bg-orange-50 rounded-full blur-[130px] -z-10 opacity-40"></div>
 
-            <Card className="w-full max-w-md relative z-10 animate-fade-in shadow-2xl bg-white/95 backdrop-blur-xl border-2 border-white/50">
-                {/* Header */}
-                <div className="text-center mb-4 sm:mb-6">
-                    <div className="inline-block mb-3">
-                        <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x">
-                            EliteHeat
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-start relative z-10"
+            >
+                {/* LEFT SIDE: EDUCATIONAL BENEFITS */}
+                <div className="lg:col-span-5 space-y-12 py-10">
+                    <div className="space-y-6">
+                        <div className="inline-flex items-center gap-3 bg-blue-50 border border-blue-100 px-4 py-2 rounded-full">
+                            <Sparkles className="w-4 h-4 text-blue-600" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Путь к мастерству</span>
                         </div>
+                        <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter leading-[0.9]">
+                            ВАШ НОВЫЙ <br />
+                            <span className="text-orange-500 italic">ЭЛИТНЫЙ</span> ПУТЬ.
+                        </h2>
+                        <p className="text-slate-500 font-medium text-lg leading-relaxed max-w-md">
+                            Присоединяйтесь к платформе, где технологии ИИ помогают масштабировать ваше обучение и проекты.
+                        </p>
                     </div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">Регистрация</h1>
-                    <p className="text-sm sm:text-base text-gray-600">Создайте свой личный кабинет</p>
+
+                    <div className="space-y-6">
+                        {[
+                            { icon: <Zap className="text-orange-500" />, title: "Масштабируемость", desc: "15+ Python лабораторий и 17+ дизайн-миссий для вашего роста." },
+                            { icon: <Bot className="text-blue-600" />, title: "ИИ Ассистент Mita", desc: "Персональный наставник в обучении 24/7." },
+                            { icon: <ShieldCheck className="text-emerald-500" />, title: "Верификация", desc: "Сертификаты, подтверждающие ваш профессиональный уровень." }
+                        ].map((benefit, idx) => (
+                            <div key={idx} className="flex gap-4 p-6 rounded-3xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-xl hover:shadow-slate-100 transition-all group">
+                                <div className="p-3 bg-white rounded-2xl shadow-sm group-hover:scale-110 transition-transform">{benefit.icon}</div>
+                                <div>
+                                    <h4 className="text-slate-900 font-black text-sm uppercase tracking-widest">{benefit.title}</h4>
+                                    <p className="text-slate-500 text-xs font-medium leading-relaxed">{benefit.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100 flex items-center gap-6">
+                        <div className="flex -space-x-4">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 overflow-hidden shadow-sm">
+                                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 999}`} alt="User" />
+                                </div>
+                            ))}
+                        </div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            К нам присоединились <span className="text-slate-900">+243</span> студента
+                        </p>
+                    </div>
                 </div>
 
-                {/* Selected Plan Display */}
-                {selectedPlan && (
-                    <div className="mb-4 p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white animate-slide-down">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Crown className="w-5 h-5" />
-                            <span className="font-bold">Выбранный тариф</span>
-                        </div>
-                        <div className="text-sm opacity-90">
-                            {selectedPlan.name} - {selectedPlan.price.toLocaleString()}₸
-                        </div>
-                        <div className="text-xs opacity-75 mt-1">
-                            Срок: {selectedPlan.duration}
-                        </div>
-                    </div>
-                )}
+                {/* RIGHT SIDE: REGISTRATION FORM */}
+                <div className="lg:col-span-7">
+                    <div className="bg-white rounded-[4rem] p-10 md:p-16 shadow-[0_32px_80px_-20px_rgba(0,0,0,0.1)] border border-slate-100 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/30 rotate-45 translate-x-20 -translate-y-20"></div>
 
-                {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm animate-shake">
-                        {error}
-                    </div>
-                )}
+                        <div className="relative z-10 space-y-10">
+                            <div className="text-center space-y-4">
+                                <LogoAnimation />
+                                <div className="space-y-1">
+                                    <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Регистрация профиля</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">Протокол безопасного зачисления</p>
+                                </div>
+                            </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input
-                        label="Имя и Фамилия"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Иван Иванов"
-                        autoComplete="name"
-                        required
-                        className="transition-all focus:scale-[1.02]"
-                    />
+                            {selectedPlan && (
+                                <motion.div
+                                    initial={{ y: -20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    className="p-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl text-white shadow-xl shadow-blue-100 flex items-center justify-between"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-white/20 rounded-2xl"><Crown className="w-6 h-6" /></div>
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Выбранный план</p>
+                                            <p className="font-black text-lg">{selectedPlan.name}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-black text-xl">{selectedPlan.price.toLocaleString()}₸</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-60">{selectedPlan.duration}</p>
+                                    </div>
+                                </motion.div>
+                            )}
 
-                    <Input
-                        label="Email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="your@email.com"
-                        autoComplete="email"
-                        required
-                        className="transition-all focus:scale-[1.02]"
-                    />
+                            {error && (
+                                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-500 text-[10px] font-black text-center uppercase tracking-widest">
+                                    {error}
+                                </div>
+                            )}
 
-                    <Input
-                        label="Пароль"
-                        type="password"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        placeholder="Минимум 6 символов"
-                        autoComplete="new-password"
-                        minLength={6}
-                        required
-                        className="transition-all focus:scale-[1.02]"
-                    />
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="relative group/input">
+                                        <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within/input:text-blue-600 transition-colors">
+                                            <User className="w-5 h-5" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="ПОЛНОЕ ИМЯ"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 pl-16 pr-6 text-slate-900 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-blue-200 focus:bg-white transition-all placeholder:text-slate-300"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="relative group/input">
+                                        <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within/input:text-blue-600 transition-colors">
+                                            <Mail className="w-5 h-5" />
+                                        </div>
+                                        <input
+                                            type="email"
+                                            placeholder="EMAIL АДРЕС"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 pl-16 pr-6 text-slate-900 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-blue-200 focus:bg-white transition-all placeholder:text-slate-300"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Роль
-                        </label>
-                        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                <div className="relative group/input">
+                                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none text-slate-300 group-focus-within/input:text-blue-600 transition-colors">
+                                        <Lock className="w-5 h-5" />
+                                    </div>
+                                    <input
+                                        type="password"
+                                        placeholder="СОЗДАТЬ ПАРОЛЬ"
+                                        required
+                                        minLength={6}
+                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-5 pl-16 pr-6 text-slate-900 text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-blue-200 focus:bg-white transition-all placeholder:text-slate-300"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="pt-4">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6 text-center">Выберите тип доступа</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {[
+                                            { id: 'student', label: t('roleStudent'), emoji: '🎒' },
+                                            { id: 'admin', label: t('roleTeacher'), emoji: '👨‍🏫' }
+                                        ].map((r) => (
+                                            <button
+                                                key={r.id}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, role: r.id as any })}
+                                                className={`
+                                                    p-6 rounded-3xl border-2 transition-all group/role
+                                                    ${formData.role === r.id
+                                                        ? 'border-blue-600 bg-blue-50 shadow-lg shadow-blue-50'
+                                                        : 'border-slate-50 bg-slate-50/50 hover:border-slate-100'}
+                                                `}
+                                            >
+                                                <div className="text-3xl mb-2 group-hover/role:scale-125 transition-transform">{r.emoji}</div>
+                                                <div className={`text-[10px] font-black uppercase tracking-widest ${formData.role === r.id ? 'text-blue-600' : 'text-slate-400'}`}>
+                                                    {r.label}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="w-full group/btn relative overflow-hidden bg-slate-900 text-white font-black uppercase tracking-[0.2em] py-6 rounded-3xl transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 shadow-xl shadow-slate-100"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800 translate-x-[100%] group-hover/btn:translate-x-0 transition-transform duration-500"></div>
+                                    <span className="relative z-10 flex items-center justify-center gap-3 transition-colors">
+                                        {isLoading ? 'ОФОРМЛЕНИЕ...' : 'ЗАРЕГИСТРИРОВАТЬСЯ'}
+                                        {!isLoading && <ArrowRight className="w-5 h-5" />}
+                                    </span>
+                                </button>
+                            </form>
+
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-slate-100"></div>
+                                </div>
+                                <div className="relative flex justify-center">
+                                    <span className="bg-white px-4 text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">ИЛИ</span>
+                                </div>
+                            </div>
+
                             <button
                                 type="button"
-                                onClick={() => setFormData({ ...formData, role: 'student' })}
-                                className={`p-3 sm:p-4 border-2 rounded-xl transition-all transform hover:scale-105 ${formData.role === 'student'
-                                        ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50 text-purple-700 shadow-lg'
-                                        : 'border-gray-200 hover:border-gray-300 bg-white'
-                                    }`}
+                                onClick={handleGoogleRegister}
+                                className="w-full py-5 border border-slate-100 rounded-2xl flex items-center justify-center gap-4 text-slate-600 hover:bg-slate-50 transition-all text-xs font-black uppercase tracking-widest"
                             >
-                                <div className="text-xl sm:text-2xl mb-1">🎒</div>
-                                <div className="font-semibold text-sm sm:text-base">Ученик</div>
+                                <Globe className="w-5 h-5" />
+                                Продолжить через Google
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => setFormData({ ...formData, role: 'admin' })}
-                                className={`p-3 sm:p-4 border-2 rounded-xl transition-all transform hover:scale-105 ${formData.role === 'admin'
-                                        ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-700 shadow-lg'
-                                        : 'border-gray-200 hover:border-gray-300 bg-white'
-                                    }`}
-                            >
-                                <div className="text-xl sm:text-2xl mb-1">👨‍🏫</div>
-                                <div className="font-semibold text-sm sm:text-base">Преподаватель</div>
-                            </button>
+
+                            <div className="text-center">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-blue-600 transition-colors"
+                                >
+                                    Уже есть аккаунт? Войти в систему
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all shadow-lg"
-                        loading={isLoading}
-                    >
-                        <span className="flex items-center justify-center gap-2">
-                            <Sparkles className="w-4 h-4" />
-                            Создать аккаунт
-                        </span>
-                    </Button>
-
-                    {/* Divider */}
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-gray-500">или</span>
-                        </div>
-                    </div>
-
-                    {/* Google Sign-In Button */}
-                    <Button
-                        type="button"
-                        variant="secondary"
-                        className="w-full flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base hover:shadow-lg transition-all"
-                        onClick={handleGoogleRegister}
-                        disabled={isLoading}
-                    >
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                        </svg>
-                        <span className="hidden sm:inline">Зарегистрироваться через Google</span>
-                        <span className="sm:hidden">Google</span>
-                    </Button>
-
-                    <div className="text-center text-sm text-gray-600">
-                        Уже есть аккаунт?{' '}
-                        <button
-                            type="button"
-                            onClick={() => navigate('/login')}
-                            className="text-purple-600 hover:text-purple-700 font-semibold hover:underline"
-                        >
-                            Войти
-                        </button>
-                    </div>
-
-                    <div className="text-center">
-                        <button
-                            type="button"
-                            onClick={() => navigate('/')}
-                            className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                        >
-                            ← Вернуться на главную
-                        </button>
-                    </div>
-                </form>
-            </Card>
-
-            <style>{`
-                @keyframes float-slow {
-                    0%, 100% { transform: translate(0, 0); }
-                    50% { transform: translate(30px, -30px); }
-                }
-                @keyframes fade-in {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes slide-down {
-                    from { opacity: 0; transform: translateY(-20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes shake {
-                    0%, 100% { transform: translateX(0); }
-                    25% { transform: translateX(-10px); }
-                    75% { transform: translateX(10px); }
-                }
-                @keyframes gradient-x {
-                    0%, 100% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                }
-                
-                .animate-float-slow { animation: float-slow 20s ease-in-out infinite; }
-                .animate-fade-in { animation: fade-in 0.8s ease-out; }
-                .animate-slide-down { animation: slide-down 0.5s ease-out; }
-                .animate-shake { animation: shake 0.5s ease-in-out; }
-                .animate-gradient-x { 
-                    background-size: 200% 200%;
-                    animation: gradient-x 3s ease infinite;
-                }
-                .animation-delay-3000 { animation-delay: 3s; }
-            `}</style>
-        </div>
+                </div >
+            </motion.div >
+        </div >
     )
 }

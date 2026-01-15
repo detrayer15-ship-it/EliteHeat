@@ -1,10 +1,12 @@
 import { useLanguageStore } from '@/store/languageStore'
-import { translations } from '@/i18n/translations'
+import { translations, TranslationKey } from '@/utils/translations'
 
 export const useTranslation = () => {
-    const language = useLanguageStore((state) => state.language)
+    const { language, setLanguage } = useLanguageStore()
 
-    const t = translations[language]
+    const t = (key: TranslationKey) => {
+        return translations[language][key] || translations['ru'][key]
+    }
 
-    return { t, language }
+    return { t, language, setLanguage }
 }

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db, auth } from './config/firebase'
 import { AppLayout } from './components/layout/AppLayout'
+
 import { LandingPage } from './pages/LandingPage'
 import { Dashboard } from './pages/Dashboard'
 import { ProjectsPage } from './pages/ProjectsPage'
@@ -60,6 +61,8 @@ import { EnhancedChatPage } from './pages/admin/EnhancedChatPage'
 import { AdminOpsChat } from './pages/admin/AdminOpsChat'
 import { AIActivityMonitorPage } from './pages/admin/AIActivityMonitorPage'
 import { StudentChatsPage } from './pages/student/StudentChatsPage'
+import { SkillTreePage } from './pages/SkillTreePage'
+import { PublicPortfolioPage } from './pages/PublicPortfolioPage'
 import AchievementsPage from './pages/student/AchievementsPage'
 import APITestPage from './pages/developer/APITestPage'
 import { TeacherDashboard } from './pages/teacher/TeacherDashboard'
@@ -127,12 +130,7 @@ function App() {
     }, [])
 
     return (
-        <BrowserRouter
-            future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true
-            }}
-        >
+        <BrowserRouter>
             <Routes>
                 {/* Public routes - без AppLayout */}
                 <Route path="/" element={<LandingPage />} />
@@ -207,6 +205,26 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <ProgressTrackerPage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/skill-tree"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <SkillTreePage />
+                            </AppLayout>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/portfolio"
+                    element={
+                        <ProtectedRoute>
+                            <AppLayout>
+                                <PublicPortfolioPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

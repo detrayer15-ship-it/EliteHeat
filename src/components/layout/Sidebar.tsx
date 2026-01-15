@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { useTranslation } from '@/hooks/useTranslation'
 import { EliteHeatLogo } from '@/components/ui/EliteHeatLogo'
 import {
     Home,
@@ -17,36 +18,40 @@ import {
     Users,
     CheckSquare,
     MessageCircle,
-    Terminal
+    Terminal,
+    Globe
 } from 'lucide-react'
 
 const navItems = [
-    { path: '/dashboard', label: 'Главная', icon: <Home className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
+    { path: '/dashboard', labelKey: 'dashboard', icon: <Home className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
 
     // Admin Sections
-    { path: '/admin', label: 'Админ-панель', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin', 'developer'] },
-    { path: '/admin/tasks', label: 'Проверка задач', icon: <CheckSquare className="w-5 h-5" />, roles: ['admin', 'developer'] },
-    { path: '/admin/users', label: 'Ученики', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer'] },
-    { path: '/admin/groups', label: 'Группы', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer'] },
-    { path: '/admin/group-chat', label: 'Чат админов', icon: <MessageCircle className="w-5 h-5" />, roles: ['admin', 'developer'] },
+    { path: '/admin', labelKey: 'adminPanel', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin', 'developer'] },
+    { path: '/admin/tasks', labelKey: 'checkTasks', icon: <CheckSquare className="w-5 h-5" />, roles: ['admin', 'developer'] },
+    { path: '/admin/users', labelKey: 'students', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer'] },
+    { path: '/admin/groups', labelKey: 'groups', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer'] },
+    { path: '/admin/group-chat', labelKey: 'adminChat', icon: <MessageCircle className="w-5 h-5" />, roles: ['admin', 'developer'] },
 
     // Developer Sections
-    { path: '/developer/panel', label: 'Разработчик', icon: <Terminal className="w-5 h-5" />, roles: ['developer'] },
+    { path: '/developer/panel', labelKey: 'developer', icon: <Terminal className="w-5 h-5" />, roles: ['developer'] },
 
     // Student Sections
-    { path: '/projects', label: 'Проекты', icon: <FolderKanban className="w-5 h-5" />, roles: ['student'] },
-    { path: '/tasks', label: 'Курсы', icon: <BookOpen className="w-5 h-5" />, roles: ['student'] },
-    { path: '/progress', label: 'Трекер прогресса', icon: <TrendingUp className="w-5 h-5" />, roles: ['student'] },
+    { path: '/projects', labelKey: 'projects', icon: <FolderKanban className="w-5 h-5" />, roles: ['student'] },
+    { path: '/tasks', labelKey: 'tasks', icon: <BookOpen className="w-5 h-5" />, roles: ['student'] },
+    { path: '/skill-tree', labelKey: 'skillTree', icon: <TrendingUp className="w-5 h-5" />, roles: ['student'] },
+    { path: '/progress', labelKey: 'progressTracker', icon: <TrendingUp className="w-5 h-5" />, roles: ['student'] },
+    { path: '/portfolio', labelKey: 'portfolio', icon: <Globe className="w-5 h-5" />, roles: ['student'] },
 
     // Shared Sections
-    { path: '/ai-assistant', label: 'Мита', icon: <Sparkles className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
-    { path: '/settings', label: 'Настройки', icon: <Settings className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
+    { path: '/ai-assistant', labelKey: 'aiAssistant', icon: <Sparkles className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
+    { path: '/settings', labelKey: 'settings', icon: <Settings className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
 ]
 
 export const Sidebar = () => {
     const location = useLocation()
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
+    const { t, language, setLanguage } = useTranslation()
     const [isOpen, setIsOpen] = useState(false)
 
     const filteredNavItems = navItems.filter(item =>
@@ -62,8 +67,8 @@ export const Sidebar = () => {
             >
                 <div className="w-6 h-5 flex flex-col justify-between overflow-hidden">
                     <span className={`block h-0.5 w-full bg-indigo-600 transition-all duration-500 ${isOpen ? 'rotate-45 translate-y-2 scale-x-125' : ''}`}></span>
-                    <span className={`block h-0.5 w-full bg-purple-600 transition-all duration-500 ${isOpen ? 'opacity-0 -translate-x-10' : ''}`}></span>
-                    <span className={`block h-0.5 w-full bg-pink-600 transition-all duration-500 ${isOpen ? '-rotate-45 -translate-y-2 scale-x-125' : ''}`}></span>
+                    <span className={`block h-0.5 w-full bg-blue-500 transition-all duration-500 ${isOpen ? 'opacity-0 -translate-x-10' : ''}`}></span>
+                    <span className={`block h-0.5 w-full bg-indigo-400 transition-all duration-500 ${isOpen ? '-rotate-45 -translate-y-2 scale-x-125' : ''}`}></span>
                 </div>
             </button>
 
@@ -98,11 +103,11 @@ export const Sidebar = () => {
                         <div>
                             <h1 className="text-2xl font-black tracking-tight flex items-center">
                                 <span className="text-indigo-600">Elite</span>
-                                <span className="bg-gradient-to-r from-pink-600 to-orange-500 bg-clip-text text-transparent">Heat</span>
+                                <span className="bg-gradient-to-r from-blue-600 to-indigo-400 bg-clip-text text-transparent">Heat</span>
                             </h1>
                             <div className="flex items-center gap-1.5 opacity-60">
                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-900">Student Platform</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-900">{t('platform')}</span>
                             </div>
                         </div>
                     </div>
@@ -111,7 +116,7 @@ export const Sidebar = () => {
                 {/* Main Navigation */}
                 <nav className="flex-1 overflow-y-auto px-6 py-2">
                     <div className="space-y-1.5">
-                        <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-4 opacity-50">Menu</p>
+                        <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-4 opacity-50">{t('menu')}</p>
 
                         {filteredNavItems.map((item, index) => {
                             const isActive = location.pathname === item.path
@@ -123,7 +128,7 @@ export const Sidebar = () => {
                                     className={`
                                         relative flex items-center gap-4 px-5 py-3.5 rounded-2xl group transition-all duration-500 overflow-hidden
                                         ${isActive
-                                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-glow-teal scale-[1.02]'
+                                            ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-glow scale-[1.02]'
                                             : 'text-indigo-900/70 hover:text-indigo-600 hover:bg-white/40'
                                         }
                                     `}
@@ -144,7 +149,7 @@ export const Sidebar = () => {
                                         {item.icon}
                                     </span>
 
-                                    <span className="font-bold tracking-wide z-10">{item.label}</span>
+                                    <span className="font-bold tracking-wide z-10">{t(item.labelKey as any)}</span>
 
                                     {isActive ? (
                                         <div className="ml-auto animate-pulse-slow z-10">
@@ -174,7 +179,7 @@ export const Sidebar = () => {
                                     `}
                                 >
                                     <MessageSquare className={`w-5 h-5 transition-transform group-hover:scale-120 ${location.pathname === '/chat' ? 'animate-bounce-subtle' : ''}`} />
-                                    <span className="font-bold tracking-wide">Поддержка</span>
+                                    <span className="font-bold tracking-wide">{t('support')}</span>
                                 </Link>
                             )}
 
@@ -185,9 +190,9 @@ export const Sidebar = () => {
                                     </div>
                                     <div className="flex items-center gap-2 mb-1">
                                         <Crown className="w-4 h-4 text-amber-600 animate-pulse" />
-                                        <span className="text-[10px] font-black uppercase text-amber-700">Premium Plan</span>
+                                        <span className="text-[10px] font-black uppercase text-amber-700">{t('premiumPlan')}</span>
                                     </div>
-                                    <p className="text-xs font-bold text-amber-900 truncate">Elite Access Active</p>
+                                    <p className="text-xs font-bold text-amber-900 truncate">{t('eliteAccess')}</p>
                                 </div>
                             )}
                         </div>
@@ -224,7 +229,7 @@ export const Sidebar = () => {
                     .glass-premium {
                         background: rgba(255, 255, 255, 0.45);
                         backdrop-filter: blur(20px) saturate(180%);
-                        border-right: 1px solid rgba(255, 255, 255, 0.3);
+                        border-right: 1px solid rgba(255, 255, 255, 0.2);
                     }
                     .shadow-glow {
                         box-shadow: 0 10px 40px -10px rgba(79, 70, 229, 0.3);

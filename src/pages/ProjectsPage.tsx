@@ -33,7 +33,7 @@ export const ProjectsPage = () => {
         <div className="min-h-full py-2 space-y-10 group/page">
             <ScrollReveal animation="fade">
                 {/* Ultra Premium Header */}
-                <div className="relative overflow-hidden glass-premium rounded-[2.5rem] p-10 shadow-2xl border border-white/60">
+                <div className="relative overflow-hidden glass-premium bg-gradient-to-br from-indigo-50/60 via-white/40 to-purple-50/40 rounded-[2.5rem] p-10 shadow-2xl border border-white/60">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] -mr-48 -mt-48 animate-pulse-slow"></div>
 
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
@@ -73,7 +73,7 @@ export const ProjectsPage = () => {
                     { label: 'Идеи', count: plannedProjects, icon: <Clock className="w-6 h-6" />, color: 'from-purple-400 to-pink-600', text: 'purple-600' },
                 ].map((stat, idx) => (
                     <ScrollReveal key={idx} animation="slide-up" delay={idx * 150}>
-                        <div className="glass-premium p-8 rounded-[2.5rem] border border-white/60 shadow-xl group hover:scale-[1.05] transition-all duration-500 relative overflow-hidden">
+                        <div className={`glass-premium bg-gradient-to-br ${stat.color.includes('emerald') ? 'from-emerald-50/60 via-white/40 to-green-50/30' : stat.color.includes('indigo') ? 'from-indigo-50/60 via-white/40 to-blue-50/30' : 'from-purple-50/60 via-white/40 to-pink-50/30'} p-8 rounded-[2.5rem] border border-white/60 shadow-xl group hover:scale-[1.05] transition-all duration-500 relative overflow-hidden`}>
                             <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${stat.color} opacity-[0.03] rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700`}></div>
 
                             <div className="flex items-center justify-between mb-2">

@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { AnimatedCounter } from '@/components/AnimatedCounter'
+import { CodeReviewPanel } from '@/components/project/CodeReviewPanel'
 
 type ContentFormat = 'pdf' | 'presentation' | 'text'
 
@@ -267,6 +268,18 @@ export const AIReviewPage = () => {
                     </div>
                 </ScrollReveal>
             )}
+
+            {/* CODE REVIEW LAB SECTION */}
+            <ScrollReveal animation="slide-up">
+                <div className="space-y-10">
+                    <div className="flex items-center gap-6">
+                        <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent to-indigo-100"></div>
+                        <h2 className="text-3xl font-black text-indigo-950 tracking-tighter whitespace-nowrap">Лаборатория Кода</h2>
+                        <div className="h-[2px] flex-1 bg-gradient-to-l from-transparent to-indigo-100"></div>
+                    </div>
+                    <CodeReviewPanel />
+                </div>
+            </ScrollReveal>
 
             <style>{`
                 .glass-premium { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); }

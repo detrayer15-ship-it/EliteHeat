@@ -7,6 +7,13 @@ export interface Task {
     deadline?: string
     category?: string
     projectId: string
+    // AI-generated task fields
+    aiGenerated?: boolean
+    difficulty?: 'beginner' | 'intermediate' | 'advanced'
+    subject?: 'python' | 'figma'
+    description?: string
+    hints?: string[]
+    estimatedTime?: number // in minutes
 }
 
 export interface Slide {

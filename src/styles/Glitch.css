@@ -1,0 +1,213 @@
+/* MiSide Glitch Effects */
+
+.glitch-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch-text {
+    position: relative;
+    color: inherit;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 #ff00c1;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+    animation: glitch-anim2 1s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% {
+        clip: rect(31px, 9999px, 94px, 0);
+        transform: skew(0.85deg);
+    }
+
+    5% {
+        clip: rect(70px, 9999px, 71px, 0);
+        transform: skew(0.88deg);
+    }
+
+    10% {
+        clip: rect(29px, 9999px, 83px, 0);
+        transform: skew(0.55deg);
+    }
+
+    15% {
+        clip: rect(48px, 9999px, 12px, 0);
+        transform: skew(0.24deg);
+    }
+
+    20% {
+        clip: rect(86px, 9999px, 13px, 0);
+        transform: skew(0.09deg);
+    }
+
+    25% {
+        clip: rect(33px, 9999px, 44px, 0);
+        transform: skew(0.04deg);
+    }
+
+    30% {
+        clip: rect(27px, 9999px, 86px, 0);
+        transform: skew(0.18deg);
+    }
+
+    35% {
+        clip: rect(85px, 9999px, 92px, 0);
+        transform: skew(0.8deg);
+    }
+
+    40% {
+        clip: rect(20px, 9999px, 30px, 0);
+        transform: skew(0.79deg);
+    }
+
+    45% {
+        clip: rect(61px, 9999px, 66px, 0);
+        transform: skew(0.57deg);
+    }
+
+    50% {
+        clip: rect(93px, 9999px, 50px, 0);
+        transform: skew(0.96deg);
+    }
+
+    55% {
+        clip: rect(3px, 9999px, 65px, 0);
+        transform: skew(0.57deg);
+    }
+
+    60% {
+        clip: rect(54px, 9999px, 20px, 0);
+        transform: skew(0.19deg);
+    }
+
+    65% {
+        clip: rect(34px, 9999px, 45px, 0);
+        transform: skew(0.25deg);
+    }
+
+    70% {
+        clip: rect(9px, 9999px, 69px, 0);
+        transform: skew(0.06deg);
+    }
+
+    75% {
+        clip: rect(26px, 9999px, 69px, 0);
+        transform: skew(0.38deg);
+    }
+
+    80% {
+        clip: rect(48px, 9999px, 95px, 0);
+        transform: skew(0.55deg);
+    }
+
+    85% {
+        clip: rect(71px, 9999px, 72px, 0);
+        transform: skew(0.08deg);
+    }
+
+    90% {
+        clip: rect(60px, 9999px, 90px, 0);
+        transform: skew(0.21deg);
+    }
+
+    95% {
+        clip: rect(45px, 9999px, 35px, 0);
+        transform: skew(0.37deg);
+    }
+
+    100% {
+        clip: rect(52px, 9999px, 34px, 0);
+        transform: skew(0.28deg);
+    }
+}
+
+@keyframes glitch-anim2 {
+    0% {
+        clip: rect(65px, 9999px, 100px, 0);
+        transform: skew(1deg);
+    }
+
+    23% {
+        clip: rect(51px, 9999px, 16px, 0);
+        transform: skew(0.85deg);
+    }
+
+    49% {
+        clip: rect(79px, 9999px, 13px, 0);
+        transform: skew(0.13deg);
+    }
+
+    77% {
+        clip: rect(26px, 9999px, 18px, 0);
+        transform: skew(0.5deg);
+    }
+
+    100% {
+        clip: rect(41px, 9999px, 25px, 0);
+        transform: skew(0.8deg);
+    }
+}
+
+.miside-glitch-overlay {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0.15) 0px,
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px);
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.3;
+}
+
+.miside-noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.miside-card {
+    background: rgba(10, 10, 12, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+.miside-hud-border {
+    position: relative;
+    padding: 2px;
+    background: linear-gradient(45deg, #ff00c1, #00fff9);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 90% 100%, 0% 100%);
+}
+
+.miside-hud-inner {
+    background: #0a0a0c;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 90% 100%, 0% 100%);
+}

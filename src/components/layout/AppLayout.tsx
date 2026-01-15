@@ -9,12 +9,12 @@ interface AppLayoutProps {
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/50 relative overflow-hidden">
-            {/* Ultra Premium Global Background Elements */}
+        <div className="flex min-h-screen bg-gradient-to-tr from-[#f8faff] via-[#ffffff] to-[#eff6ff] relative overflow-hidden">
+            {/* Ultra Premium Global Background Elements (Harmonized with Earth) */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full blur-[120px] animate-pulse-mega-slow"></div>
-                <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full blur-[120px] animate-pulse-mega-slow animation-delay-4000"></div>
-                <div className="absolute inset-0 gradient-mesh opacity-[0.03] pointer-events-none"></div>
+                <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-100/20 rounded-full blur-[160px] animate-pulse-mega-slow"></div>
+                <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-indigo-50/30 rounded-full blur-[160px] animate-pulse-mega-slow animation-delay-4000"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(255,255,255,0.4)_100%)]"></div>
             </div>
 
             <Sidebar />

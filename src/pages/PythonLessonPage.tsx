@@ -4,7 +4,9 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { TaskComments } from '@/components/TaskComments'
-import { ArrowLeft, Video, CheckCircle, Clock } from 'lucide-react'
+import { ArrowLeft, Video, CheckCircle, Clock, Sparkles, Terminal } from 'lucide-react'
+import { motion } from 'framer-motion'
+
 import { PythonTask } from '@/types/pythonTask'
 
 export const PythonLessonPage = () => {
@@ -15,6 +17,7 @@ export const PythonLessonPage = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [isCompleted, setIsCompleted] = useState(false)
+    const [completedSteps, setCompletedSteps] = useState<number[]>([])
 
     useEffect(() => {
         // Загружаем задание
@@ -31,7 +34,22 @@ export const PythonLessonPage = () => {
 
         setIsSubmitted(submitted.includes(lessonId))
         setIsCompleted(completed[lessonId || ''] === true)
+
+        // Загружаем локальный прогресс шагов
+        const stepsProgress = JSON.parse(localStorage.getItem(`python_steps_${lessonId}`) || '[]')
+        setCompletedSteps(stepsProgress)
     }, [lessonId])
+
+    const toggleStep = (index: number) => {
+        const newSteps = completedSteps.includes(index)
+            ? completedSteps.filter(i => i !== index)
+            : [...completedSteps, index]
+
+        setCompletedSteps(newSteps)
+        localStorage.setItem(`python_steps_${lessonId}`, JSON.stringify(newSteps))
+    }
+
+    const progress = task?.steps.length ? Math.round((completedSteps.length / task.steps.length) * 100) : 0
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -134,6 +152,41 @@ export const PythonLessonPage = () => {
                     )}
                 </div>
 
+                {/* Progress Bar & Mita */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <Card className="p-8 md:col-span-3 bg-white/80 backdrop-blur-xl border-2 border-blue-100 shadow-xl relative overflow-hidden">
+                        <div className="flex justify-between items-end mb-4">
+                            <div>
+                                <h3 className="text-xs font-black text-blue-600 uppercase tracking-widest mb-1">Ваш прогресс</h3>
+                                <div className="text-4xl font-black text-gray-900 leading-none">{progress}%</div>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-sm font-bold text-gray-500">{completedSteps.length} из {task.steps.length} шагов пройдены</span>
+                            </div>
+                        </div>
+                        <div className="h-4 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress}%` }}
+                                transition={{ type: "spring", stiffness: 50 }}
+                                className="h-full bg-gradient-to-r from-blue-500 via-cyan-500 to-purple-600 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+                            />
+                        </div>
+                        {progress === 100 && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="mt-6 flex items-center justify-center gap-2 p-3 bg-green-50 text-green-700 rounded-xl border border-green-200 font-bold"
+                            >
+                                <Sparkles className="w-5 h-5 animate-pulse" />
+                                Программный код готов к отправке!
+                            </motion.div>
+                        )}
+                    </Card>
+
+
+                </div>
+
                 {/* Основная карточка */}
                 <Card className="p-8">
                     {/* Заголовок */}
@@ -178,17 +231,34 @@ export const PythonLessonPage = () => {
 
                     {/* Шаги выполнения */}
                     <div className="mb-8">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">✅ Шаги выполнения</h2>
-                        <ol className="space-y-3">
+                        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <CheckCircle className="w-6 h-6 text-green-500" />
+                            Шаги выполнения
+                        </h2>
+                        <div className="space-y-3">
                             {task.steps.map((step, index) => (
-                                <li key={index} className="flex gap-4">
-                                    <span className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center font-bold">
-                                        {index + 1}
+                                <motion.div
+                                    key={index}
+                                    whileHover={{ x: 5 }}
+                                    onClick={() => toggleStep(index)}
+                                    className={`flex gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer group ${completedSteps.includes(index)
+                                        ? 'bg-green-50 border-green-200'
+                                        : 'bg-white border-transparent hover:border-blue-200 hover:bg-blue-50'
+                                        }`}
+                                >
+                                    <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold transition-all ${completedSteps.includes(index)
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
+                                        }`}>
+                                        {completedSteps.includes(index) ? <CheckCircle className="w-5 h-5" /> : index + 1}
                                     </span>
-                                    <span className="text-gray-700 flex-1 pt-1">{step}</span>
-                                </li>
+                                    <span className={`flex-1 pt-1 transition-all ${completedSteps.includes(index) ? 'text-gray-400 line-through' : 'text-gray-700'
+                                        }`}>
+                                        {step}
+                                    </span>
+                                </motion.div>
                             ))}
-                        </ol>
+                        </div>
                     </div>
 
                     {/* Форма отправки */}

@@ -13,13 +13,18 @@ import {
     Star,
     ChevronRight,
     Trophy,
-    Target
+    Target,
+    Clock
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { AnimatedCounter } from '@/components/AnimatedCounter'
+import { AITaskGenerator } from '@/components/tasks/AITaskGenerator'
+import { useTaskStore } from '@/store/taskStore'
 
 export const TasksPage = () => {
     const [activeTab, setActiveTab] = useState<'python' | 'figma'>('python')
+    const [showAIGenerator, setShowAIGenerator] = useState(false)
+    const aiTasks = useTaskStore((state) => state.getAITasks())
 
     return (
         <div className="min-h-full py-2 space-y-12">
@@ -101,6 +106,62 @@ export const TasksPage = () => {
                             <Zap className="w-6 h-6 text-emerald-600 animate-pulse" />
                         </div>
                     </div>
+                </div>
+            </ScrollReveal>
+
+            {/* AI TASK GENERATOR SECTION */}
+            <ScrollReveal animation="slide-up" delay={200}>
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between px-4">
+                        <div className="flex items-center gap-3">
+                            <Sparkles className="w-6 h-6 text-purple-600" />
+                            <h2 className="text-2xl font-black text-indigo-950">AI-Generated Challenges</h2>
+                        </div>
+                        <button
+                            onClick={() => setShowAIGenerator(!showAIGenerator)}
+                            className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold hover:scale-105 transition-all shadow-lg"
+                        >
+                            {showAIGenerator ? 'Скрыть' : '✨ Создать задачу'}
+                        </button>
+                    </div>
+
+                    {showAIGenerator && (
+                        <AITaskGenerator onTaskGenerated={() => setShowAIGenerator(false)} />
+                    )}
+
+                    {/* Display AI-generated tasks */}
+                    {aiTasks.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {aiTasks.map((task) => (
+                                <div key={task.id} className="glass-premium p-6 rounded-2xl border border-white/60 hover:shadow-xl transition-all">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            {task.subject === 'python' ? (
+                                                <Code className="w-5 h-5 text-blue-600" />
+                                            ) : (
+                                                <Palette className="w-5 h-5 text-purple-600" />
+                                            )}
+                                            <h3 className="font-bold text-indigo-950">{task.title}</h3>
+                                        </div>
+                                        <span className={`text-xs px-2 py-1 rounded-lg ${task.difficulty === 'beginner' ? 'bg-green-100 text-green-700' :
+                                            task.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-red-100 text-red-700'
+                                            }`}>
+                                            {task.difficulty === 'beginner' ? '🌱 Новичок' :
+                                                task.difficulty === 'intermediate' ? '🔥 Средний' : '⚡ Эксперт'}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-indigo-950/60 mb-3">{task.description}</p>
+                                    {task.estimatedTime && (
+                                        <div className="flex items-center gap-2 text-xs text-indigo-950/40">
+                                            <Clock className="w-4 h-4" />
+                                            <span>~{task.estimatedTime} мин</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </ScrollReveal>
 

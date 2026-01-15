@@ -1,6 +1,7 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { sendAIMessage, sendAIChatMessage, clearSession, getSessionHistory, checkAIStatus } from '../controllers/ai.controller.js';
+import { generateTask } from '../controllers/ai.controller.generateTask.js';
 import { validate } from '../middleware/validator.js';
 
 const router = express.Router();
@@ -100,5 +101,24 @@ router.get('/session/:session_id/history', getSessionHistory);
  * Check AI status
  */
 router.get('/status', checkAIStatus);
+
+/**
+ * POST /api/ai/generate-task
+ * Generate AI-powered learning task
+ */
+router.post(
+    '/generate-task',
+    rateLimit,
+    [
+        body('subject')
+            .isIn(['python', 'figma'])
+            .withMessage('subject должен быть "python" или "figma"'),
+        body('difficulty')
+            .isIn(['beginner', 'intermediate', 'advanced'])
+            .withMessage('difficulty должен быть "beginner", "intermediate" или "advanced"')
+    ],
+    validate,
+    generateTask
+);
 
 export default router;

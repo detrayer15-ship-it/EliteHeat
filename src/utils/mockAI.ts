@@ -229,7 +229,7 @@ Database: ${techStack?.db || 'PostgreSQL'}
 
 Create a normalized database schema with:
 - User management
-- Core business logic tables
+- Core educational content tables
 - Relationships and constraints
 - Indexes for performance`
             },
