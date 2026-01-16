@@ -8,7 +8,7 @@ export const RankBuff = ({ xp = 0 }: { xp?: number }) => {
     const intensity = Math.min(Math.max(xp / 20000, 0.4), 1)
 
     return (
-        <div className="relative flex flex-col items-center justify-center p-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group h-full">
+        <div className="dashboard-card group">
             {/* Soft Background Atmosphere */}
             <div className="absolute inset-0 bg-blue-50/30 opacity-60"></div>
 

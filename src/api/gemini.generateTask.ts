@@ -1,6 +1,8 @@
 /**
  * Generate AI-powered learning task
  */
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 export interface GeneratedTask {
     title: string
     description: string

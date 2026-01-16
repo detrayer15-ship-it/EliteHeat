@@ -5,7 +5,7 @@ import { useTranslation } from '@/hooks/useTranslation'
 export const DailyChallenge = () => {
     const { t } = useTranslation()
     return (
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div className="dashboard-card group">
             <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-amber-200/20 rounded-full blur-3xl animate-pulse"></div>
 
             <div className="relative z-10 space-y-6">
@@ -28,7 +28,7 @@ export const DailyChallenge = () => {
                     </p>
                 </div>
 
-                <button className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors shadow-lg active:scale-95 transition-all">
+                <button className="w-full min-h-[44px] py-3 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors shadow-lg active:scale-95 transition-all">
                     Принять Вызов
                     <ChevronRight className="w-4 h-4" />
                 </button>

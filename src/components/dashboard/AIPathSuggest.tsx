@@ -35,7 +35,7 @@ export const AIPathSuggest = () => {
 
                     <button
                         onClick={() => navigate('/skill-tree')}
-                        className="flex items-center gap-3 text-blue-600 font-black uppercase tracking-widest text-[9px] hover:gap-5 transition-all"
+                        className="flex items-center gap-3 text-blue-600 font-black uppercase tracking-widest text-[9px] hover:gap-5 transition-all min-h-[44px]"
                     >
                         {t('openSkillTree')}
                         <ArrowRight className="w-4 h-4" />

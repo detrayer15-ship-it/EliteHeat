@@ -666,6 +666,47 @@
       padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
     }
   }
+
+  /* ============================================
+     ELITEHEAT DASHBOARD UNIFIED STYLES
+     ============================================ */
+  .dashboard-card {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    border: 1px solid #f1f5f9;
+    /* slate-100 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dashboard-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .sidebar-sticky {
+    position: sticky;
+    top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Responsive sizing for Hero */
+  .hero-container {
+    border-radius: 2rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-container {
+      border-radius: 4rem;
+    }
+  }
 }
 
 /* Тёмная тема */

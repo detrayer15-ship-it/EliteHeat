@@ -90,7 +90,7 @@ export const SocialPulseFeed = () => {
     }
 
     return (
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm overflow-hidden h-full flex flex-col relative">
+        <div className="dashboard-card group flex flex-col">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/30 rounded-full blur-[40px] -mr-16 -mt-16"></div>
 
             <div className="flex items-center justify-between mb-6 relative z-10">

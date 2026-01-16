@@ -29,7 +29,7 @@ export function useProjectData(projectId: string): UseProjectDataReturn {
             projectRef,
             (snapshot) => {
                 if (snapshot.exists()) {
-                    setProject({ id: snapshot.id, ...snapshot.data() } as Project)
+                    setProject({ id: snapshot.id, ...(snapshot.data() as any) } as Project)
                     setError(null)
                 } else {
                     setError('Проект не найден')

@@ -1,0 +1,27 @@
+{
+  "status": "success",
+  "result": [
+    {
+      "projectId": "afkas-nava",
+      "projectNumber": "831075585508",
+      "displayName": "Afkas-nava",
+      "name": "projects/afkas-nava",
+      "resources": {
+        "hostingSite": "afkas-nava"
+      },
+      "state": "ACTIVE",
+      "etag": "1_65fd2f02-ff1d-4f20-b890-218a785779b8"
+    },
+    {
+      "projectId": "eliteheat-da70c",
+      "projectNumber": "86087836414",
+      "displayName": "EliteHeat",
+      "name": "projects/eliteheat-da70c",
+      "resources": {
+        "hostingSite": "eliteheat-da70c"
+      },
+      "state": "ACTIVE",
+      "etag": "1_7fb5f03d-7866-4535-8489-04cb793ca11f"
+    }
+  ]
+}

@@ -10,12 +10,10 @@ interface TaskStore {
 
     loadTasks: () => void
     createTask: (data: Omit<Task, 'id'>) => Task
-    createAITask: (data: Omit<Task, 'id'>) => Task
     updateTask: (id: string, data: Partial<Task>) => void
     deleteTask: (id: string) => void
     toggleTask: (id: string) => void
     getProjectTasks: (projectId: string) => Task[]
-    getAITasks: () => Task[]
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -60,22 +58,5 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
     getProjectTasks: (projectId) => {
         return get().tasks.filter(t => t.projectId === projectId)
-    },
-
-    createAITask: (data) => {
-        const newTask: Task = {
-            id: generateId(),
-            ...data,
-            aiGenerated: true,
-        }
-
-        const tasks = [...get().tasks, newTask]
-        storage.set(STORAGE_KEY, tasks)
-        set({ tasks })
-        return newTask
-    },
-
-    getAITasks: () => {
-        return get().tasks.filter(t => t.aiGenerated === true)
     },
 }))
