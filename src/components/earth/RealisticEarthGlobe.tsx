@@ -161,7 +161,7 @@ export const RealisticEarthGlobe = () => {
 
     return (
         <div
-            className="relative w-[210px] h-[210px] md:w-[250px] md:h-[250px] lg:w-[300px] lg:h-[300px] transition-all duration-1000"
+            className="relative w-[200px] h-[200px] md:w-[280px] md:h-[280px] lg:w-[360px] lg:h-[360px] transition-all duration-1000"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >

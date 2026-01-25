@@ -1,85 +1,99 @@
 import { useAIContext } from '@/store/aiContextStore'
-import { sendTextMessage } from '@/api/gemini'
-import { useState } from 'react'
+import { sendAIChatMessage, type ChatMode } from '@/api/gemini'
+import { subscribeToAIChatMessages } from '@/api/aiMessages'
+import { useState, useEffect, useMemo } from 'react'
+import { useGamificationStore } from '@/store/gamificationStore'
 
 export const useAIAssistant = (context?: { projectId?: string; page?: string }) => {
     const {
         currentConversation,
-        addMessage,
+        setMessages,
         startConversation,
-        updateGlobalContext,
-        shareContextToAssistant,
         getSharedContext,
-    } = useAIContext()
+    } = useAIContext() as any
 
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedMode, setSelectedMode] = useState<ChatMode>('tutor')
+    const [error, setError] = useState<string | null>(null)
 
-    const sendMessage = async (userMessage: string, additionalContext?: any) => {
-        // Add user message
-        addMessage({
-            role: 'user',
-            content: userMessage,
-            context: {
-                ...context,
-                ...additionalContext,
-            },
-        })
+    // Gamification store
+    const { updateProgress, getAchievement } = useGamificationStore()
+
+    // Subscribe to Firestore messages
+    useEffect(() => {
+        if (!currentConversation?.id) return
+
+        const unsubscribe = subscribeToAIChatMessages(
+            currentConversation.id,
+            (firestoreMessages) => {
+                // Map Firestore messages to local AIMessage format
+                const mappedMessages = firestoreMessages.map(msg => ({
+                    id: msg.id,
+                    role: msg.role,
+                    content: msg.content,
+                    timestamp: (msg.timestamp as any)?.toDate ? (msg.timestamp as any).toDate() : new Date(),
+                    context: msg.meta
+                }))
+
+                if (typeof setMessages === 'function') {
+                    setMessages(currentConversation.id, mappedMessages)
+                }
+            }
+        )
+
+        return () => unsubscribe()
+    }, [currentConversation?.id, setMessages])
+
+    const sendMessage = async (userMessage: string) => {
+        let chatId = currentConversation?.id
+
+        // If no active conversation, start one first
+        if (!chatId) {
+            try {
+                chatId = await startConversation('AI Chat (' + new Date().toLocaleDateString() + ')')
+            } catch (err) {
+                setError('Не удалось создать новый чат.')
+                return
+            }
+        }
 
         setIsLoading(true)
+        setError(null)
 
         try {
-            // Get shared context from other pages
             const sharedContext = getSharedContext()
 
-            // Build context-aware prompt
-            const contextPrompt = `
-Контекст разговора:
-${sharedContext.globalContext.currentProject ? `- Текущий проект: ${sharedContext.globalContext.currentProject}` : ''}
-${sharedContext.globalContext.currentFile ? `- Текущий файл: ${sharedContext.globalContext.currentFile}` : ''}
-${sharedContext.recentMessages.length > 0 ? `- Последние сообщения:\n${sharedContext.recentMessages.map((m: any) => `${m.role}: ${m.content}`).join('\n')}` : ''}
+            const contextPrompt = sharedContext.globalContext.currentProject
+                ? `[Context: ${sharedContext.globalContext.currentProject}] ${userMessage}`
+                : userMessage
 
-Вопрос пользователя: ${userMessage}
+            await sendAIChatMessage(chatId!, contextPrompt, selectedMode)
 
-Ответь как опытный AI-помощник, учитывая весь контекст.
-`
-
-            // Call Gemini API
-            const response = await sendTextMessage(contextPrompt)
-
-            // Add AI response
-            addMessage({
-                role: 'assistant',
-                content: response,
-                context: {
-                    ...context,
-                    ...additionalContext,
-                },
-            })
-        } catch (error) {
-            console.error('AI Error:', error)
-            addMessage({
-                role: 'assistant',
-                content: 'Извините, произошла ошибка. Попробуйте ещё раз.',
-            })
+            // Achievement: Chat Explorer
+            const chatExplorer = getAchievement('chat-explorer')
+            if (chatExplorer && !chatExplorer.isUnlocked) {
+                const newProgress = (chatExplorer.progress || 0) + 1
+                await updateProgress('chat-explorer', newProgress, chatExplorer.maxProgress)
+            }
+        } catch (err: any) {
+            console.error('AI Error:', err)
+            if (err.message?.includes('requires an index')) {
+                setError('Система обновляет базу данных (индексы). Пожалуйста, подождите 2-3 минуты...')
+            } else {
+                setError('Произошла ошибка при отправке сообщения.')
+            }
         } finally {
             setIsLoading(false)
         }
     }
 
-    const switchToProject = (projectId: string, projectData?: any) => {
-        shareContextToAssistant(projectId, projectData)
-    }
-
-    const updateContext = (newContext: any) => {
-        updateGlobalContext(newContext)
-    }
-
     return {
         messages: currentConversation?.messages || [],
         isLoading,
+        selectedMode,
+        setSelectedMode,
         sendMessage,
-        switchToProject,
-        updateContext,
+        error,
         sharedContext: getSharedContext(),
     }
 }

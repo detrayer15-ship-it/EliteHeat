@@ -8,6 +8,7 @@ import { useProjectStore } from '@/store/projectStore'
 import { collection, addDoc } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 import { sendTextMessage } from '@/api/gemini'
+import { useGamificationStore } from '@/store/gamificationStore'
 
 
 export const ProjectCreationChat = () => {
@@ -19,6 +20,9 @@ export const ProjectCreationChat = () => {
     const [selectedName, setSelectedName] = useState<string | null>(null)
     const navigate = useNavigate()
     const user = useAuthStore((state) => state.user)
+
+    // Gamification store
+    const { unlockAchievement, getAchievement } = useGamificationStore()
 
     // Подключаем AI Context для синхронизации
     const { addMessage: addToGlobalContext, shareContextToAssistant } = useAIContext()
@@ -210,6 +214,12 @@ export const ProjectCreationChat = () => {
 
             // Сохраняем также в локальное хранилище
             createLocalProject({ ...projectData, id: docRef.id })
+
+            // Achievement: Project Creator
+            const projectCreator = getAchievement('project-creator')
+            if (projectCreator && !projectCreator.isUnlocked) {
+                unlockAchievement('project-creator')
+            }
 
             const successMsg = `✅ Отлично! Проект "${analysis.title}" создан!
 

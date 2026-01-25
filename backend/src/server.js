@@ -1,6 +1,9 @@
+import dotenv from 'dotenv'
+// Load env vars immediately for static imports
+dotenv.config()
+
 import express from 'express'
 import { createServer } from 'http'
-import dotenv from 'dotenv'
 import cors from 'cors'
 import helmet from 'helmet'
 import connectDB from './config/db.js'
@@ -12,9 +15,6 @@ import authRoutes from './routes/auth.routes.js'
 import adminRoutes from './routes/admin.routes.js'
 import chatRoutes from './routes/chat.routes.js'
 import aiRoutes from './routes/ai.routes.js'
-
-// Load env vars
-dotenv.config()
 
 // Connect to database (optional - not needed for AI Assistant)
 // MongoDB is only used for auth, chat, and submissions
@@ -29,9 +29,18 @@ const server = createServer(app)
 const io = initializeSocket(server)
 
 // Middleware
-app.use(helmet())
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "script-src": ["'self'", "'unsafe-inline'", "https://apis.google.com"],
+            "img-src": ["'self'", "data:", "https://*.google.com"],
+            "connect-src": ["'self'", "https://*.googleapis.com", "http://localhost:3000", "http://localhost:5173"]
+        },
+    },
+}))
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'http://localhost:5175'],
     credentials: true
 }))
 app.use(express.json())
@@ -80,7 +89,7 @@ server.listen(PORT, () => {
     console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║
-║   🚀 EliteHeat Backend Server                        ║
+║   🚀 EliteHeat Backend Server v4.0.5                 ║
 ║                                                       ║
 ║   📡 Server running on port ${PORT}                     ║
 ║   🌍 Environment: ${process.env.NODE_ENV || 'development'}                    ║

@@ -23,7 +23,7 @@ export interface AIMessage {
         outputTokens?: number;
         latencyMs?: number;
     };
-    createdAt: Timestamp;
+    timestamp: Timestamp;
 }
 
 /**
@@ -38,7 +38,7 @@ export async function addUserMessage(chatId: string, content: string): Promise<A
         userId: user.uid,
         role: 'user' as const,
         content,
-        createdAt: Timestamp.now()
+        timestamp: Timestamp.now()
     };
 
     const docRef = await addDoc(collection(db, 'aiMessages'), messageData);
@@ -66,7 +66,7 @@ export async function addAssistantMessage(
         role: 'assistant' as const,
         content,
         meta: meta || {},
-        createdAt: Timestamp.now()
+        timestamp: Timestamp.now()
     };
 
     const docRef = await addDoc(collection(db, 'aiMessages'), messageData);
@@ -81,10 +81,14 @@ export async function addAssistantMessage(
  * Get chat messages (one-time fetch)
  */
 export async function getAIChatMessages(chatId: string): Promise<AIMessage[]> {
+    const user = auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
     const q = query(
         collection(db, 'aiMessages'),
         where('chatId', '==', chatId),
-        orderBy('createdAt', 'asc')
+        where('userId', '==', user.uid),
+        orderBy('timestamp', 'asc')
     );
 
     const snapshot = await getDocs(q);
@@ -101,10 +105,17 @@ export function subscribeToAIChatMessages(
     chatId: string,
     callback: (messages: AIMessage[]) => void
 ): () => void {
+    const user = auth.currentUser;
+    if (!user) {
+        console.error("Not authenticated for subscription");
+        return () => { };
+    }
+
     const q = query(
         collection(db, 'aiMessages'),
         where('chatId', '==', chatId),
-        orderBy('createdAt', 'asc')
+        where('userId', '==', user.uid),
+        orderBy('timestamp', 'asc')
     );
 
     return onSnapshot(q, (snapshot: QuerySnapshot) => {

@@ -19,7 +19,7 @@ export interface AIChat {
     userId: string;
     title: string;
     mode: ChatMode;
-    createdAt: Timestamp;
+    timestamp: Timestamp;
     updatedAt: Timestamp;
 }
 
@@ -34,7 +34,7 @@ export async function createAIChat(title: string, mode: ChatMode = 'tutor'): Pro
         userId: user.uid,
         title,
         mode,
-        createdAt: Timestamp.now(),
+        timestamp: Timestamp.now(),
         updatedAt: Timestamp.now()
     };
 
@@ -91,10 +91,13 @@ export async function touchAIChat(chatId: string): Promise<void> {
  * Delete AI chat and all its messages
  */
 export async function deleteAIChat(chatId: string): Promise<void> {
+    const user = auth.currentUser;
+
     // Delete all messages first
     const messagesQuery = query(
         collection(db, 'aiMessages'),
-        where('chatId', '==', chatId)
+        where('chatId', '==', chatId),
+        where('userId', '==', user?.uid)
     );
     const messagesSnapshot = await getDocs(messagesQuery);
 

@@ -76,6 +76,7 @@ import { useProjectStore } from './store/projectStore'
 import { useTaskStore } from './store/taskStore'
 import { useSettingsStore } from './store/settingsStore'
 import { useAuthStore } from './store/authStore'
+import { AchievementNotifier } from './components/gamification/AchievementNotifier'
 
 function App() {
     const loadProjects = useProjectStore((state) => state.loadProjects)
@@ -130,7 +131,11 @@ function App() {
     }, [])
 
     return (
-        <BrowserRouter>
+        <BrowserRouter future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+        }}>
+            <AchievementNotifier />
             <Routes>
                 {/* Public routes - без AppLayout */}
                 <Route path="/" element={<LandingPage />} />

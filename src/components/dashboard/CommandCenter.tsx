@@ -55,7 +55,7 @@ export const CommandCenter = () => {
     ]
 
     return (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-6">
             {actions.map((action, idx) => (
                 <motion.div
                     key={action.id}
@@ -63,22 +63,37 @@ export const CommandCenter = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
                     onClick={() => navigate(action.path)}
-                    className={`group relative p-6 rounded-[2rem] border border-slate-100 shadow-sm cursor-pointer transition-all hover:scale-[1.05] active:scale-95 overflow-hidden ${action.bg}`}
+                    className={`group relative p-8 rounded-[2.5rem] border cursor-pointer transition-all duration-500 hover:-translate-y-2 overflow-hidden ${action.id === 'analyzer'
+                            ? 'bg-[#0f1014] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-white col-span-1'
+                            : 'bg-white border-slate-100 shadow-sm hover:shadow-[0_25px_60px_rgba(79,70,229,0.1)] text-slate-900'
+                        }`}
                 >
-                    <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${action.color} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity rounded-bl-[3rem]`}></div>
+                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${action.color} opacity-[0.03] group-hover:opacity-[0.15] transition-opacity rounded-bl-[4rem]`}></div>
 
-                    <div className="space-y-4 relative z-10">
-                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.color} text-white flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform`}>
+                    {/* Glow effect for primary card icon */}
+                    {action.id === 'analyzer' && (
+                        <div className="absolute top-10 left-10 w-20 h-20 bg-blue-500/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    )}
+
+                    <div className="space-y-6 relative z-10">
+                        <div className={`w-16 h-16 rounded-[1.5rem] bg-gradient-to-br ${action.color} text-white flex items-center justify-center shadow-lg group-hover:shadow-[0_0_25px_rgba(96,165,250,0.5)] transition-all transform group-hover:rotate-6`}>
                             {action.icon}
                         </div>
                         <div>
-                            <h3 className="text-lg font-black text-slate-900 tracking-tighter">{action.title}</h3>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{action.desc}</p>
+                            <h3 className={`text-xl font-black tracking-tight ${action.id === 'analyzer' ? 'text-white' : 'text-slate-900'}`}>
+                                {action.title}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-1">
+                                <Zap className={`w-3 h-3 ${action.id === 'analyzer' ? 'text-blue-400' : 'text-blue-600'}`} />
+                                <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${action.id === 'analyzer' ? 'text-white/40' : 'text-slate-400'}`}>
+                                    {action.desc}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ArrowUpRight className="w-5 h-5 text-slate-300" />
+                    <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                        <ArrowUpRight className={`w-6 h-6 ${action.id === 'analyzer' ? 'text-blue-400' : 'text-slate-300'}`} />
                     </div>
                 </motion.div>
             ))}

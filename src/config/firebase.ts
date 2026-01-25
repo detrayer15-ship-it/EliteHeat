@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
-    apiKey: "AIzaSyA46J4VdaznwpQBkAT1wMPyQ8X3D1OGb4Q",
-    authDomain: "eliteheat-da70c.firebaseapp.com",
-    projectId: "eliteheat-da70c",
-    storageBucket: "eliteheat-da70c.firebasestorage.app",
-    messagingSenderId: "86087836414",
-    appId: "1:86087836414:web:79f5cadca6177af116bbaf",
-    measurementId: "G-3EECL4FG8F"
+    apiKey: "AIzaSyB3_sAnEGrWo71UfwfQIM1ruJhhwsFIqBk",
+    authDomain: "eliteheat-2ee0b.firebaseapp.com",
+    projectId: "eliteheat-2ee0b",
+    storageBucket: "eliteheat-2ee0b.firebasestorage.app",
+    messagingSenderId: "70394651592",
+    appId: "1:70394651592:web:8769ab3461fb25734196fd",
+    measurementId: "G-RY3NL750X9"
 }
 
 // Initialize Firebase
