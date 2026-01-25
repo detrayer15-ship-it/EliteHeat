@@ -12,13 +12,12 @@ import {
     Timestamp
 } from 'firebase/firestore';
 
-export type ChatMode = 'tutor' | 'developer' | 'debug' | 'product';
+// export type ChatMode = 'tutor' | 'developer' | 'debug' | 'product';
 
 export interface AIChat {
     id: string;
     userId: string;
     title: string;
-    mode: ChatMode;
     timestamp: Timestamp;
     updatedAt: Timestamp;
 }
@@ -26,14 +25,13 @@ export interface AIChat {
 /**
  * Create new AI chat in Firestore
  */
-export async function createAIChat(title: string, mode: ChatMode = 'tutor'): Promise<AIChat> {
+export async function createAIChat(title: string): Promise<AIChat> {
     const user = auth.currentUser;
     if (!user) throw new Error('Not authenticated');
 
     const chatData = {
         userId: user.uid,
         title,
-        mode,
         timestamp: Timestamp.now(),
         updatedAt: Timestamp.now()
     };

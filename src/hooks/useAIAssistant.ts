@@ -1,5 +1,5 @@
 import { useAIContext } from '@/store/aiContextStore'
-import { sendAIChatMessage, type ChatMode } from '@/api/gemini'
+import { sendAIChatMessage } from '@/api/gemini'
 import { subscribeToAIChatMessages } from '@/api/aiMessages'
 import { useState, useEffect, useMemo } from 'react'
 import { useGamificationStore } from '@/store/gamificationStore'
@@ -13,7 +13,6 @@ export const useAIAssistant = (context?: { projectId?: string; page?: string }) 
     } = useAIContext() as any
 
     const [isLoading, setIsLoading] = useState(false)
-    const [selectedMode, setSelectedMode] = useState<ChatMode>('tutor')
     const [error, setError] = useState<string | null>(null)
 
     // Gamification store
@@ -67,7 +66,7 @@ export const useAIAssistant = (context?: { projectId?: string; page?: string }) 
                 ? `[Context: ${sharedContext.globalContext.currentProject}] ${userMessage}`
                 : userMessage
 
-            await sendAIChatMessage(chatId!, contextPrompt, selectedMode)
+            await sendAIChatMessage(chatId!, contextPrompt)
 
             // Achievement: Chat Explorer
             const chatExplorer = getAchievement('chat-explorer')
@@ -90,8 +89,6 @@ export const useAIAssistant = (context?: { projectId?: string; page?: string }) 
     return {
         messages: currentConversation?.messages || [],
         isLoading,
-        selectedMode,
-        setSelectedMode,
         sendMessage,
         error,
         sharedContext: getSharedContext(),

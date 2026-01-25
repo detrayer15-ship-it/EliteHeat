@@ -1,12 +1,12 @@
 import { getAIChatMessages, addUserMessage, addAssistantMessage } from './aiMessages'
 import { touchAIChat } from './aiChats'
-import type { ChatMode } from './aiChats'
+// import type { ChatMode } from './aiChats'
 
 // Backend API URL
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 // Export ChatMode type
-export type { ChatMode }
+// export type { ChatMode }
 
 // Session ID management
 const SESSION_ID_KEY = 'eliteheat_ai_session_id'
@@ -117,8 +117,7 @@ export interface AIUsage {
  */
 export async function sendAIChatMessage(
     chatId: string,
-    message: string,
-    mode: ChatMode = 'tutor'
+    message: string
 ): Promise<{ reply: string; usage: AIUsage }> {
     try {
         // 1. Add user message to Firestore
@@ -139,7 +138,7 @@ export async function sendAIChatMessage(
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message, history, mode })
+            body: JSON.stringify({ message, history })
         })
 
         const data = await response.json()

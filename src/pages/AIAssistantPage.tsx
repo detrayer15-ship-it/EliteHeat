@@ -17,15 +17,12 @@ import {
     Lightbulb
 } from 'lucide-react'
 import { AIMessage } from '@/components/ai/AIMessage'
-import { AIModeSelect } from '@/components/ai/AIModeSelect'
 
 export const AIAssistantPage = () => {
     const {
         messages,
         sendMessage,
         isLoading,
-        selectedMode,
-        setSelectedMode,
         error
     } = useAIAssistant({
         page: 'ai-assistant'
@@ -175,13 +172,6 @@ export const AIAssistantPage = () => {
             </div>
 
             <div className="flex-1 bg-white/60 backdrop-blur-3xl rounded-[2rem] border border-white shadow-3xl overflow-hidden flex flex-col relative">
-                <div className="p-2 border-b border-indigo-50 bg-white/40 sticky top-0 z-20 backdrop-blur-xl">
-                    <AIModeSelect
-                        selectedMode={selectedMode}
-                        onModeChange={(mode) => setSelectedMode(mode as any)}
-                    />
-                </div>
-
                 <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-none relative">
                     {messages.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center gap-6 max-w-xl mx-auto py-4">

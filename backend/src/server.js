@@ -40,7 +40,12 @@ app.use(helmet({
     },
 }))
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5175'],
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:5175',
+        'https://eliteheat-2ee0b.web.app',
+        'https://eliteheat-2ee0b.firebaseapp.com'
+    ],
     credentials: true
 }))
 app.use(express.json())
