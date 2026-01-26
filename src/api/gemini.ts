@@ -3,10 +3,10 @@ import { touchAIChat } from './aiChats'
 // import type { ChatMode } from './aiChats'
 
 // Backend API URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-
-// Export ChatMode type
-// export type { ChatMode }
+// Proactive Fix: If we are in production (deployed), we should use the production URL.
+// If VITE_API_URL is not provided, we might be in a situation where the backend is on the same domain or a specific cloud function.
+const API_URL = import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD ? 'https://eliteheat-backend.web.app' : 'http://localhost:3000')
 
 // Session ID management
 const SESSION_ID_KEY = 'eliteheat_ai_session_id'
@@ -34,7 +34,7 @@ export function clearSessionId(): void {
 
 /**
  * Отправка текстового запроса к AI через backend с session_id
- */
+*/
 export async function sendTextMessage(message: string): Promise<string> {
     try {
         const session_id = getSessionId()
@@ -47,22 +47,27 @@ export async function sendTextMessage(message: string): Promise<string> {
             body: JSON.stringify({ message, session_id })
         })
 
-        const data = await response.json()
-
         if (!response.ok) {
-            throw new Error(data.error || 'Ошибка AI')
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || `Ошибка сервера: ${response.status}`);
         }
 
-        return data.reply
+        const data = await response.json();
+        return data.reply;
     } catch (error: any) {
         console.error('AI API Error:', error)
 
-        // Fallback response if backend is unavailable
-        if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-            return getFallbackResponse(message)
+        // Fallback response if backend is unavailable or connection refused
+        if (
+            error.message?.includes('Failed to fetch') ||
+            error.message?.includes('NetworkError') ||
+            error.name === 'TypeError'
+        ) {
+            console.warn('Backend connection failed, using local fallback mode');
+            return getFallbackResponse(message);
         }
 
-        throw error
+        throw error;
     }
 }
 

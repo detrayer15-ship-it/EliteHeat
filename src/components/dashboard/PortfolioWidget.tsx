@@ -2,16 +2,25 @@ import { Globe, Users, ExternalLink, Eye, FolderKanban } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from '@/hooks/useTranslation'
-import { useProjectStore } from '@/store/projectStore'
+import { AnimatedCounter } from '@/components/AnimatedCounter'
 
-export const PortfolioWidget = () => {
+interface Project {
+    id: string
+    title: string
+    description: string
+}
+
+export const PortfolioWidget = ({ projects }: { projects: Project[] }) => {
     const navigate = useNavigate()
     const { t } = useTranslation()
-    const projects = useProjectStore((state) => state.projects)
 
     return (
-        <div className="dashboard-card group">
-            <div className="absolute bottom-[-20%] left-[-10%] w-40 h-40 bg-purple-200/10 rounded-full blur-3xl group-hover:bg-purple-300/20 transition-colors"></div>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="group relative h-full bg-white rounded-[2.5rem] border-2 border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-700 overflow-hidden"
+        >
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
             <div className="relative z-10 space-y-5">
                 <div className="flex items-center justify-between">
@@ -50,6 +59,6 @@ export const PortfolioWidget = () => {
                     </p>
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }

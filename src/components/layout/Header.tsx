@@ -206,6 +206,17 @@ export const Header = () => {
 
                                         <button
                                             onClick={() => {
+                                                navigate('/portfolio')
+                                                setShowDropdown(false)
+                                            }}
+                                            className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-smooth flex items-center gap-2"
+                                        >
+                                            <span>📁</span>
+                                            <span>Моё портфолио</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
                                                 navigate('/about')
                                                 setShowDropdown(false)
                                             }}

@@ -10,7 +10,8 @@ import {
     Crown,
     Target,
     ChevronRight,
-    Code
+    Code,
+    BookOpen
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { formatDaysRemaining, getPlanDisplayName } from '@/utils/subscriptionUtils'
@@ -109,7 +110,7 @@ export const Dashboard = () => {
 
                                 <div className="grid grid-cols-2 gap-3 max-w-sm">
                                     <div className="bg-white/[0.03] backdrop-blur-2xl p-[14px_20px] rounded-3xl border border-white/10 shadow-3xl hover:bg-white/[0.06] transition-all group">
-                                        <p className="text-[8px] font-black uppercase text-white/30 mb-1 tracking-widest leading-none">Global Students</p>
+                                        <p className="text-[8px] font-black uppercase text-white/30 mb-1 tracking-widest leading-none">{t('activeFleet')}</p>
                                         <div className="flex items-end justify-between">
                                             <div className="text-2xl font-black text-white tracking-tighter leading-none">
                                                 <AnimatedCounter end={studentCount} />
@@ -119,17 +120,15 @@ export const Dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    {user?.subscriptionPlan && (
-                                        <div className="bg-gradient-to-br from-orange-500/10 to-transparent backdrop-blur-2xl p-[14px_20px] rounded-3xl border border-orange-500/20 shadow-3xl hover:border-orange-500/40 transition-all">
-                                            <p className="text-[8px] font-black uppercase text-orange-500/50 mb-1 tracking-widest leading-none truncate">{getPlanDisplayName(user.subscriptionPlan)} Status</p>
-                                            <div className="flex items-end justify-between">
-                                                <div className="text-xl font-black text-white leading-none">
-                                                    {formatDaysRemaining(user.subscriptionDaysRemaining ?? 0)}
-                                                </div>
-                                                <Crown className="w-4 h-4 text-orange-500 mb-0.5" />
+                                    <div className="bg-gradient-to-br from-indigo-500/20 to-transparent backdrop-blur-2xl p-[14px_20px] rounded-3xl border border-indigo-500/20 shadow-3xl hover:border-indigo-500/40 transition-all cursor-pointer" onClick={() => navigate('/projects')}>
+                                        <p className="text-[8px] font-black uppercase text-indigo-400 mb-1 tracking-widest leading-none">{t('nextStep')}</p>
+                                        <div className="flex items-end justify-between">
+                                            <div className="text-xl font-black text-white leading-none">
+                                                Python 101
                                             </div>
+                                            <BookOpen className="w-4 h-4 text-indigo-400 mb-0.5" />
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
 

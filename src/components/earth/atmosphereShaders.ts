@@ -1,7 +1,9 @@
 export const atmosphereVertexShader = `
   varying vec3 vNormal;
   void main() {
-    vNormal = normalize(normalMatrix * normal);
+    // Proactive Fix: Use a safer normalization
+    vec3 transformedNormal = normalize(normalMatrix * normal);
+    vNormal = transformedNormal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
@@ -9,9 +11,11 @@ export const atmosphereVertexShader = `
 export const atmosphereFragmentShader = `
   varying vec3 vNormal;
   void main() {
-    // Advanced atmospheric scattering imitation
-    // Dot product gives us alignment with view vector
-    float intensity = pow(0.65 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 8.0);
+    // dot product can be slightly > 1.0 or < -1.0 due to precision
+    float alignment = dot(vNormal, vec3(0.0, 0.0, 1.0));
+    
+    // Proactive Fix: Clamp input for pow() to avoid undefined behavior or division by zero in derivatives
+    float intensity = pow(max(0.0, 0.65 - alignment), 8.0);
     
     // Light blue-white color for a premium feel
     vec3 atmosphereColor = vec3(0.7, 0.85, 1.0);

@@ -62,6 +62,7 @@ import { AdminOpsChat } from './pages/admin/AdminOpsChat'
 import { AIActivityMonitorPage } from './pages/admin/AIActivityMonitorPage'
 import { StudentChatsPage } from './pages/student/StudentChatsPage'
 import { SkillTreePage } from './pages/SkillTreePage'
+import { PublicPortfolioPage } from './pages/PublicPortfolioPage'
 import AchievementsPage from './pages/student/AchievementsPage'
 import APITestPage from './pages/developer/APITestPage'
 import { TeacherDashboard } from './pages/teacher/TeacherDashboard'
@@ -486,11 +487,11 @@ function App() {
                 />
 
                 <Route
-                    path="/student/achievements"
+                    path="/portfolio"
                     element={
                         <ProtectedRoute>
                             <AppLayout>
-                                <AchievementsPage />
+                                <PublicPortfolioPage />
                             </AppLayout>
                         </ProtectedRoute>
                     }
