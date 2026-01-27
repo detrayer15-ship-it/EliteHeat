@@ -61,7 +61,6 @@ import { EnhancedChatPage } from './pages/admin/EnhancedChatPage'
 import { AdminOpsChat } from './pages/admin/AdminOpsChat'
 import { AIActivityMonitorPage } from './pages/admin/AIActivityMonitorPage'
 import { StudentChatsPage } from './pages/student/StudentChatsPage'
-import { SkillTreePage } from './pages/SkillTreePage'
 import { PublicPortfolioPage } from './pages/PublicPortfolioPage'
 import AchievementsPage from './pages/student/AchievementsPage'
 import APITestPage from './pages/developer/APITestPage'
@@ -210,16 +209,6 @@ function App() {
                         <ProtectedRoute>
                             <AppLayout>
                                 <ProgressTrackerPage />
-                            </AppLayout>
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/skill-tree"
-                    element={
-                        <ProtectedRoute>
-                            <AppLayout>
-                                <SkillTreePage />
                             </AppLayout>
                         </ProtectedRoute>
                     }

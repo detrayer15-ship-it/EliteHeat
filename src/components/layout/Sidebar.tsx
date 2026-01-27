@@ -59,7 +59,6 @@ const navGroups: NavGroup[] = [
     {
         title: 'Развитие',
         items: [
-            { path: '/skill-tree', labelKey: 'skillTree', icon: <TrendingUp className="w-6 h-6" />, roles: ['student'] },
             { path: '/progress', labelKey: 'progressTracker', icon: <TrendingUp className="w-6 h-6" />, roles: ['student'] },
         ]
     },

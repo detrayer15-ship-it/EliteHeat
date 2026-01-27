@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { sendAIMessage, sendAIChatMessage, clearSession, getSessionHistory, checkAIStatus } from '../controllers/ai.controller.js';
+import { sendAIMessage, sendAIChatMessage, clearSession, getSessionHistory, checkAIStatus, updateAIConfig } from '../controllers/ai.controller.js';
 import { generateTask } from '../controllers/ai.controller.generateTask.js';
 import { validate } from '../middleware/validator.js';
 
@@ -101,6 +101,12 @@ router.get('/session/:session_id/history', getSessionHistory);
  * Check AI status
  */
 router.get('/status', checkAIStatus);
+
+/**
+ * POST /api/ai/config
+ * Update AI configuration (keys/model)
+ */
+router.post('/config', updateAIConfig);
 
 /**
  * POST /api/ai/generate-task

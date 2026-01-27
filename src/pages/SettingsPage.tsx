@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Card } from '@/components/ui/Card'
+import { updateAIConfig } from '@/api/gemini'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import {
@@ -22,7 +23,8 @@ import {
     Save,
     Trash2,
     ChevronRight,
-    Camera
+    Camera,
+    Zap
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 
@@ -51,6 +53,15 @@ export const SettingsPage = () => {
         }
     })
 
+    const [aiKeys, setAiKeys] = useState({
+        gemini: '',
+        openai: '',
+        deepseek: '',
+        model: 'gemini-1.5-flash'
+    })
+
+    const [isUpdatingAI, setIsUpdatingAI] = useState(false)
+
     const tabs = [
         { id: 'account', name: 'Identity', icon: User },
         { id: 'notifications', name: 'Alerts', icon: Bell },
@@ -58,6 +69,23 @@ export const SettingsPage = () => {
         { id: 'privacy', name: 'Privacy', icon: Eye },
         { id: 'security', name: 'Defense', icon: Shield }
     ]
+
+    const handleAISave = async () => {
+        setIsUpdatingAI(true)
+        try {
+            await updateAIConfig({
+                geminiKey: aiKeys.gemini,
+                openaiKey: aiKeys.openai,
+                deepseekKey: aiKeys.deepseek,
+                model: aiKeys.model
+            })
+            alert('Neural Core Link Established!')
+        } catch (error) {
+            alert('Neural Link Synchronization Failed')
+        } finally {
+            setIsUpdatingAI(false)
+        }
+    }
 
     const handleSave = () => {
         alert('Config Protocol Updated!')
@@ -201,7 +229,6 @@ export const SettingsPage = () => {
                             </div>
                         )}
 
-                        {/* NOTIFICATIONS INTERFACE */}
                         {activeTab === 'notifications' && (
                             <div className="space-y-12 animate-fade-in">
                                 <div className="space-y-2">

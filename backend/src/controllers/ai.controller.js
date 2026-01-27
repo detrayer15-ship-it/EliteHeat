@@ -1,116 +1,100 @@
 import dotenv from 'dotenv';
+import { aiService } from '../services/ai.service.js';
+
 dotenv.config();
 
 /**
  * Mita Ultra-Kernel v5.0 (Final Edition)
  * Zero dependencies, high-performance educational engine.
  */
-const EXPERT_KNOWLEDGE = {
-    python: {
-        keywords: ['python', 'пайтон', 'питон', 'код', 'функция', 'цикл', 'переменн'],
-        reply: `🐍 **Mita: Мастер-класс Python**
-
-Привет! Давай разберем архитектуру Python. Это база твоего успеха в программировании:
-
-1️⃣ **Логика Переменных**: 
-Представь их как коробки. В \`name = "Dev"\` мы кладем строку.
-\`\`\`python
-grade = 95 # Число
-is_pro = True # Флаг
-\`\`\`
-
-2️⃣ **Структуры Данных**:
-Списки — это твои инструменты. \`tools = ["Figma", "React"]\`. Мы можем перебирать их циклом \`for\`.
-
-3️⃣ **Функции**:
-Это маленькие заводы по обработке данных:
-\`\`\`python
-def greet(user):
-    return f"Добро пожаловать в EliteHeat, {user}!"
-\`\`\`
-
-**Твой первый квест:** Попробуй написать функцию, которая складывает два числа. Как ты её назовешь? Давай обсудим!`
-    },
-    javascript: {
-        keywords: ['js', 'javascript', 'джаваскрипт', 'скрипт', 'react', 'реакт', 'фронтенд', 'хук', 'state'],
-        reply: `⚡ **Mita: Погружение в Web (JS & React)**
-
-JavaScript — это двигатель, который вращает EliteHeat. Давай посмотрим под капот:
-
-1️⃣ **Реактивный интерфейс**: 
-В React мы используем \`useState\`, чтобы страница "жила" и менялась без перезагрузки. Это магия!
-
-2️⃣ **Синтаксис ES6**:
-Забудь про старые \`var\`. Мы используем \`const\` для стабильности и \`let\` для гибкости. Это стандарт индустрии.
-
-3️⃣ **Компоненты**:
-Твой проект — это набор умных деталей. Складывая их, мы получаем мощное приложение.
-
-**Вопрос дня:** Знаешь ли ты разницу между \`const\` и \`let\`? Попробуй объяснить, а я дополню твой ответ!`
-    },
-    design: {
-        keywords: ['дизайн', 'figma', 'фигма', 'ux', 'ui', 'интерфейс', 'цвета', 'шрифт'],
-        reply: `🎨 **Mita: Школа UI/UX Дизайна**
-
-Дизайн в EliteHeat — это не только картинки, это психология. Давай улучшим твои навыки:
-
-1️⃣ **Правило Воздуха**:
-Никогда не сжимай элементы! Давай отступы по 24-32px. Это делает интерфейс премиальным.
-
-2️⃣ **Цветовая Гармония**:
-Используй акцентный оранжевый только для самых важных действий. Это ведет пользователя за руку.
-
-3️⃣ **Auto Layout в Figma**:
-Это твой лучший друг. Все кнопки должны растягиваться сами под текст. Это экономит часы работы!
-
-**Совет эксперта:** Попробуй в Figma использовать шрифт Inter с начертанием Black для заголовков. Какой отступ между заголовком и текстом ты бы поставил?`
-    }
-};
-
-function processMitaBrain(message) {
-    const msg = message.toLowerCase();
-
-    // Check expertise
-    for (const subject in EXPERT_KNOWLEDGE) {
-        if (EXPERT_KNOWLEDGE[subject].keywords.some(k => msg.includes(k))) {
-            return EXPERT_KNOWLEDGE[subject].reply;
-        }
-    }
-
-    // Friendly AI Persona Greeting
-    if (msg.includes('привет') || msg.includes('hi') || msg.includes('hello')) {
-        return `👋 **Я Mita.** Расскажу про **Python**, **JavaScript** или **Figma**. Что именно?`;
-    }
-
-    // Direct fallback
-    return `🤖 **Я на связи.** Могу разобрать **код (Python/JS)** или **дизайн**. Какая тема?`;
-}
+// EXPERT_KNOWLEDGE removed as we now use real AI service
 
 export const sendAIChatMessage = async (req, res) => {
     try {
-        const { message } = req.body;
+        const { message, history, mode = 'tutor' } = req.body;
         console.log(`[MITA OS v5.0] Processing: ${message.substring(0, 30)}...`);
 
-        const response = processMitaBrain(message);
+        // Use the real AI service for high-quality responses
+        const result = await aiService.chat({
+            message,
+            history: history || [],
+            mode
+        });
 
-        // Natural typing delay
-        setTimeout(() => {
-            res.json({
-                success: true,
-                reply: response,
-                usage: { model: 'mita-ultra-kernel-v5', inputTokens: 0, outputTokens: 0, latencyMs: 250 }
-            });
-        }, 600);
+        res.json(result);
 
     } catch (error) {
+        console.error('sendAIChatMessage Error:', error);
         res.json({
             success: true,
-            reply: "Кажется, мои нейронные связи обновляются. Попробуй ещё раз через секунду!"
+            reply: "Извините, сейчас я немного занята. Пожалуйста, попробуйте написать через минуту!",
+            usage: { model: 'emergency-fallback', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
         });
     }
 };
 
-export const sendAIMessage = sendAIChatMessage;
+/**
+ * LEGACY - session-based endpoint support
+ */
+export const sendAIMessage = async (req, res) => {
+    try {
+        const { message } = req.body;
+
+        const result = await aiService.chat({
+            message,
+            history: [] // Legacy doesn't send history in the same format
+        });
+
+        res.json(result);
+    } catch (error) {
+        res.json({
+            success: true,
+            reply: "Извините, сейчас я немного занята. Попробуйте написать позже!"
+        });
+    }
+};
+
 export const clearSession = async (req, res) => res.json({ success: true });
 export const getSessionHistory = async (req, res) => res.json({ success: true, history: [] });
-export const checkAIStatus = async (req, res) => res.json({ success: true, status: 'online-ultra' });
+/**
+ * updateAIConfig - Focus only on Gemini
+ */
+export const updateAIConfig = async (req, res) => {
+    try {
+        const { geminiKey, model } = req.body;
+
+        if (geminiKey) {
+            AI_CONFIG.PROVIDERS.GEMINI.apiKey = geminiKey;
+            aiService.providers.gemini.genAI = new (await import('@google/generative-ai')).GoogleGenerativeAI(geminiKey);
+        }
+
+        if (model) {
+            AI_CONFIG.DEFAULT_MODEL = model;
+        }
+
+        console.log(`[MITA OS] Neural Configuration Updated`);
+
+        res.json({
+            success: true,
+            message: 'Configuration updated successfully'
+        });
+    } catch (error) {
+        console.error('updateAIConfig Error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update configuration'
+        });
+    }
+};
+
+/**
+ * checkAIStatus - Simple online/offline check
+ */
+export const checkAIStatus = async (req, res) => {
+    const isOnline = !!(process.env.GEMINI_API_KEY || AI_CONFIG.PROVIDERS.GEMINI.apiKey);
+    res.json({
+        success: true,
+        status: isOnline ? 'online' : 'offline',
+        available: isOnline
+    });
+};

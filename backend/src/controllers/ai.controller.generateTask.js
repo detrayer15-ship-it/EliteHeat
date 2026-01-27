@@ -1,11 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-
-// Initialize Gemini AI
-const genAI = process.env.GEMINI_API_KEY
-    ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-    : null;
-
-const WORKING_MODEL = 'gemini-1.5-flash';
+import { aiService } from '../services/ai.service.js';
 
 // ... (existing code)
 
@@ -31,72 +24,71 @@ export const generateTask = async (req, res) => {
             });
         }
 
-        // Check if API is available
-        if (!genAI) {
-            console.warn('⚠️ Gemini API недоступен, используем fallback');
-            return res.json({
-                success: true,
-                task: getFallbackTask(subject, difficulty)
-            });
-        }
-
         // Build prompt for task generation
         const prompt = buildTaskGenerationPrompt(subject, difficulty, userLevel, completedTopics);
 
-        // Generate task with AI
-        const startTime = Date.now();
-        const model = genAI.getGenerativeModel({
-            model: WORKING_MODEL,
-            generationConfig: {
-                temperature: 0.8,
-                topP: 0.9,
-                topK: 40,
-                maxOutputTokens: 1000,
-            },
+        // Generate task with centralized AI service
+        const result = await aiService.chat({
+            message: prompt,
+            mode: 'developer', // Using developer mode for task generation
+            options: {
+                style: 'detailed',
+                format: 'steps'
+            }
         });
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const aiText = response.text();
-        const latencyMs = Date.now() - startTime;
-
-        // Parse JSON response
-        const jsonMatch = aiText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-            console.warn('AI не вернул JSON, используем fallback');
+        if (!result.success) {
+            console.warn('AI Service failed, using fallback');
             return res.json({
                 success: true,
                 task: getFallbackTask(subject, difficulty)
             });
         }
 
-        const task = JSON.parse(jsonMatch[0]);
+        // Parse JSON response
+        const aiText = result.reply;
+        const jsonMatch = aiText.match(/\{[\s\S]*\}/);
 
-        // Log request
-        console.log({
-            endpoint: '/api/ai/generate-task',
-            subject,
-            difficulty,
-            model: WORKING_MODEL,
-            latencyMs
-        });
+        if (!jsonMatch) {
+            console.warn('AI returned non-JSON response, using fallback');
+            return res.json({
+                success: true,
+                task: getFallbackTask(subject, difficulty)
+            });
+        }
 
-        res.json({
-            success: true,
-            task: {
-                title: task.title,
-                description: task.description,
-                difficulty,
+        try {
+            const task = JSON.parse(jsonMatch[0]);
+            // Log request
+            console.log({
+                endpoint: '/api/ai/generate-task',
                 subject,
-                hints: task.hints || [],
-                estimatedTime: task.estimatedTime || 60
-            }
-        });
+                difficulty,
+                // model: WORKING_MODEL, // Removed as aiService abstracts this
+                // latencyMs // Removed as aiService abstracts this
+            });
+
+            res.json({
+                success: true,
+                task: {
+                    title: task.title,
+                    description: task.description,
+                    difficulty,
+                    subject,
+                    hints: task.hints || [],
+                    estimatedTime: task.estimatedTime || 60
+                }
+            });
+        } catch (parseError) {
+            console.error('JSON Parse Error:', parseError);
+            res.json({
+                success: true,
+                task: getFallbackTask(subject, difficulty)
+            });
+        }
 
     } catch (error) {
-        console.error('Task Generation Error:', error);
-
-        // Fallback response
+        console.error('Task Generation Controller Error:', error);
         res.json({
             success: true,
             task: getFallbackTask(req.body.subject, req.body.difficulty)
@@ -123,20 +115,20 @@ function buildTaskGenerationPrompt(subject, difficulty, userLevel, completedTopi
 
 Верни ответ СТРОГО В ФОРМАТЕ JSON (без markdown):
 {
-  "title": "Название задачи (краткое, до 60 символов)",
-  "description": "Подробное описание задачи (что нужно сделать, 2-3 предложения)",
+  "title": "Название задачи",
+  "description": "Подробное описание задачи",
   "hints": ["Подсказка 1", "Подсказка 2", "Подсказка 3"],
   "estimatedTime": 45
 }
 
 Требования:
-- Задача должна быть практической и интересной
-- Описание должно быть четким и понятным
-- Подсказки должны помогать, но не давать готовое решение
-- estimatedTime - примерное время в минутах (15-120)
-${completedTopics && completedTopics.length > 0 ? `- Избегай тем: ${completedTopics.join(', ')}` : ''}
+1. Краткий заголовок до 60 символов.
+2. Описание на 2-3 предложения.
+3. 3 полезных подсказки.
+4. Время в минутах (15-120).
+${completedTopics && completedTopics.length > 0 ? `5. ИЗБЕГАЙ ТЕМ: ${completedTopics.join(', ')}` : ''}
 
-Верни ТОЛЬКО JSON, без дополнительного текста.`;
+Верни ТОЛЬКО JSON.`;
 }
 
 /**

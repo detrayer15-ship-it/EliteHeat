@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom'
 
+import { Home, FolderKanban, BookOpen, TrendingUp, Settings } from 'lucide-react'
+
 const navItems = [
-    { path: '/', icon: '🏠' },
-    { path: '/projects', icon: '📁' },
-    { path: '/tasks', icon: '✓' },
-    { path: '/progress', icon: '📊' },
-    { path: '/settings', icon: '⚙️' },
+    { path: '/dashboard', icon: <Home className="w-6 h-6" /> },
+    { path: '/projects', icon: <FolderKanban className="w-6 h-6" /> },
+    { path: '/tasks', icon: <BookOpen className="w-6 h-6" /> },
+    { path: '/progress', icon: <TrendingUp className="w-6 h-6" /> },
+    { path: '/settings', icon: <Settings className="w-6 h-6" /> },
 ]
 
 export const MobileNav = () => {
@@ -20,10 +22,10 @@ export const MobileNav = () => {
                         <Link
                             key={item.path}
                             to={item.path}
-                            className={`flex flex-col items-center py-3 px-3 min-w-[44px] min-h-[44px] transition-smooth ${isActive ? 'text-primary' : 'text-gray-500'
+                            className={`flex flex-col items-center py-2 px-3 min-w-[44px] transition-all duration-300 ${isActive ? 'text-indigo-600 scale-110' : 'text-gray-400 hover:text-gray-600'
                                 }`}
                         >
-                            <span className="text-2xl">{item.icon}</span>
+                            {item.icon}
                         </Link>
                     )
                 })}

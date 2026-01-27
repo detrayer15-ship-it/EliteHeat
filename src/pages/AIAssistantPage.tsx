@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAIAssistant } from '@/hooks/useAIAssistant'
 import { useAIContext } from '@/store/aiContextStore'
-import { clearSessionHistory } from '@/api/gemini'
+import { clearSessionHistory, checkAIStatus } from '@/api/gemini'
 import {
     Sparkles,
     Image as ImageIcon,
@@ -35,6 +35,22 @@ export const AIAssistantPage = () => {
     const [selectedAudio] = useState<string | null>(null)
     const [showSuggestions, setShowSuggestions] = useState(true)
     const [userName] = useState<string>('')
+    const [aiStatus, setAiStatus] = useState({ available: false, status: 'offline' })
+
+    useEffect(() => {
+        const fetchStatus = async () => {
+            try {
+                const status = await checkAIStatus()
+                setAiStatus(status)
+            } catch (e) {
+                setAiStatus({ available: false, status: 'offline' })
+            }
+        }
+        fetchStatus()
+        const interval = setInterval(fetchStatus, 30000)
+        return () => clearInterval(interval)
+    }, [])
+
     const [isListening, setIsListening] = useState(false)
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -151,7 +167,10 @@ export const AIAssistantPage = () => {
                     <div>
                         <h1 className="text-xl font-black text-indigo-950 tracking-tighter leading-none">Mita OS <span className="text-indigo-600/30 text-xs font-serif lowercase italic ml-1">v4.0.2</span></h1>
                         <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-indigo-950/40 mt-1">
-                            <span className="flex items-center gap-1"><Zap className="w-2 h-2 text-yellow-500 fill-current" /> Neural Core Active</span>
+                            <span className="flex items-center gap-1">
+                                <Zap className={`w-2 h-2 ${aiStatus.available ? 'text-yellow-500 fill-current animate-pulse' : 'text-rose-400'}`} />
+                                Neural Core {aiStatus.available ? 'Active' : 'Offline'}
+                            </span>
                             <span className="w-0.5 h-0.5 rounded-full bg-indigo-200"></span>
                             <span>{userName || 'Global Guest'}</span>
                         </div>

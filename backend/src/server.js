@@ -1,5 +1,4 @@
 import dotenv from 'dotenv'
-// Load env vars immediately for static imports
 dotenv.config()
 
 import express from 'express'
