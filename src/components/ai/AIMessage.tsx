@@ -1,4 +1,4 @@
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, Bot, User } from 'lucide-react'
 import { useState } from 'react'
 
 interface AIMessageProps {
@@ -14,150 +14,6 @@ export const AIMessage = ({ content, role, userName }: AIMessageProps) => {
         navigator.clipboard.writeText(code)
         setCopiedCode(code)
         setTimeout(() => setCopiedCode(null), 2000)
-    }
-
-    // Simple formatter for AI responses
-    const formatContent = (text: string) => {
-        const lines = text.split('\n')
-        const formatted: JSX.Element[] = []
-        let inCodeBlock = false
-        let codeLanguage = ''
-        let codeLines: string[] = []
-
-        lines.forEach((line, index) => {
-            // Code block start
-            if (line.startsWith('```')) {
-                if (!inCodeBlock) {
-                    inCodeBlock = true
-                    codeLanguage = line.replace('```', '').trim() || 'code'
-                } else {
-                    // Code block end
-                    inCodeBlock = false
-                    const codeContent = codeLines.join('\n')
-                    formatted.push(
-                        <div key={`code-${index}`} className="relative group/code my-4">
-                            <div className="absolute top-3 right-3 z-10">
-                                <button
-                                    onClick={() => handleCopyCode(codeContent)}
-                                    className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-all"
-                                >
-                                    {copiedCode === codeContent ? (
-                                        <>
-                                            <Check className="w-3 h-3" />
-                                            Скопировано!
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Copy className="w-3 h-3" />
-                                            Копировать
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                            <div className="rounded-xl overflow-hidden border-2 border-neutral-200">
-                                <div className="bg-neutral-800 px-4 py-2">
-                                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">
-                                        {codeLanguage}
-                                    </span>
-                                </div>
-                                <pre className="bg-[#1e1e1e] p-6 overflow-x-auto">
-                                    <code className="text-sm text-gray-100 font-mono leading-relaxed">
-                                        {codeContent}
-                                    </code>
-                                </pre>
-                            </div>
-                        </div>
-                    )
-                    codeLines = []
-                    codeLanguage = ''
-                }
-                return
-            }
-
-            if (inCodeBlock) {
-                codeLines.push(line)
-                return
-            }
-
-            // Headings
-            if (line.startsWith('# ')) {
-                formatted.push(
-                    <h1 key={index} className="text-2xl font-black text-neutral-900 mt-6 mb-4 pb-2 border-b-2 border-primary-200">
-                        {line.replace('# ', '')}
-                    </h1>
-                )
-            } else if (line.startsWith('## ')) {
-                formatted.push(
-                    <h2 key={index} className="text-xl font-black text-neutral-900 mt-5 mb-3">
-                        {line.replace('## ', '')}
-                    </h2>
-                )
-            } else if (line.startsWith('### ')) {
-                formatted.push(
-                    <h3 key={index} className="text-lg font-bold text-neutral-800 mt-4 mb-2">
-                        {line.replace('### ', '')}
-                    </h3>
-                )
-            }
-            // Numbered list
-            else if (line.match(/^\d+\./)) {
-                const text = line.replace(/^\d+\.\s*/, '')
-                formatted.push(
-                    <div key={index} className="flex gap-3 text-sm my-2">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black bg-primary-100 text-primary-700">
-                            {line.match(/^\d+/)?.[0]}
-                        </span>
-                        <span className="flex-1 text-neutral-700 leading-relaxed">{formatInlineText(text)}</span>
-                    </div>
-                )
-            }
-            // Bullet list
-            else if (line.startsWith('- ') || line.startsWith('* ')) {
-                const text = line.replace(/^[-*]\s*/, '')
-                formatted.push(
-                    <div key={index} className="flex gap-3 text-sm my-2">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black bg-success-100 text-success-700">
-                            ✓
-                        </span>
-                        <span className="flex-1 text-neutral-700 leading-relaxed">{formatInlineText(text)}</span>
-                    </div>
-                )
-            }
-            // Emoji numbered items (1️⃣, 2️⃣, etc.)
-            else if (line.match(/^[0-9]️⃣/)) {
-                formatted.push(
-                    <div key={index} className="my-3">
-                        <p className="text-sm text-neutral-700 leading-relaxed font-medium">
-                            {formatInlineText(line)}
-                        </p>
-                    </div>
-                )
-            }
-            // Blockquote
-            else if (line.startsWith('> ')) {
-                formatted.push(
-                    <blockquote key={index} className="border-l-4 border-primary-500 bg-primary-50 pl-4 pr-4 py-3 my-4 rounded-r-lg">
-                        <div className="text-sm text-primary-900 italic">
-                            {formatInlineText(line.replace('> ', ''))}
-                        </div>
-                    </blockquote>
-                )
-            }
-            // Empty line
-            else if (line.trim() === '') {
-                formatted.push(<div key={index} className="h-2"></div>)
-            }
-            // Regular paragraph
-            else {
-                formatted.push(
-                    <p key={index} className="text-sm leading-relaxed text-neutral-700 mb-3">
-                        {formatInlineText(line)}
-                    </p>
-                )
-            }
-        })
-
-        return formatted
     }
 
     // Format inline text (bold, italic, inline code)
@@ -176,7 +32,7 @@ export const AIMessage = ({ content, role, userName }: AIMessageProps) => {
                 parts.push(currentText.substring(lastIndex, match.index))
             }
             parts.push(
-                <code key={`code-${key++}`} className="px-2 py-0.5 bg-primary-50 text-primary-700 rounded font-mono text-sm font-semibold border border-primary-200">
+                <code key={`code-${key++}`} className="px-1.5 py-0.5 bg-slate-100 text-indigo-600 rounded font-mono text-xs font-medium">
                     {match[1]}
                 </code>
             )
@@ -188,7 +44,7 @@ export const AIMessage = ({ content, role, userName }: AIMessageProps) => {
         }
 
         // Bold **text**
-        const processedParts = parts.map((part, idx) => {
+        return parts.map((part, idx) => {
             if (typeof part === 'string') {
                 const boldParts: (string | JSX.Element)[] = []
                 const boldRegex = /\*\*([^*]+)\*\*/g
@@ -200,7 +56,7 @@ export const AIMessage = ({ content, role, userName }: AIMessageProps) => {
                         boldParts.push(part.substring(boldLastIndex, boldMatch.index))
                     }
                     boldParts.push(
-                        <strong key={`bold-${idx}-${key++}`} className="font-black text-neutral-900">
+                        <strong key={`bold-${idx}-${key++}`} className="font-semibold text-slate-900">
                             {boldMatch[1]}
                         </strong>
                     )
@@ -215,43 +71,134 @@ export const AIMessage = ({ content, role, userName }: AIMessageProps) => {
             }
             return part
         }).flat()
-
-        return processedParts
     }
 
+    // Format content with markdown
+    const formatContent = (text: string) => {
+        const lines = text.split('\n')
+        const formatted: JSX.Element[] = []
+        let inCodeBlock = false
+        let codeLanguage = ''
+        let codeLines: string[] = []
+
+        lines.forEach((line, index) => {
+            // Code block
+            if (line.startsWith('```')) {
+                if (!inCodeBlock) {
+                    inCodeBlock = true
+                    codeLanguage = line.replace('```', '').trim() || 'code'
+                } else {
+                    inCodeBlock = false
+                    const codeContent = codeLines.join('\n')
+                    formatted.push(
+                        <div key={`code-${index}`} className="my-3 group/code">
+                            <div className="rounded-xl overflow-hidden border border-slate-200">
+                                <div className="bg-slate-800 px-4 py-2 flex items-center justify-between">
+                                    <span className="text-xs font-medium text-slate-400">{codeLanguage}</span>
+                                    <button
+                                        onClick={() => handleCopyCode(codeContent)}
+                                        className="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                                    >
+                                        {copiedCode === codeContent ? (
+                                            <><Check className="w-3 h-3" /> Скопировано</>
+                                        ) : (
+                                            <><Copy className="w-3 h-3" /> Копировать</>
+                                        )}
+                                    </button>
+                                </div>
+                                <pre className="bg-slate-900 p-4 overflow-x-auto">
+                                    <code className="text-sm text-slate-100 font-mono">{codeContent}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    )
+                    codeLines = []
+                    codeLanguage = ''
+                }
+                return
+            }
+
+            if (inCodeBlock) {
+                codeLines.push(line)
+                return
+            }
+
+            // Headings
+            if (line.startsWith('### ')) {
+                formatted.push(<h4 key={index} className="text-sm font-bold text-slate-900 mt-3 mb-1">{line.replace('### ', '')}</h4>)
+            } else if (line.startsWith('## ')) {
+                formatted.push(<h3 key={index} className="text-base font-bold text-slate-900 mt-4 mb-2">{line.replace('## ', '')}</h3>)
+            } else if (line.startsWith('# ')) {
+                formatted.push(<h2 key={index} className="text-lg font-bold text-slate-900 mt-4 mb-2">{line.replace('# ', '')}</h2>)
+            }
+            // Numbered list
+            else if (line.match(/^\d+\./)) {
+                const text = line.replace(/^\d+\.\s*/, '')
+                const num = line.match(/^\d+/)?.[0]
+                formatted.push(
+                    <div key={index} className="flex gap-2 my-1.5">
+                        <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">{num}</span>
+                        <span className="flex-1 text-sm text-slate-600 leading-relaxed">{formatInlineText(text)}</span>
+                    </div>
+                )
+            }
+            // Bullet list
+            else if (line.startsWith('- ') || line.startsWith('* ') || line.startsWith('• ')) {
+                const text = line.replace(/^[-*•]\s*/, '')
+                formatted.push(
+                    <div key={index} className="flex gap-2 my-1.5">
+                        <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-indigo-400 mt-2" />
+                        <span className="flex-1 text-sm text-slate-600 leading-relaxed">{formatInlineText(text)}</span>
+                    </div>
+                )
+            }
+            // Blockquote
+            else if (line.startsWith('> ')) {
+                formatted.push(
+                    <blockquote key={index} className="border-l-3 border-indigo-300 bg-indigo-50 pl-3 pr-3 py-2 my-2 rounded-r-lg text-sm text-indigo-800 italic">
+                        {formatInlineText(line.replace('> ', ''))}
+                    </blockquote>
+                )
+            }
+            // Empty line
+            else if (line.trim() === '') {
+                formatted.push(<div key={index} className="h-2" />)
+            }
+            // Regular paragraph
+            else {
+                formatted.push(
+                    <p key={index} className="text-sm leading-relaxed text-slate-600 mb-2">{formatInlineText(line)}</p>
+                )
+            }
+        })
+
+        return formatted
+    }
+
+    // User message
     if (role === 'user') {
         return (
-            <div className="flex justify-end group animate-slide-in">
-                <div className="flex gap-6 max-w-[85%] flex-row-reverse">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg border border-white bg-primary-600 text-white">
-                        <span className="text-lg font-black">{userName?.[0] || 'У'}</span>
+            <div className="flex justify-end">
+                <div className="flex gap-3 max-w-[80%]">
+                    <div className="bg-indigo-600 text-white px-4 py-3 rounded-2xl rounded-br-md shadow-sm">
+                        <p className="text-sm whitespace-pre-wrap">{content}</p>
                     </div>
-                    <div className="p-6 md:p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden bg-gradient-to-br from-primary-600 to-blue-700 text-white rounded-tr-none">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"></div>
-                        <div className="text-sm font-black uppercase tracking-widest mb-3 opacity-30 italic">
-                            {userName || 'Ученик'}
-                        </div>
-                        <div className="text-sm md:text-base leading-relaxed font-medium whitespace-pre-wrap">
-                            {content}
-                        </div>
+                    <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-slate-500" />
                     </div>
                 </div>
             </div>
         )
     }
 
-    // Assistant message with formatted content
+    // Assistant message
     return (
-        <div className="flex justify-start group animate-slide-in">
-            <div className="flex gap-6 max-w-[90%]">
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg border border-white bg-[#0a0a0c] text-primary-400">
-                    <span className="text-2xl">🤖</span>
+        <div className="flex justify-start">
+            <div className="flex gap-3 max-w-[85%]">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <Bot className="w-4 h-4 text-white" />
                 </div>
-                <div className="p-6 md:p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden bg-white border border-primary-50 text-neutral-950 rounded-tl-none">
-                    <div className="text-sm font-black uppercase tracking-widest mb-4 text-primary-600 italic flex items-center gap-2">
-                        <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
-                        Mita AI
-                    </div>
+                <div className="bg-slate-50 px-4 py-3 rounded-2xl rounded-bl-md border border-slate-100">
                     <div className="prose prose-sm max-w-none">
                         {formatContent(content)}
                     </div>

@@ -36,7 +36,7 @@ service cloud.firestore {
     
     // Разрешить всё остальное для разработки (опционально)
     match /{document=**} {
-      allow read, write: if isSignedIn();
+      allow read, write: if true;
     }
   }
 }

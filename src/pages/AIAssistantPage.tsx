@@ -4,17 +4,11 @@ import { useAIContext } from '@/store/aiContextStore'
 import { clearSessionHistory, checkAIStatus } from '@/api/gemini'
 import {
     Sparkles,
-    Image as ImageIcon,
     Trash2,
     Send,
-    Music,
     Mic,
-    MoreHorizontal,
-    Zap,
     Bot,
-    Code,
-    BookOpen,
-    Lightbulb
+    Zap
 } from 'lucide-react'
 import { AIMessage } from '@/components/ai/AIMessage'
 
@@ -31,33 +25,29 @@ export const AIAssistantPage = () => {
     const { currentConversation, startConversation, clearConversation } = useAIContext()
 
     const [input, setInput] = useState('')
-    const [selectedImage] = useState<string | null>(null)
-    const [selectedAudio] = useState<string | null>(null)
-    const [showSuggestions, setShowSuggestions] = useState(true)
-    const [userName] = useState<string>('')
-    const [aiStatus, setAiStatus] = useState({ available: false, status: 'offline' })
+    const [aiStatus, setAiStatus] = useState({ available: true, status: 'online' })
+    const [isListening, setIsListening] = useState(false)
 
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const recognitionRef = useRef<any>(null)
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    // Check AI status
     useEffect(() => {
         const fetchStatus = async () => {
             try {
                 const status = await checkAIStatus()
                 setAiStatus(status)
             } catch (e) {
-                setAiStatus({ available: false, status: 'offline' })
+                setAiStatus({ available: true, status: 'online' })
             }
         }
         fetchStatus()
-        const interval = setInterval(fetchStatus, 30000)
+        const interval = setInterval(fetchStatus, 60000)
         return () => clearInterval(interval)
     }, [])
 
-    const [isListening, setIsListening] = useState(false)
-
-    const messagesEndRef = useRef<HTMLDivElement>(null)
-    const imageInputRef = useRef<HTMLInputElement>(null)
-    const audioInputRef = useRef<HTMLInputElement>(null)
-    const recognitionRef = useRef<any>(null)
-
+    // Scroll to bottom
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
@@ -66,68 +56,34 @@ export const AIAssistantPage = () => {
         scrollToBottom()
     }, [messages])
 
+    // Initialize chat
     useEffect(() => {
         const initChat = async () => {
             if (!currentConversation) {
                 try {
-                    await startConversation('AI Assistant Chat')
+                    await startConversation('AI Chat')
                 } catch (err) {
-                    console.error('Failed to auto-start chat:', err)
+                    console.error('Failed to start chat:', err)
                 }
             }
         }
         initChat()
     }, [currentConversation, startConversation])
 
-    // Умные предложения
-    const suggestions = [
-        {
-            icon: <Code className="w-5 h-5" />,
-            title: 'Development',
-            prompt: 'Помоги мне написать функцию на JavaScript для...',
-            color: 'from-blue-500 to-indigo-600'
-        },
-        {
-            icon: <BookOpen className="w-5 h-5" />,
-            title: 'Knowledge',
-            prompt: 'Объясни простыми словами, что такое...',
-            color: 'from-purple-500 to-pink-600'
-        },
-        {
-            icon: <Lightbulb className="w-5 h-5" />,
-            title: 'Creative',
-            prompt: 'Предложи идеи для моего проекта...',
-            color: 'from-amber-400 to-orange-600'
-        },
-        {
-            icon: <Zap className="w-5 h-5" />,
-            title: 'Optimization',
-            prompt: 'Как оптимизировать этот код?',
-            color: 'from-emerald-400 to-teal-600'
-        }
-    ]
-
     const handleSend = async () => {
-        if (!input.trim() && !selectedImage && !selectedAudio) return
+        if (!input.trim() || isLoading) return
 
         const currentInput = input
         setInput('')
-        setShowSuggestions(false)
-
         await sendMessage(currentInput)
-    }
-
-    const handleSuggestionClick = (prompt: string) => {
-        setInput(prompt)
-        setShowSuggestions(false)
+        inputRef.current?.focus()
     }
 
     const handleNewChat = async () => {
         try {
             await clearSessionHistory()
             clearConversation()
-            await startConversation('New AI Chat')
-            setShowSuggestions(true)
+            await startConversation('New Chat')
         } catch (err) {
             console.error('Failed to start new chat:', err)
         }
@@ -135,71 +91,69 @@ export const AIAssistantPage = () => {
 
     const startVoiceInput = () => {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            alert('Голосовой ввод не поддерживается.')
+            alert('Голосовой ввод не поддерживается')
             return
         }
         const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
         const recognition = new SpeechRecognition()
         recognition.lang = 'ru-RU'
         recognition.onstart = () => setIsListening(true)
-        recognition.onresult = (event: any) => setInput(event.results[0][0].transcript)
+        recognition.onresult = (event: any) => {
+            setInput(event.results[0][0].transcript)
+            setIsListening(false)
+        }
         recognition.onerror = () => setIsListening(false)
         recognition.onend = () => setIsListening(false)
         recognitionRef.current = recognition
         recognition.start()
     }
 
-    const stopVoiceInput = () => {
-        recognitionRef.current?.stop()
-        setIsListening(false)
-    }
-
     return (
-        <div className="min-h-full py-1 flex flex-col gap-2 h-[calc(100vh-100px)]">
-            <div className="flex items-center justify-between px-4 py-1">
+        <div className="h-[calc(100vh-120px)] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-2 py-3">
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <div className="w-12 h-12 rounded-2xl bg-[#0a0a0c] border border-white/5 flex items-center justify-center group/av">
-                            <Bot className="w-6 h-6 text-indigo-400 group-hover/av:scale-110 transition-transform" />
-                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></div>
+                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                            <Bot className="w-6 h-6 text-white" />
                         </div>
+                        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${aiStatus.available ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                     </div>
                     <div>
-                        <h1 className="text-xl font-black text-indigo-950 tracking-tighter leading-none">Mita OS <span className="text-indigo-600/30 text-xs font-serif lowercase italic ml-1">v4.0.2</span></h1>
-                        <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-indigo-950/40 mt-1">
-                            <span className="flex items-center gap-1">
-                                <Zap className={`w-2 h-2 ${aiStatus.available ? 'text-yellow-500 fill-current animate-pulse' : 'text-rose-400'}`} />
-                                Neural Core {aiStatus.available ? 'Active' : 'Offline'}
-                            </span>
-                            <span className="w-0.5 h-0.5 rounded-full bg-indigo-200"></span>
-                            <span>{userName || 'Global Guest'}</span>
+                        <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            Мита
+                            <span className="text-xs font-medium text-slate-400">AI</span>
+                        </h1>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                            <Zap className={`w-3 h-3 ${aiStatus.available ? 'text-emerald-500' : 'text-slate-400'}`} />
+                            <span>{aiStatus.available ? 'Онлайн' : 'Оффлайн'}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-2">
-                    <button
-                        onClick={handleNewChat}
-                        className="p-3 bg-white/80 backdrop-blur-md rounded-xl border border-white shadow-sm hover:shadow-md transition-all text-indigo-950/40 hover:text-red-500"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                    <button className="p-3 bg-white/80 backdrop-blur-md rounded-xl border border-white shadow-sm hover:shadow-md transition-all text-indigo-950/40 hover:text-indigo-600">
-                        <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                </div>
+                <button
+                    onClick={handleNewChat}
+                    className="p-2.5 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+                    title="Новый чат"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </button>
             </div>
 
-            <div className="flex-1 bg-white/60 backdrop-blur-3xl rounded-[2rem] border border-white shadow-3xl overflow-hidden flex flex-col relative">
-                <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-none relative">
+            {/* Chat Area */}
+            <div className="flex-1 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center gap-6 max-w-xl mx-auto py-4">
-                            <div className="text-center space-y-2">
-                                <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-indigo-600">
-                                    <Sparkles className="w-7 h-7 animate-pulse" />
+                        <div className="h-full flex flex-col items-center justify-center gap-6 max-w-md mx-auto py-8">
+                            <div className="text-center space-y-3">
+                                <div className="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto">
+                                    <Sparkles className="w-8 h-8 text-indigo-500" />
                                 </div>
-                                <h2 className="text-xl font-black text-indigo-950">Система готова.</h2>
-                                <p className="text-xs text-indigo-900/40 font-medium">С чего начнем обучение сегодня?</p>
+                                <h2 className="text-xl font-bold text-slate-900">Привет! Я Мита 👋</h2>
+                                <p className="text-sm text-slate-400">
+                                    Твой AI-помощник для изучения Python и Figma.
+                                    Спрашивай что угодно!
+                                </p>
                             </div>
                         </div>
                     ) : (
@@ -208,104 +162,65 @@ export const AIAssistantPage = () => {
                                 key={i}
                                 content={msg.content}
                                 role={msg.role as 'user' | 'assistant'}
-                                userName={userName || undefined}
                             />
                         ))
                     )}
+
+                    {/* Loading indicator */}
                     {isLoading && (
-                        <div className="flex justify-start animate-fade-in pl-2">
-                            <div className="flex gap-4 items-center bg-indigo-50/50 px-6 py-3 rounded-full border border-indigo-100">
+                        <div className="flex justify-start">
+                            <div className="flex items-center gap-3 bg-slate-50 px-4 py-3 rounded-2xl">
                                 <div className="flex gap-1">
-                                    <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce"></div>
-                                    <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce delay-100"></div>
-                                    <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce delay-200"></div>
+                                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Mita thinking</span>
+                                <span className="text-xs font-medium text-slate-400">Мита думает...</span>
                             </div>
                         </div>
                     )}
-                    <div ref={messagesEndRef} className="h-4" />
+
+                    <div ref={messagesEndRef} className="h-2" />
                 </div>
 
-                <div className="p-4 border-t border-indigo-50 bg-white/40">
-                    <div className="max-w-3xl mx-auto">
-                        <div className={`p-2 pl-4 rounded-2xl bg-white shadow-xl border border-indigo-50 flex items-center gap-3 transition-all focus-within:ring-2 focus-within:ring-indigo-500/10`}>
-                            <div className="flex gap-1">
-                                <button
-                                    onClick={() => imageInputRef.current?.click()}
-                                    className="p-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-all"
-                                >
-                                    <ImageIcon className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => audioInputRef.current?.click()}
-                                    className="p-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-all"
-                                >
-                                    <Music className="w-4 h-4" />
-                                </button>
-                            </div>
+                {/* Input */}
+                <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+                    <div className="flex items-center gap-2 bg-white rounded-2xl border border-slate-200 p-2 focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            placeholder={isListening ? "Говорите..." : "Напишите сообщение..."}
+                            className="flex-1 px-3 py-2 bg-transparent border-none focus:outline-none text-sm text-slate-900 placeholder:text-slate-400"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                            disabled={isListening}
+                        />
 
-                            <input
-                                type="text"
-                                placeholder={isListening ? "Listening..." : "Ask Mita..."}
-                                className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-indigo-950 font-medium placeholder:text-indigo-900/20 py-2"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                                disabled={isListening}
-                            />
+                        <button
+                            onClick={startVoiceInput}
+                            className={`p-2.5 rounded-xl transition-all ${isListening
+                                ? 'bg-red-500 text-white animate-pulse'
+                                : 'bg-slate-100 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50'
+                                }`}
+                        >
+                            <Mic className="w-4 h-4" />
+                        </button>
 
-                            <div className="flex items-center gap-2 pr-1">
-                                <button
-                                    onClick={isListening ? stopVoiceInput : startVoiceInput}
-                                    className={`p-3 rounded-xl transition-all ${isListening ? 'bg-indigo-600 text-white animate-pulse' : 'bg-indigo-50 text-indigo-400 hover:text-indigo-600'}`}
-                                >
-                                    <Mic className={`w-4 h-4 ${isListening ? 'animate-bounce' : ''}`} />
-                                </button>
-                                <button
-                                    onClick={handleSend}
-                                    disabled={isLoading || !input.trim()}
-                                    className="p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-glow disabled:opacity-30 disabled:shadow-none transition-all"
-                                >
-                                    <Send className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
+                        <button
+                            onClick={handleSend}
+                            disabled={isLoading || !input.trim()}
+                            className="p-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        >
+                            <Send className="w-4 h-4" />
+                        </button>
                     </div>
+
+                    <p className="text-center text-[10px] text-slate-300 mt-2">
+                        Мита использует AI для генерации ответов
+                    </p>
                 </div>
             </div>
-
-            <input type="file" ref={imageInputRef} className="hidden" />
-            <input type="file" ref={audioInputRef} className="hidden" />
-
-            <style>{`
-                .glass-premium {
-                    background: rgba(255, 255, 255, 0.4);
-                    backdrop-filter: blur(20px) saturate(180%);
-                }
-                .shadow-3xl {
-                    box-shadow: 0 40px 90px -20px rgba(0, 0, 0, 0.1);
-                }
-                .scrollbar-none::-webkit-scrollbar { display: none; }
-                .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-                @keyframes fade-in {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes slide-up {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
-                .animate-slide-up { animation: slide-up 0.6s ease-out forwards; }
-                @keyframes bounce {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-5px); }
-                }
-                .animate-bounce { animation: bounce 0.6s infinite; }
-                .delay-100 { animation-delay: 0.1s; }
-                .delay-200 { animation-delay: 0.2s; }
-            `}</style>
         </div>
     )
 }

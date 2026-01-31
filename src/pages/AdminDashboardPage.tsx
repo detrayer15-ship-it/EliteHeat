@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { getRankByPoints, getProgressToNextRank } from '@/utils/adminRanks'
-import { Users, MessageSquare, FileText, TrendingUp, Award, ClipboardCheck } from 'lucide-react'
+import { Users, MessageSquare, FileText, TrendingUp, Award, ClipboardCheck, Sparkles } from 'lucide-react'
 
 export const AdminDashboardPage = () => {
     const navigate = useNavigate()
@@ -250,6 +250,19 @@ export const AdminDashboardPage = () => {
                                 <h3 className="text-xl font-bold text-white">Улучшенный чат</h3>
                             </div>
                             <p className="text-pink-50">Теги, FAQ, приоритеты</p>
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/admin/ai-activity')}
+                            className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
+                        >
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
+                                    <Sparkles className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Активность AI</h3>
+                            </div>
+                            <p className="text-indigo-50">Анализ запросов, подозрения</p>
                         </button>
                     </div>
                 </div>

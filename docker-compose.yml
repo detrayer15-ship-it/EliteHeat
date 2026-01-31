@@ -1,0 +1,70 @@
+# Docker Compose for EliteHeat Development
+# Run: docker-compose up --build
+
+version: '3.8'
+
+services:
+  # ============================================
+  # Frontend Service (Vite Dev Server)
+  # ============================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend-builder
+    container_name: eliteheat-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+      - ./index.html:/app/index.html:ro
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - backend
+
+  # ============================================
+  # Backend Service (Express + Socket.io)
+  # ============================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: eliteheat-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/src:/app/backend/src:ro
+      - ./backend/logs:/app/backend/logs
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    env_file:
+      - ./backend/.env
+    command: sh -c "cd backend && node src/server.js"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  default:
+    name: eliteheat-network
+    driver: bridge
+
+# ============================================
+# Volumes for persistent data
+# ============================================
+volumes:
+  backend-logs:
+    driver: local

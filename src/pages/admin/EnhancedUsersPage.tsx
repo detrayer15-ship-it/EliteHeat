@@ -59,14 +59,14 @@ export const EnhancedUsersPage = () => {
                         role: data.role || 'student',
                         teacherRank: data.teacherRank,
                         createdAt: data.createdAt?.toDate() || new Date(),
-                        lastActive: Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
+                        lastActive: data.lastActiveAt?.toDate().getTime() || data.createdAt?.toDate().getTime() || Date.now(),
                         coursesProgress: {
-                            python: Math.floor(Math.random() * 100),
-                            figma: Math.floor(Math.random() * 100)
+                            python: data.progress || 0,
+                            figma: data.figmaProgress || 0
                         },
-                        activeProjects: Math.floor(Math.random() * 5),
-                        warnings: Math.floor(Math.random() * 3),
-                        adminNotes: ''
+                        activeProjects: data.activeProjects || 0,
+                        warnings: data.warnings || 0,
+                        adminNotes: data.adminNotes || ''
                     }
                 })
                 setUsers(loadedUsers)
@@ -271,8 +271,8 @@ export const EnhancedUsersPage = () => {
                                         <div className="flex items-center gap-2 mb-1">
                                             <h3 className="text-lg font-bold text-gray-900">{u.name}</h3>
                                             <span className={`px-2 py-0.5 rounded text-xs font-bold ${u.role === 'student' ? 'bg-blue-100 text-blue-700' :
-                                                    u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                                                        'bg-red-100 text-red-700'
+                                                u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                                                    'bg-red-100 text-red-700'
                                                 }`}>
                                                 {u.role === 'student' ? 'Ученик' : u.role === 'admin' ? 'Учитель' : 'Разработчик'}
                                             </span>

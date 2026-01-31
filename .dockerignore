@@ -1,0 +1,58 @@
+# Dependencies
+node_modules
+*/node_modules
+
+# Build output
+dist
+build
+
+# Cache
+.npm
+.cache
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Environment files (build from env vars)
+.env
+.env.local
+.env*.local
+backend/.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Documentation (not needed in image)
+*.md
+!README.md
+docs
+
+# Test files
+*.test.*
+*.spec.*
+__tests__
+coverage
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Firebase
+.firebase
+firebase-debug.log
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Temporary files
+tmp
+temp

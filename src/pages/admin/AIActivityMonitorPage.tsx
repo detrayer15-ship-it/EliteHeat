@@ -47,158 +47,80 @@ export const AIActivityMonitorPage = () => {
     const loadAIActivityData = async () => {
         setLoading(true)
         try {
-            // Реальные ученики нашей школы
-            const mockLogs: AIUsageLog[] = [
-                {
-                    id: '1',
-                    studentId: 'student1',
-                    studentName: 'Алия Касымова',
-                    studentEmail: 'aliya.k@school.kz',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 минут назад
-                    feature: 'code-review',
-                    prompt: 'Помоги разобраться, почему мой код не работает',
-                    response: 'Давай посмотрим на твой код...',
-                    tokensUsed: 320,
-                    suspicious: false,
-                    suspicionReasons: []
-                },
-                {
-                    id: '2',
-                    studentId: 'student2',
-                    studentName: 'Данияр Бекбосынов',
-                    studentEmail: 'daniiar.b@school.kz',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 30),
-                    feature: 'chat',
-                    prompt: 'Как работает цикл for в Python?',
-                    response: 'Цикл for используется для...',
-                    tokensUsed: 280,
-                    suspicious: false,
-                    suspicionReasons: []
-                },
-                {
-                    id: '3',
-                    studentId: 'student3',
-                    studentName: 'Айым Сапарова',
-                    studentEmail: 'aiym.s@school.kz',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 45),
-                    feature: 'assistant',
-                    prompt: 'Объясни, как создать компонент в Figma',
-                    response: 'Компоненты в Figma создаются...',
-                    tokensUsed: 350,
-                    suspicious: false,
-                    suspicionReasons: []
-                },
-                {
-                    id: '4',
-                    studentId: 'student4',
-                    studentName: 'Нурсултан Жумабаев',
-                    studentEmail: 'nursultan.zh@school.kz',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 60),
-                    feature: 'chat',
-                    prompt: 'Дай ответ на задание 5',
-                    response: 'Ответ: ...',
-                    tokensUsed: 180,
-                    suspicious: true,
-                    suspicionReasons: [
-                        'Запрос прямого ответа на задание',
-                        'Не задавал уточняющих вопросов'
-                    ]
-                },
-                {
-                    id: '5',
-                    studentId: 'student5',
-                    studentName: 'Диана Омарова',
-                    studentEmail: 'diana.o@school.kz',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 90),
-                    feature: 'code-review',
-                    prompt: 'Проверь мой дизайн на ошибки',
-                    response: 'Вот несколько рекомендаций...',
-                    tokensUsed: 420,
-                    suspicious: false,
-                    suspicionReasons: []
-                }
-            ]
+            // 1. Fetch Students
+            const usersSnapshot = await getDocs(query(collection(db, 'users'), where('role', '==', 'student')))
+            const studentsMap = new Map()
+            usersSnapshot.docs.forEach(doc => {
+                studentsMap.set(doc.id, { id: doc.id, ...doc.data() })
+            })
 
-            const mockStats: StudentAIStats[] = [
-                {
-                    studentId: 'student1',
-                    studentName: 'Алия Касымова',
-                    totalRequests: 34,
-                    suspiciousRequests: 2,
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 15),
-                    avgTokensPerRequest: 290,
-                    features: {
-                        chat: 15,
-                        codeReview: 12,
-                        assistant: 6,
-                        imageAnalysis: 1
-                    },
-                    suspicionScore: 12 // Низкий риск
-                },
-                {
-                    studentId: 'student2',
-                    studentName: 'Данияр Бекбосынов',
-                    totalRequests: 42,
-                    suspiciousRequests: 3,
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 30),
-                    avgTokensPerRequest: 310,
-                    features: {
-                        chat: 20,
-                        codeReview: 15,
-                        assistant: 5,
-                        imageAnalysis: 2
-                    },
-                    suspicionScore: 18 // Низкий риск
-                },
-                {
-                    studentId: 'student3',
-                    studentName: 'Айым Сапарова',
-                    totalRequests: 28,
-                    suspiciousRequests: 1,
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 45),
-                    avgTokensPerRequest: 340,
-                    features: {
-                        chat: 10,
-                        codeReview: 8,
-                        assistant: 8,
-                        imageAnalysis: 2
-                    },
-                    suspicionScore: 8 // Низкий риск
-                },
-                {
-                    studentId: 'student4',
-                    studentName: 'Нурсултан Жумабаев',
-                    totalRequests: 51,
-                    suspiciousRequests: 18,
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 60),
-                    avgTokensPerRequest: 220,
-                    features: {
-                        chat: 35,
-                        codeReview: 8,
-                        assistant: 7,
-                        imageAnalysis: 1
-                    },
-                    suspicionScore: 65 // Средний риск
-                },
-                {
-                    studentId: 'student5',
-                    studentName: 'Диана Омарова',
-                    totalRequests: 38,
-                    suspiciousRequests: 4,
-                    lastUsed: new Date(Date.now() - 1000 * 60 * 90),
-                    avgTokensPerRequest: 380,
-                    features: {
-                        chat: 12,
-                        codeReview: 18,
-                        assistant: 6,
-                        imageAnalysis: 2
-                    },
-                    suspicionScore: 22 // Низкий риск
-                }
-            ]
+            // 2. Fetch AI Messages
+            const messagesSnapshot = await getDocs(query(
+                collection(db, 'aiMessages'),
+                orderBy('timestamp', 'desc'),
+                limit(100)
+            ))
 
-            setLogs(mockLogs)
-            setStudentStats(mockStats)
+            const realLogs: AIUsageLog[] = messagesSnapshot.docs.map(doc => {
+                const data = doc.data()
+                const student = studentsMap.get(data.userId) || { name: 'Unknown', email: '' }
+
+                const suspicionReasons = []
+                const suspiciousKeywords = ['готовый код', 'ответ', 'решение', 'сделай за меня', 'код для задания']
+                if (data.role === 'user' && suspiciousKeywords.some(k => data.content.toLowerCase().includes(k))) {
+                    suspicionReasons.push('Запрос прямого решения или готового кода')
+                }
+
+                return {
+                    id: doc.id,
+                    studentId: data.userId,
+                    studentName: student.name,
+                    studentEmail: student.email,
+                    timestamp: data.timestamp?.toDate() || new Date(),
+                    feature: data.feature || 'chat',
+                    prompt: data.role === 'user' ? data.content : '(Ответ AI)',
+                    response: data.role === 'assistant' ? data.content : '',
+                    tokensUsed: data.meta?.totalTokens || 0,
+                    suspicious: suspicionReasons.length > 0,
+                    suspicionReasons
+                }
+            })
+
+            // 3. Calculate Stats
+            const statsMap = new Map<string, StudentAIStats>()
+
+            realLogs.forEach(log => {
+                if (!statsMap.has(log.studentId)) {
+                    statsMap.set(log.studentId, {
+                        studentId: log.studentId,
+                        studentName: log.studentName,
+                        totalRequests: 0,
+                        suspiciousRequests: 0,
+                        lastUsed: log.timestamp,
+                        avgTokensPerRequest: 0,
+                        features: { chat: 0, codeReview: 0, assistant: 0, imageAnalysis: 0 },
+                        suspicionScore: 0
+                    })
+                }
+
+                const s = statsMap.get(log.studentId)!
+                s.totalRequests++
+                if (log.suspicious) s.suspiciousRequests++
+                if (log.timestamp > s.lastUsed) s.lastUsed = log.timestamp
+
+                // Track features (simplified)
+                if (log.feature === 'chat') s.features.chat++
+                else if (log.feature === 'code-review') s.features.codeReview++
+            })
+
+            // Finalize stats
+            const finalStats = Array.from(statsMap.values()).map(s => {
+                s.suspicionScore = Math.min(100, Math.round((s.suspiciousRequests / s.totalRequests) * 100 * 2)) // Scaled for visibility
+                return s
+            })
+
+            setLogs(realLogs.filter(l => l.prompt !== '(Ответ AI)')) // Show only user prompts for clarity in logs
+            setStudentStats(finalStats)
         } catch (error) {
             console.error('Error loading AI activity:', error)
         } finally {
@@ -251,11 +173,10 @@ export const AIActivityMonitorPage = () => {
                             <button
                                 key={filter}
                                 onClick={() => setTimeFilter(filter)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                    timeFilter === filter
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${timeFilter === filter
                                         ? 'bg-primary text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 {filter === 'today' && 'Сегодня'}
                                 {filter === 'week' && 'Неделя'}
@@ -292,7 +213,7 @@ export const AIActivityMonitorPage = () => {
                     <div className="text-3xl font-bold text-yellow-600">
                         {Math.round(
                             studentStats.reduce((sum, s) => sum + s.suspicionScore, 0) /
-                                studentStats.length
+                            studentStats.length
                         )}
                         %
                     </div>
@@ -384,11 +305,10 @@ export const AIActivityMonitorPage = () => {
                     {logs.map((log) => (
                         <div
                             key={log.id}
-                            className={`p-4 rounded-lg border-2 ${
-                                log.suspicious
+                            className={`p-4 rounded-lg border-2 ${log.suspicious
                                     ? 'border-red-200 bg-red-50'
                                     : 'border-gray-200 bg-white'
-                            }`}
+                                }`}
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <div>

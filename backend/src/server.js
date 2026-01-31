@@ -8,6 +8,8 @@ import helmet from 'helmet'
 import connectDB from './config/db.js'
 import { initializeSocket } from './config/socket.js'
 import { limiter } from './middleware/rateLimiter.js'
+import { sanitizer, strictSanitizer } from './middleware/sanitizer.js'
+import { auditMiddleware, getAuditLogs } from './middleware/auditLogger.js'
 
 // Routes
 import authRoutes from './routes/auth.routes.js'
@@ -50,12 +52,21 @@ app.use(cors({
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// Security middleware
+app.use(sanitizer)  // Input sanitization
+app.use(auditMiddleware)  // Audit logging
+
 // Rate limiting
 app.use('/api/', limiter)
 
+// Admin routes with strict sanitization
+app.use('/api/admin', strictSanitizer, adminRoutes)
+
+// Audit logs endpoint (admin only)
+app.get('/api/admin/audit-logs', getAuditLogs)
+
 // Routes
 app.use('/api/auth', authRoutes)
-app.use('/api/admin', adminRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/ai', aiRoutes)
 

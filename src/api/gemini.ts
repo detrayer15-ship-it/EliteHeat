@@ -2,9 +2,14 @@ import { getAIChatMessages, addUserMessage, addAssistantMessage } from './aiMess
 import { touchAIChat } from './aiChats'
 // import type { ChatMode } from './aiChats'
 
-// Backend API URL
-const API_URL = import.meta.env.VITE_API_URL ||
+// API URLs - Python AI is primary, Node.js is fallback
+const PYTHON_AI_URL = import.meta.env.VITE_PYTHON_AI_URL || 'http://localhost:3001'
+const NODE_API_URL = import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD ? 'https://eliteheat-backend.web.app' : 'http://localhost:3000')
+
+// Which backend to use (dynamically switches on failure)
+let currentBackend: 'python' | 'node' = 'python'
+let pythonAvailable = true
 
 // Session ID management
 const SESSION_ID_KEY = 'eliteheat_ai_session_id'
@@ -31,13 +36,41 @@ export function clearSessionId(): void {
 }
 
 /**
+ * Get current API URL (Python AI primary, Node.js fallback)
+ */
+function getApiUrl(): string {
+    return pythonAvailable ? PYTHON_AI_URL : NODE_API_URL
+}
+
+/**
  * Отправка текстового запроса к AI через backend с session_id
 */
 export async function sendTextMessage(message: string): Promise<string> {
     try {
         const session_id = getSessionId()
 
-        const response = await fetch(`${API_URL}/api/ai/chat`, {
+        // Try Python AI first
+        try {
+            const response = await fetch(`${PYTHON_AI_URL}/api/ai/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message, session_id })
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                pythonAvailable = true
+                return data.reply
+            }
+        } catch (pythonError) {
+            console.log('Python AI unavailable, trying Node.js backend...')
+            pythonAvailable = false
+        }
+
+        // Fallback to Node.js backend
+        const response = await fetch(`${NODE_API_URL}/api/ai/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,7 +86,7 @@ export async function sendTextMessage(message: string): Promise<string> {
         const data = await response.json();
         return data.reply;
     } catch (error: any) {
-        // Fallback response if backend is unavailable or connection refused
+        // Fallback response if both backends are unavailable
         if (
             error.message?.includes('Failed to fetch') ||
             error.message?.includes('NetworkError') ||
@@ -73,7 +106,7 @@ export async function clearSessionHistory(): Promise<void> {
     try {
         const session_id = getSessionId()
 
-        await fetch(`${API_URL}/api/ai/session/${session_id}`, {
+        await fetch(`${getApiUrl()}/api/ai/session/${session_id}`, {
             method: 'DELETE',
         })
 
@@ -91,7 +124,7 @@ export async function getSessionHistory(): Promise<Array<{ role: string, content
     try {
         const session_id = getSessionId()
 
-        const response = await fetch(`${API_URL}/api/ai/session/${session_id}/history`)
+        const response = await fetch(`${getApiUrl()}/api/ai/session/${session_id}/history`)
         const data = await response.json()
 
         return data.history || []
@@ -133,7 +166,7 @@ export async function sendAIChatMessage(
         }))
 
         // 3. Call backend with history
-        const response = await fetch(`${API_URL}/api/ai/chat/message`, {
+        const response = await fetch(`${getApiUrl()}/api/ai/chat/message`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -395,7 +428,7 @@ export async function helpWithPresentation(topic: string, details: string): Prom
  */
 export async function checkAPIStatus(): Promise<boolean> {
     try {
-        const response = await fetch(`${API_URL}/api/ai/status`, {
+        const response = await fetch(`${getApiUrl()}/api/ai/status`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -436,7 +469,7 @@ export async function generateTask(params: {
     completedTopics?: string[]
 }): Promise<GeneratedTask> {
     try {
-        const response = await fetch(`${API_URL}/api/ai/generate-task`, {
+        const response = await fetch(`${getApiUrl()}/api/ai/generate-task`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -553,7 +586,7 @@ export async function updateAIConfig(config: {
     model?: string
 }) {
     try {
-        const response = await fetch(`${API_URL}/api/ai/config`, {
+        const response = await fetch(`${getApiUrl()}/api/ai/config`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -574,7 +607,7 @@ export async function updateAIConfig(config: {
  */
 export async function checkAIStatus() {
     try {
-        const response = await fetch(`${API_URL}/api/ai/status`)
+        const response = await fetch(`${getApiUrl()}/api/ai/status`)
         if (!response.ok) throw new Error('Status check failed')
         return await response.json()
     } catch (error) {

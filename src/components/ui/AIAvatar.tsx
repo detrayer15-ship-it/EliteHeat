@@ -1,9 +1,10 @@
 interface AIAvatarProps {
     size?: number
     state?: 'idle' | 'thinking' | 'speaking'
+    showImage?: boolean
 }
 
-export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
+export const AIAvatar = ({ size = 120, state = 'idle', showImage = true }: AIAvatarProps) => {
     return (
         <div
             className="ai-avatar-container"
@@ -14,10 +15,25 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
             <div className="pulse-ring pulse-ring-2"></div>
             <div className="pulse-ring pulse-ring-3"></div>
 
-            {/* Main Avatar - Liquid Gradient */}
+            {/* Main Avatar - Mita Image or Gradient */}
             <div className={`ai-avatar-core ${state}`}>
-                {/* Animated Gradient Background */}
-                <div className="gradient-layer"></div>
+                {showImage ? (
+                    <>
+                        {/* Mita Avatar Image */}
+                        <img
+                            src="/mita-avatar.png"
+                            alt="Mita AI"
+                            className="mita-image"
+                        />
+                        {/* Subtle overlay for effects */}
+                        <div className="image-overlay"></div>
+                    </>
+                ) : (
+                    <>
+                        {/* Animated Gradient Background */}
+                        <div className="gradient-layer"></div>
+                    </>
+                )}
 
                 {/* Shine Effect */}
                 <div className="shine-effect"></div>
@@ -42,7 +58,7 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
                     justify-content: center;
                 }
 
-                /* Main Avatar Core - Liquid Gradient */
+                /* Main Avatar Core */
                 .ai-avatar-core {
                     position: relative;
                     width: 100%;
@@ -56,7 +72,31 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
                     z-index: 2;
                 }
 
-                /* Animated Liquid Gradient */
+                /* Mita Image */
+                .mita-image {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: center top;
+                    z-index: 1;
+                }
+
+                /* Image Overlay for Effects */
+                .image-overlay {
+                    position: absolute;
+                    inset: 0;
+                    background: linear-gradient(
+                        180deg,
+                        transparent 0%,
+                        transparent 60%,
+                        rgba(168, 85, 247, 0.3) 100%
+                    );
+                    z-index: 2;
+                }
+
+                /* Animated Liquid Gradient (fallback) */
                 .gradient-layer {
                     position: absolute;
                     inset: 0;
@@ -91,11 +131,12 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
                     background: linear-gradient(
                         90deg,
                         transparent,
-                        rgba(255, 255, 255, 0.3),
+                        rgba(255, 255, 255, 0.2),
                         transparent
                     );
                     animation: shine-sweep 4s ease-in-out infinite;
                     transform: rotate(45deg);
+                    z-index: 3;
                 }
 
                 @keyframes shine-sweep {
@@ -120,6 +161,7 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
                     );
                     animation: scanline-move 3s linear infinite, flicker 2.5s ease-in-out infinite;
                     pointer-events: none;
+                    z-index: 4;
                 }
 
                 @keyframes scanline-move {
@@ -133,10 +175,10 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
 
                 @keyframes flicker {
                     0%, 100% {
-                        opacity: 0.8;
+                        opacity: 0.6;
                     }
                     50% {
-                        opacity: 0.95;
+                        opacity: 0.8;
                     }
                 }
 
@@ -188,47 +230,20 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
                     animation: particle-orbit 8s linear infinite;
                 }
 
-                .particle-1 {
-                    animation-delay: 0s;
-                    animation-duration: 6s;
-                }
-
-                .particle-2 {
-                    animation-delay: 1s;
-                    animation-duration: 7s;
-                }
-
-                .particle-3 {
-                    animation-delay: 2s;
-                    animation-duration: 8s;
-                }
-
-                .particle-4 {
-                    animation-delay: 3s;
-                    animation-duration: 6.5s;
-                }
-
-                .particle-5 {
-                    animation-delay: 4s;
-                    animation-duration: 7.5s;
-                }
-
-                .particle-6 {
-                    animation-delay: 5s;
-                    animation-duration: 8.5s;
-                }
+                .particle-1 { animation-delay: 0s; animation-duration: 6s; }
+                .particle-2 { animation-delay: 1s; animation-duration: 7s; }
+                .particle-3 { animation-delay: 2s; animation-duration: 8s; }
+                .particle-4 { animation-delay: 3s; animation-duration: 6.5s; }
+                .particle-5 { animation-delay: 4s; animation-duration: 7.5s; }
+                .particle-6 { animation-delay: 5s; animation-duration: 8.5s; }
 
                 @keyframes particle-orbit {
                     0% {
                         transform: rotate(0deg) translateX(60px) rotate(0deg);
                         opacity: 0;
                     }
-                    10% {
-                        opacity: 1;
-                    }
-                    90% {
-                        opacity: 1;
-                    }
+                    10% { opacity: 1; }
+                    90% { opacity: 1; }
                     100% {
                         transform: rotate(360deg) translateX(60px) rotate(-360deg);
                         opacity: 0;
@@ -236,12 +251,25 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
                 }
 
                 /* Thinking State - Faster animations */
-                .ai-avatar-core.thinking .gradient-layer {
-                    animation-duration: 3s;
-                }
-
                 .ai-avatar-core.thinking .shine-effect {
                     animation-duration: 2s;
+                }
+
+                .ai-avatar-core.thinking {
+                    animation: thinking-glow 1s ease-in-out infinite;
+                }
+
+                @keyframes thinking-glow {
+                    0%, 100% {
+                        box-shadow: 
+                            0 0 30px rgba(168, 85, 247, 0.6),
+                            0 0 60px rgba(168, 85, 247, 0.4);
+                    }
+                    50% {
+                        box-shadow: 
+                            0 0 40px rgba(168, 85, 247, 0.8),
+                            0 0 80px rgba(168, 85, 247, 0.6);
+                    }
                 }
 
                 /* Speaking State - Pulsing */
@@ -263,7 +291,8 @@ export const AIAvatar = ({ size = 120, state = 'idle' }: AIAvatarProps) => {
                 .shine-effect,
                 .scanlines,
                 .pulse-ring,
-                .particle {
+                .particle,
+                .mita-image {
                     will-change: transform, opacity;
                 }
             `}</style>

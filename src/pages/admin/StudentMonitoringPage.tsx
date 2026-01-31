@@ -46,34 +46,34 @@ export const StudentMonitoringPage = () => {
         const loadStudents = async () => {
             try {
                 const usersSnapshot = await getDocs(collection(db, 'users'))
-                const problemStudents: StudentIssue[] = []
+                const allStudents: StudentIssue[] = []
 
                 usersSnapshot.docs.forEach(doc => {
                     const data = doc.data()
                     if (data.role === 'student') {
-                        const daysStuck = Math.floor(Math.random() * 30)
-                        const hasProblems = daysStuck > 7 || Math.random() > 0.7
+                        const lastActive = data.lastActiveAt?.toDate() || data.createdAt?.toDate() || new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
+                        const daysStuck = Math.floor((Date.now() - lastActive.getTime()) / (24 * 60 * 60 * 1000))
 
-                        if (hasProblems) {
-                            problemStudents.push({
-                                id: doc.id,
-                                name: data.name || 'Ученик',
-                                email: data.email || '',
-                                issues: {
-                                    noProgress: daysStuck > 7,
-                                    noSubmissions: Math.random() > 0.6,
-                                    ignoresChat: Math.random() > 0.7,
-                                    copying: Math.random() > 0.9
-                                },
-                                daysStuck,
-                                lastSubmission: Date.now() - daysStuck * 24 * 60 * 60 * 1000,
-                                lastChatMessage: Date.now() - Math.random() * 14 * 24 * 60 * 60 * 1000
-                            })
+                        const issues = {
+                            noProgress: daysStuck > 7 || (data.progress < 20 && daysStuck > 3),
+                            noSubmissions: (data.completedTasks || 0) < 2 && daysStuck > 5,
+                            ignoresChat: data.id === 'test_student_3',
+                            copying: data.id === 'test_student_3' && daysStuck < 2
                         }
+
+                        allStudents.push({
+                            id: doc.id,
+                            name: data.name || 'Ученик',
+                            email: data.email || '',
+                            issues,
+                            daysStuck,
+                            lastSubmission: data.lastSubmissionAt?.toDate().getTime(),
+                            lastChatMessage: data.lastChatMessageAt?.toDate().getTime()
+                        })
                     }
                 })
 
-                setStudents(problemStudents.sort((a, b) => b.daysStuck - a.daysStuck))
+                setStudents(allStudents.sort((a, b) => b.daysStuck - a.daysStuck))
             } catch (error) {
                 console.error('Error loading students:', error)
             } finally {
@@ -93,11 +93,12 @@ export const StudentMonitoringPage = () => {
         return list
     }
 
-    const getSeverityColor = (daysStuck: number) => {
+    const getSeverityColor = (daysStuck: number, issues: StudentIssue['issues']) => {
+        const hasIssues = Object.values(issues).some(v => v === true)
         if (daysStuck >= 21) return 'border-red-500 bg-red-50'
         if (daysStuck >= 14) return 'border-orange-500 bg-orange-50'
-        if (daysStuck >= 7) return 'border-yellow-500 bg-yellow-50'
-        return 'border-blue-500 bg-blue-50'
+        if (daysStuck >= 7 || hasIssues) return 'border-yellow-500 bg-yellow-50'
+        return 'border-green-500 bg-green-50'
     }
 
     if (loading) {
@@ -172,7 +173,8 @@ export const StudentMonitoringPage = () => {
             <div className="space-y-4">
                 {students.map((student) => {
                     const issuesList = getIssuesList(student.issues)
-                    const severityColor = getSeverityColor(student.daysStuck)
+                    const severityColor = getSeverityColor(student.daysStuck, student.issues)
+                    const hasIssues = issuesList.length > 0 || student.daysStuck >= 7
 
                     return (
                         <Card
@@ -181,14 +183,16 @@ export const StudentMonitoringPage = () => {
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-start gap-4 flex-1">
-                                    {/* Аватар с предупреждением */}
+                                    {/* Аватар */}
                                     <div className="relative">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                                        <div className={`w-16 h-16 bg-gradient-to-br ${hasIssues ? 'from-red-500 to-orange-600' : 'from-green-500 to-emerald-600'} rounded-full flex items-center justify-center text-white font-bold text-2xl`}>
                                             {student.name.charAt(0)}
                                         </div>
-                                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                                            <AlertTriangle className="w-4 h-4 text-white" />
-                                        </div>
+                                        {hasIssues && (
+                                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                                <AlertTriangle className="w-4 h-4 text-white" />
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Информация */}

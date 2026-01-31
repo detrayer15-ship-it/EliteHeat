@@ -19,7 +19,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
             <Sidebar />
 
-            <div className="flex-1 flex flex-col lg:ml-72 relative z-10">
+            <div className="flex-1 flex flex-col lg:ml-[272px] relative z-10">
                 <Header />
 
                 <main className="flex-1 p-3 sm:p-4 lg:p-6 pb-24 lg:pb-10 transition-all duration-500">
