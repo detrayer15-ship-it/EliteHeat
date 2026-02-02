@@ -13,12 +13,12 @@ export const AdminDashboardPage = () => {
         setLoading(false)
     }, [])
 
-    if (currentUser?.role !== 'admin' && currentUser?.role !== 'developer') {
+    if (currentUser?.role !== 'admin' && currentUser?.role !== 'developer' && currentUser?.role !== 'teacher') {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold text-red-600 mb-4">Доступ запрещён</h1>
-                    <p className="text-gray-600">Эта страница доступна только администраторам</p>
+                    <p className="text-gray-600">Эта страница доступна только учителям, администраторам и разработчикам</p>
                 </div>
             </div>
         )

@@ -14,8 +14,8 @@ export const EnhancedGroupsPage = () => {
         { id: '3', name: 'Группа C', students: 18, avgScore: 90, progress: 85, weak: 1, strong: 8 }
     ])
 
-    if (!user || user.role !== 'admin') {
-        return <div className="p-6"><h1 className="text-2xl font-bold text-red-600">403</h1></div>
+    if (!user || (user.role !== 'admin' && user.role !== 'developer' && user.role !== 'teacher')) {
+        return <div className="p-6"><h1 className="text-2xl font-bold text-red-600">403 - Доступ запрещён</h1></div>
     }
 
     return (

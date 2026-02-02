@@ -3,9 +3,9 @@ import { touchAIChat } from './aiChats'
 // import type { ChatMode } from './aiChats'
 
 // API URLs - Python AI is primary, Node.js is fallback
-const PYTHON_AI_URL = import.meta.env.VITE_PYTHON_AI_URL || 'http://localhost:3001'
+const PYTHON_AI_URL = import.meta.env.VITE_PYTHON_AI_URL || 'http://127.0.0.1:3001'
 const NODE_API_URL = import.meta.env.VITE_API_URL ||
-    (import.meta.env.PROD ? 'https://eliteheat-backend.web.app' : 'http://localhost:3000')
+    (import.meta.env.PROD ? 'https://eliteheat-backend.web.app' : 'http://127.0.0.1:3000')
 
 // Which backend to use (dynamically switches on failure)
 let currentBackend: 'python' | 'node' = 'python'
@@ -424,9 +424,9 @@ export async function helpWithPresentation(topic: string, details: string): Prom
 }
 
 /**
- * Проверка доступности API
+ * Проверка доступности API (Унифицированная версия)
  */
-export async function checkAPIStatus(): Promise<boolean> {
+export async function checkAPIStatus(): Promise<{ success: boolean, available: boolean, status: string }> {
     try {
         const response = await fetch(`${getApiUrl()}/api/ai/status`, {
             method: 'GET',
@@ -436,17 +436,19 @@ export async function checkAPIStatus(): Promise<boolean> {
         })
 
         if (!response.ok) {
-            // If backend is down, we still have fallback responses
-            console.log('Backend unavailable, using fallback mode')
-            return true // Return true because fallback mode works
+            console.log('Backend unreachable, using fallback mode')
+            return { success: false, available: true, status: 'fallback' }
         }
 
         const data = await response.json()
-        return data.success && data.available
+        return {
+            success: true,
+            available: data.available ?? true,
+            status: data.status || 'online'
+        }
     } catch (error) {
-        // Network error - backend not running, but fallback works
         console.log('API Status Check Failed, using fallback mode:', error)
-        return true // Always return true because we have fallback responses
+        return { success: false, available: true, status: 'offline' }
     }
 }
 
@@ -603,14 +605,6 @@ export async function updateAIConfig(config: {
 }
 
 /**
- * Check AI Cluster Status
+ * Check AI Cluster Status (Alias for checkAPIStatus)
  */
-export async function checkAIStatus() {
-    try {
-        const response = await fetch(`${getApiUrl()}/api/ai/status`)
-        if (!response.ok) throw new Error('Status check failed')
-        return await response.json()
-    } catch (error) {
-        return { success: false, available: false, status: 'offline' }
-    }
-}
+export const checkAIStatus = checkAPIStatus;

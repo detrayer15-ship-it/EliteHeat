@@ -38,20 +38,20 @@ const navGroups: NavGroup[] = [
     {
         title: 'Обучение',
         items: [
-            { path: '/dashboard', labelKey: 'dashboard', icon: <Home className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
-            { path: '/projects', labelKey: 'projects', icon: <FolderKanban className="w-5 h-5" />, roles: ['student'] },
-            { path: '/tasks', labelKey: 'tasks', icon: <BookOpen className="w-5 h-5" />, roles: ['student'] },
+            { path: '/dashboard', labelKey: 'dashboard', icon: <Home className="w-5 h-5" />, roles: ['student', 'teacher', 'admin', 'developer'] },
+            { path: '/projects', labelKey: 'projects', icon: <FolderKanban className="w-5 h-5" />, roles: ['student', 'teacher'] },
+            { path: '/tasks', labelKey: 'tasks', icon: <BookOpen className="w-5 h-5" />, roles: ['student', 'teacher'] },
         ]
     },
     {
         title: 'Администрирование',
-        roles: ['admin', 'developer'],
+        roles: ['admin', 'developer', 'teacher'],
         items: [
-            { path: '/admin', labelKey: 'adminPanel', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin', 'developer'] },
-            { path: '/admin/tasks', labelKey: 'checkTasks', icon: <CheckSquare className="w-5 h-5" />, roles: ['admin', 'developer'] },
-            { path: '/admin/users', labelKey: 'students', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer'] },
-            { path: '/admin/groups', labelKey: 'groups', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer'] },
-            { path: '/admin/group-chat', labelKey: 'adminChat', icon: <MessageCircle className="w-5 h-5" />, roles: ['admin', 'developer'] },
+            { path: '/admin', labelKey: 'adminPanel', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
+            { path: '/admin/tasks', labelKey: 'checkTasks', icon: <CheckSquare className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
+            { path: '/admin/users', labelKey: 'students', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
+            { path: '/admin/groups', labelKey: 'groups', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
+            { path: '/admin/group-chat', labelKey: 'adminChat', icon: <MessageCircle className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
             { path: '/admin/ranks', labelKey: 'ranks', icon: <Award className="w-5 h-5" />, roles: ['admin', 'developer'] },
             { path: '/admin/support-chats', labelKey: 'supportChats', icon: <HelpCircle className="w-5 h-5" />, roles: ['admin', 'developer'] },
         ]
@@ -59,16 +59,16 @@ const navGroups: NavGroup[] = [
     {
         title: 'Развитие',
         items: [
-            { path: '/progress', labelKey: 'progressTracker', icon: <TrendingUp className="w-5 h-5" />, roles: ['student'] },
+            { path: '/progress', labelKey: 'progressTracker', icon: <TrendingUp className="w-5 h-5" />, roles: ['student', 'teacher'] },
         ]
     },
     {
         title: 'Система',
         items: [
-            { path: '/ai-assistant', labelKey: 'aiAssistant', icon: <Sparkles className="w-5 h-5" />, roles: ['student', 'admin', 'developer'], isAI: true },
-            { path: '/support', labelKey: 'support', icon: <HelpCircle className="w-5 h-5" />, roles: ['student'] },
+            { path: '/ai-assistant', labelKey: 'aiAssistant', icon: <Sparkles className="w-5 h-5" />, roles: ['student', 'teacher', 'admin', 'developer'], isAI: true },
+            { path: '/support', labelKey: 'support', icon: <HelpCircle className="w-5 h-5" />, roles: ['student', 'teacher'] },
             { path: '/developer/panel', labelKey: 'developer', icon: <Terminal className="w-5 h-5" />, roles: ['developer'] },
-            { path: '/settings', labelKey: 'settings', icon: <Settings className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
+            { path: '/settings', labelKey: 'settings', icon: <Settings className="w-5 h-5" />, roles: ['student', 'teacher', 'admin', 'developer'] },
         ]
     }
 ]

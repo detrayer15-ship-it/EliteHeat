@@ -3,7 +3,7 @@ export interface User {
     email: string
     name: string
     city: string
-    role: 'student' | 'admin'
+    role: 'student' | 'teacher' | 'admin'
     level?: number
     points?: number
     tasksReviewed?: number
@@ -18,5 +18,6 @@ export interface User {
 
 export const roleLabels: Record<string, string> = {
     student: 'Ученик',
+    teacher: 'Учитель',
     admin: 'Админ'
 }

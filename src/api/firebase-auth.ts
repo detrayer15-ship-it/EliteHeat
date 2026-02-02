@@ -14,7 +14,7 @@ export interface UserData {
     name: string
     displayName?: string
     city: string
-    role: 'student' | 'admin' | 'developer'
+    role: 'student' | 'teacher' | 'admin' | 'developer'
     level?: number
     points?: number
     tasksReviewed?: number
@@ -41,7 +41,7 @@ export const firebaseAuthAPI = {
         password: string,
         name: string,
         city: string,
-        role: 'student' | 'admin' = 'student',
+        role: 'student' | 'teacher' | 'admin' = 'student',
         subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family'
     ) => {
         try {

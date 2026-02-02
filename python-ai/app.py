@@ -18,6 +18,9 @@ CORS(app, origins=[
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
     "https://eliteheat-2ee0b.web.app",
     "https://eliteheat-2ee0b.firebaseapp.com"
 ])
@@ -428,10 +431,28 @@ def ask_gemini(message, history=[]):
 3. Объясняй простым языком
 4. Структурируй ответы с маркерами и заголовками"""
 
-        chat = gemini_model.start_chat(history=[
+        # Начальный контекст
+        formatted_history = [
             {"role": "user", "parts": [system_prompt]},
             {"role": "model", "parts": ["Понял! Я Мита, готова помогать! 🚀"]}
-        ])
+        ]
+        
+        # Добавляем историю сообщений (если есть)
+        # Если последнее сообщение в истории совпадает с текущим, убираем его, 
+        # так как оно будет отправлено через send_message
+        if history and history[-1].get("role") == "user" and history[-1].get("content") == message:
+            history_to_process = history[:-1]
+        else:
+            history_to_process = history
+
+        for msg in history_to_process:
+            # Преобразуем роли frontend в роли Gemini
+            role = "user" if msg.get("role") == "user" else "model"
+            content = msg.get("content", "")
+            if content:
+                formatted_history.append({"role": role, "parts": [content]})
+
+        chat = gemini_model.start_chat(history=formatted_history)
         
         response = chat.send_message(message)
         return response.text
@@ -584,6 +605,11 @@ def chat():
             "success": False,
             "error": str(e)
         }), 500
+
+@app.route('/api/ai/chat/message', methods=['POST'])
+def chat_message():
+    """Firestore-based chat endpoint (New Frontend compatibility)"""
+    return chat()  # Переиспользуем логику основного чата, так как форматы данных схожи
 
 @app.route('/api/ai/status', methods=['GET'])
 def status():

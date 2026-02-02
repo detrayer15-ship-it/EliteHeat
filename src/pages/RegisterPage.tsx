@@ -16,6 +16,7 @@ export const RegisterPage = () => {
         email: '',
         name: '',
         password: '',
+        role: 'student' as 'student' | 'teacher',
     })
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
@@ -30,7 +31,7 @@ export const RegisterPage = () => {
             formData.password,
             formData.name,
             '', // city
-            'student' // всегда student
+            formData.role
         )
 
         setIsLoading(false)
@@ -134,6 +135,30 @@ export const RegisterPage = () => {
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 />
+                            </div>
+
+                            {/* Role Selection */}
+                            <div className="flex gap-4 p-1 bg-slate-50 rounded-xl border border-slate-100">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, role: 'student' })}
+                                    className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.role === 'student'
+                                        ? 'bg-white text-blue-600 shadow-sm'
+                                        : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                >
+                                    Я ученик
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, role: 'teacher' })}
+                                    className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${formData.role === 'teacher'
+                                        ? 'bg-white text-orange-600 shadow-sm'
+                                        : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                >
+                                    Я учитель
+                                </button>
                             </div>
 
                             {/* Submit */}

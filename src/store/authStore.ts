@@ -10,7 +10,7 @@ interface AuthStore {
     isLoading: boolean
     error: string | null
 
-    register: (email: string, password: string, name: string, city: string, role?: 'student' | 'admin', subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family') => Promise<{ success: boolean; message: string }>
+    register: (email: string, password: string, name: string, city: string, role?: 'student' | 'teacher' | 'admin', subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family') => Promise<{ success: boolean; message: string }>
     login: (email: string, password: string) => Promise<{ success: boolean; message: string }>
     loginWithGoogle: () => Promise<{ success: boolean; message: string }>
     logout: () => Promise<void>
@@ -28,7 +28,7 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
             error: null,
 
-            register: async (email: string, password: string, name: string, city: string, role: 'student' | 'admin' = 'student', subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family') => {
+            register: async (email: string, password: string, name: string, city: string, role: 'student' | 'teacher' | 'admin' = 'student', subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family') => {
                 try {
                     set({ isLoading: true, error: null })
 

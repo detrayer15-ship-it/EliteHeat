@@ -12,7 +12,7 @@ interface User {
     id: string
     name: string
     email: string
-    role: 'student' | 'admin' | 'developer'
+    role: 'student' | 'teacher' | 'admin' | 'developer'
     teacherRank?: number
     createdAt: Date
     lastActive?: number
@@ -30,12 +30,12 @@ export const AdminUsersPage = () => {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
-    const [filterRole, setFilterRole] = useState<'all' | 'student' | 'admin' | 'developer'>('all')
+    const [filterRole, setFilterRole] = useState<'all' | 'student' | 'teacher' | 'admin' | 'developer'>('all')
     const [filterActivity, setFilterActivity] = useState<'all' | 'active' | 'inactive' | 'risk'>('all')
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
     // Access check
-    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'developer')) {
+    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'developer' && currentUser.role !== 'teacher')) {
         return (
             <div className="p-6 flex items-center justify-center min-h-screen">
                 <Card className="p-8 text-center max-w-md">
@@ -174,6 +174,7 @@ export const AdminUsersPage = () => {
                 {[
                     { label: 'Всего', value: users.length, color: 'text-indigo-600', icon: <UserIcon className="w-4 h-4" /> },
                     { label: 'Ученики', value: users.filter(u => u.role === 'student').length, color: 'text-blue-600', icon: <Shield className="w-4 h-4" /> },
+                    { label: 'Учителя', value: users.filter(u => u.role === 'teacher').length, color: 'text-orange-600', icon: <Shield className="w-4 h-4" /> },
                     { label: 'Админы', value: users.filter(u => u.role === 'admin' || u.role === 'developer').length, color: 'text-purple-600', icon: <Shield className="w-4 h-4" /> },
                     { label: 'В зоне риска', value: users.filter(u => u.lastActive && Date.now() - u.lastActive > 14 * 24 * 60 * 60 * 1000).length, color: 'text-red-600', icon: <AlertTriangle className="w-4 h-4" /> },
                 ].map((stat, i) => (
@@ -211,7 +212,8 @@ export const AdminUsersPage = () => {
                         >
                             <option value="all">Все роли</option>
                             <option value="student">Ученики</option>
-                            <option value="admin">Учителя</option>
+                            <option value="teacher">Учителя</option>
+                            <option value="admin">Администраторы</option>
                             <option value="developer">Разработчики</option>
                         </select>
                     </div>
@@ -251,10 +253,11 @@ export const AdminUsersPage = () => {
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <h3 className="font-bold text-gray-900 truncate">{u.name}</h3>
                                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tighter ${u.role === 'student' ? 'bg-blue-50 text-blue-600' :
-                                            u.role === 'admin' ? 'bg-purple-50 text-purple-600' :
-                                                'bg-red-50 text-red-600'
+                                            u.role === 'teacher' ? 'bg-orange-50 text-orange-600' :
+                                                u.role === 'admin' ? 'bg-purple-50 text-purple-600' :
+                                                    'bg-red-50 text-red-600'
                                             }`}>
-                                            {u.role === 'student' ? 'Ученик' : u.role === 'admin' ? 'Учитель' : 'Dev'}
+                                            {u.role === 'student' ? 'Ученик' : u.role === 'teacher' ? 'Учитель' : u.role === 'admin' ? 'Админ' : 'Dev'}
                                         </span>
                                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activity.color}`}>
                                             {activity.label}
