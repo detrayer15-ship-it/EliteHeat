@@ -189,7 +189,11 @@ export async function sendAIChatMessage(
         await addAssistantMessage(chatId, data.reply, data.usage);
         await touchAIChat(chatId);
 
-        console.log(`✅ AI Response received.`);
+        if (data.isFallback) {
+            console.warn(`[MITA] Using fallback response (ID: ${data.requestId || 'unknown'})`);
+        } else {
+            console.log(`✅ AI Response received (ID: ${data.requestId || 'unknown'})`);
+        }
 
         return {
             reply: data.reply,

@@ -166,6 +166,7 @@ class AIService {
                 success: true,
                 reply: this.getFallbackResponse(message),
                 cached: false,
+                isFallback: true,
                 usage: { model: 'hard-fallback', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
             };
         }
@@ -279,6 +280,7 @@ class AIService {
                 success: true,
                 reply: this.getFallbackResponse(message),
                 cached: false,
+                isFallback: true,
                 requestId
             };
         }
