@@ -10,7 +10,7 @@ import {
     Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { sendTextMessage } from '@/api/gemini'
+import { sendTextMessage } from '@/api/mita'
 
 export const CodeReviewPanel = () => {
     const [code, setCode] = useState('')

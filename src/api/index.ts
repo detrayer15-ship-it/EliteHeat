@@ -41,12 +41,12 @@ export type {
   CourseResponse,
 } from './courses';
 
-// Gemini AI API
-export * from './gemini';
+// Mita AI API
+export * from './mita';
 export {
   sendTextMessage,
   sendImageMessage,
   checkCode,
   helpWithPresentation,
   checkAPIStatus,
-} from './gemini';
+} from './mita';

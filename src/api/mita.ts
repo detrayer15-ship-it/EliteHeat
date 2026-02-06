@@ -2,14 +2,11 @@ import { getAIChatMessages, addUserMessage, addAssistantMessage } from './aiMess
 import { touchAIChat } from './aiChats'
 // import type { ChatMode } from './aiChats'
 
-// API URLs - Python AI is primary, Node.js is fallback
-const PYTHON_AI_URL = import.meta.env.VITE_PYTHON_AI_URL || 'http://127.0.0.1:3001'
+// API URL - Node.js is now the single primary backend
 const NODE_API_URL = import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD ? 'https://eliteheat-backend.web.app' : 'http://127.0.0.1:3000')
 
-// Which backend to use (dynamically switches on failure)
-let currentBackend: 'python' | 'node' = 'python'
-let pythonAvailable = true
+const REQUEST_TIMEOUT = 15000; // 15 seconds
 
 // Session ID management
 const SESSION_ID_KEY = 'eliteheat_ai_session_id'
@@ -36,46 +33,22 @@ export function clearSessionId(): void {
 }
 
 /**
- * Get current API URL (Python AI primary, Node.js fallback)
+ * Отправка текстового запроса к AI через Node.js backend с session_id
  */
-function getApiUrl(): string {
-    return pythonAvailable ? PYTHON_AI_URL : NODE_API_URL
-}
-
-/**
- * Отправка текстового запроса к AI через backend с session_id
-*/
 export async function sendTextMessage(message: string): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
     try {
         const session_id = getSessionId()
 
-        // Try Python AI first
-        try {
-            const response = await fetch(`${PYTHON_AI_URL}/api/ai/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message, session_id })
-            })
-
-            if (response.ok) {
-                const data = await response.json()
-                pythonAvailable = true
-                return data.reply
-            }
-        } catch (pythonError) {
-            console.log('Python AI unavailable, trying Node.js backend...')
-            pythonAvailable = false
-        }
-
-        // Fallback to Node.js backend
         const response = await fetch(`${NODE_API_URL}/api/ai/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message, session_id })
+            body: JSON.stringify({ message, session_id }),
+            signal: controller.signal
         })
 
         if (!response.ok) {
@@ -86,7 +59,14 @@ export async function sendTextMessage(message: string): Promise<string> {
         const data = await response.json();
         return data.reply;
     } catch (error: any) {
-        // Fallback response if both backends are unavailable
+        if (error.name === 'AbortError') {
+            console.error('[MITA] Request timed out');
+            return 'Извини, сервер отвечает слишком долго. Попробуй еще раз через минуту.';
+        }
+
+        console.error('[MITA] Chat request failed:', error);
+
+        // Hard fallback to local responses if backend is unreachable
         if (
             error.message?.includes('Failed to fetch') ||
             error.message?.includes('NetworkError') ||
@@ -96,6 +76,8 @@ export async function sendTextMessage(message: string): Promise<string> {
         }
 
         throw error;
+    } finally {
+        clearTimeout(timeoutId);
     }
 }
 
@@ -103,17 +85,23 @@ export async function sendTextMessage(message: string): Promise<string> {
  * Clear session history
  */
 export async function clearSessionHistory(): Promise<void> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     try {
         const session_id = getSessionId()
 
-        await fetch(`${getApiUrl()}/api/ai/session/${session_id}`, {
+        await fetch(`${NODE_API_URL}/api/ai/session/${session_id}`, {
             method: 'DELETE',
+            signal: controller.signal
         })
 
         // Create new session
         clearSessionId()
     } catch (error) {
         console.error('Clear Session Error:', error)
+    } finally {
+        clearTimeout(timeoutId);
     }
 }
 
@@ -121,16 +109,23 @@ export async function clearSessionHistory(): Promise<void> {
  * Get session history
  */
 export async function getSessionHistory(): Promise<Array<{ role: string, content: string }>> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     try {
         const session_id = getSessionId()
 
-        const response = await fetch(`${getApiUrl()}/api/ai/session/${session_id}/history`)
+        const response = await fetch(`${NODE_API_URL}/api/ai/session/${session_id}/history`, {
+            signal: controller.signal
+        })
         const data = await response.json()
 
         return data.history || []
     } catch (error) {
         console.error('Get History Error:', error)
         return []
+    } finally {
+        clearTimeout(timeoutId);
     }
 }
 
@@ -152,65 +147,87 @@ export async function sendAIChatMessage(
     chatId: string,
     message: string
 ): Promise<{ reply: string; usage: AIUsage }> {
+    // 1. Add user message to Firestore
+    await addUserMessage(chatId, message)
+
+    // 2. Get chat history from Firestore
+    const messages = await getAIChatMessages(chatId)
+
+    // Convert to history format for backend (last 20 messages for token efficiency)
+    const history = messages.slice(-20).map(msg => ({
+        role: msg.role,
+        content: msg.content
+    }))
+
+    const payload = JSON.stringify({ message, history });
+
+    // 3. Attempt Node.js Backend
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
     try {
-        // 1. Add user message to Firestore
-        await addUserMessage(chatId, message)
-
-        // 2. Get chat history from Firestore
-        const messages = await getAIChatMessages(chatId)
-
-        // Convert to history format for backend (last 25 messages)
-        const history = messages.slice(-25).map(msg => ({
-            role: msg.role,
-            content: msg.content
-        }))
-
-        // 3. Call backend with history
-        const response = await fetch(`${getApiUrl()}/api/ai/chat/message`, {
+        console.log(`[MITA] Requesting AI response...`);
+        const res = await fetch(`${NODE_API_URL}/api/ai/chat/message`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message, history })
-        })
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            signal: controller.signal,
+        });
 
-        const data = await response.json()
-
-        if (!response.ok) {
-            throw new Error(data.reply || data.error || 'Ошибка AI')
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.reply || errorData.error || `Error: ${res.status}`);
         }
 
-        // 4. Add assistant response to Firestore
-        await addAssistantMessage(chatId, data.reply, data.usage)
+        const data = await res.json();
 
-        // 5. Update chat's updatedAt timestamp
-        await touchAIChat(chatId)
+        if (!data.reply) {
+            throw new Error("Некорректный ответ от сервера");
+        }
+
+        // 4. Store in Firestore and return
+        await addAssistantMessage(chatId, data.reply, data.usage);
+        await touchAIChat(chatId);
+
+        console.log(`✅ AI Response received.`);
 
         return {
             reply: data.reply,
-            usage: data.usage || { model: 'gemini-1.5-flash', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
-        }
+            usage: data.usage || {
+                model: 'gpt-4o-mini',
+                inputTokens: 0, outputTokens: 0, latencyMs: 0
+            }
+        };
 
     } catch (error: any) {
-        console.error('AI Chat Message Error (Backend connection failure):', error)
-
-        // Fallback response if backend is unavailable
-        if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError') || error.name === 'TypeError') {
-            const fallbackReply = getFallbackResponse(message)
-            await addAssistantMessage(chatId, fallbackReply)
-            await touchAIChat(chatId)
+        if (error.name === 'AbortError') {
+            const timeoutReply = 'Извини, я думала слишком долго и не успела ответить. Попробуй еще раз!';
+            await addAssistantMessage(chatId, timeoutReply);
             return {
-                reply: fallbackReply,
-                usage: { model: 'fallback-error', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
-            }
+                reply: timeoutReply,
+                usage: { model: 'timeout', inputTokens: 0, outputTokens: 0, latencyMs: REQUEST_TIMEOUT }
+            };
         }
 
-        throw error
+        console.error(`❌ AI Chat request failed:`, error);
+
+        // Hard Fallback to local logic
+        const fallbackReply = getFallbackResponse(message);
+        await addAssistantMessage(chatId, fallbackReply);
+        await touchAIChat(chatId);
+
+        return {
+            reply: fallbackReply,
+            usage: { model: 'local-fallback', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
+        };
+    } finally {
+        clearTimeout(timeoutId);
     }
 }
 
+
 /**
- * Fallback ответы если Gemini недоступен
+ * Fallback ответы если AI недоступен
  */
 function getFallbackResponse(message: string): string {
     const lowerMessage = message.toLowerCase()
@@ -406,6 +423,7 @@ ${code}
     return sendTextMessage(prompt)
 }
 
+
 /**
  * Помощь с презентацией
  */
@@ -424,20 +442,22 @@ export async function helpWithPresentation(topic: string, details: string): Prom
 }
 
 /**
- * Проверка доступности API (Унифицированная версия)
+ * Проверка доступности API (Унифицированная версия для Node.js)
  */
 export async function checkAPIStatus(): Promise<{ success: boolean, available: boolean, status: string }> {
+    const url = `${NODE_API_URL}/api/ai/status`;
+
     try {
-        const response = await fetch(`${getApiUrl()}/api/ai/status`, {
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
+            signal: AbortSignal.timeout(3000) // 3s timeout
         })
 
         if (!response.ok) {
-            console.log('Backend unreachable, using fallback mode')
-            return { success: false, available: true, status: 'fallback' }
+            return { success: false, available: true, status: 'offline' }
         }
 
         const data = await response.json()
@@ -447,7 +467,7 @@ export async function checkAPIStatus(): Promise<{ success: boolean, available: b
             status: data.status || 'online'
         }
     } catch (error) {
-        console.log('API Status Check Failed, using fallback mode:', error)
+        console.error("[MITA] API Status Check Failed", error);
         return { success: false, available: true, status: 'offline' }
     }
 }
@@ -471,7 +491,7 @@ export async function generateTask(params: {
     completedTopics?: string[]
 }): Promise<GeneratedTask> {
     try {
-        const response = await fetch(`${getApiUrl()}/api/ai/generate-task`, {
+        const response = await fetch(`${NODE_API_URL}/api/ai/generate-task`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -588,7 +608,7 @@ export async function updateAIConfig(config: {
     model?: string
 }) {
     try {
-        const response = await fetch(`${getApiUrl()}/api/ai/config`, {
+        const response = await fetch(`${NODE_API_URL}/api/ai/config`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

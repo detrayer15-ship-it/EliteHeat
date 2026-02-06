@@ -28,4 +28,4 @@ pip install -r requirements.txt -q
 
 REM Start the server
 echo 🚀 Starting Mita AI Service...
-python app.py
+uvicorn app:app --host 0.0.0.0 --port 3001 --reload

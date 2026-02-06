@@ -97,6 +97,12 @@ router.delete('/session/:session_id', clearSession);
 router.get('/session/:session_id/history', getSessionHistory);
 
 /**
+ * GET /api/ai/health
+ * Simple health check for monitoring
+ */
+router.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+
+/**
  * GET /api/ai/status
  * Check AI status
  */

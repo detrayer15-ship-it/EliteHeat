@@ -7,7 +7,7 @@ import { useAIContext } from '@/store/aiContextStore'
 import { useProjectStore } from '@/store/projectStore'
 import { collection, addDoc } from 'firebase/firestore'
 import { db } from '@/config/firebase'
-import { sendTextMessage } from '@/api/gemini'
+import { sendTextMessage } from '@/api/mita'
 import { useGamificationStore } from '@/store/gamificationStore'
 
 

@@ -1,5 +1,5 @@
 import { useAIContext } from '@/store/aiContextStore'
-import { sendAIChatMessage } from '@/api/gemini'
+import { sendAIChatMessage } from '@/api/mita'
 import { subscribeToAIChatMessages } from '@/api/aiMessages'
 import { useState, useEffect, useMemo } from 'react'
 import { useGamificationStore } from '@/store/gamificationStore'

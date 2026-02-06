@@ -47,12 +47,37 @@ services:
       - ./backend/.env
     command: sh -c "cd backend && node src/server.js"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
     restart: unless-stopped
+
+  # ============================================
+  # AI Service (Python FastAPI + Gemini)
+  # ============================================
+  python-ai:
+    build:
+      context: ./python-ai
+      dockerfile: Dockerfile
+    container_name: eliteheat-python-ai
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./python-ai:/app:ro
+    environment:
+      - PYTHON_AI_PORT=3001
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    env_file:
+      - ./python-ai/.env
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
 # ============================================
 # Networks

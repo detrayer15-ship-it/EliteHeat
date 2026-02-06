@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAIAssistant } from '@/hooks/useAIAssistant'
 import { useAIContext } from '@/store/aiContextStore'
-import { clearSessionHistory, checkAIStatus } from '@/api/gemini'
+import { clearSessionHistory } from '@/api/mita'
 import {
     Sparkles,
     Trash2,
@@ -25,27 +25,11 @@ export const AIAssistantPage = () => {
     const { currentConversation, startConversation, clearConversation } = useAIContext()
 
     const [input, setInput] = useState('')
-    const [aiStatus, setAiStatus] = useState({ available: true, status: 'online' })
     const [isListening, setIsListening] = useState(false)
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const recognitionRef = useRef<any>(null)
     const inputRef = useRef<HTMLInputElement>(null)
-
-    // Check AI status
-    useEffect(() => {
-        const fetchStatus = async () => {
-            try {
-                const status = await checkAIStatus()
-                setAiStatus(status)
-            } catch (e) {
-                setAiStatus({ available: true, status: 'online' })
-            }
-        }
-        fetchStatus()
-        const interval = setInterval(fetchStatus, 60000)
-        return () => clearInterval(interval)
-    }, [])
 
     // Scroll to bottom
     const scrollToBottom = () => {
@@ -117,16 +101,15 @@ export const AIAssistantPage = () => {
                         <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
                             <Bot className="w-6 h-6 text-white" />
                         </div>
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${aiStatus.available ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                     </div>
                     <div>
                         <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                             Мита
                             <span className="text-xs font-medium text-slate-400">AI</span>
                         </h1>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                            <Zap className={`w-3 h-3 ${aiStatus.available ? 'text-emerald-500' : 'text-slate-400'}`} />
-                            <span>{aiStatus.available ? 'Онлайн' : 'Оффлайн'}</span>
+                        <div className="flex items-center gap-1.5 text-xs text-emerald-500 font-medium">
+                            <Zap className="w-3 h-3" />
+                            <span>Активна</span>
                         </div>
                     </div>
                 </div>

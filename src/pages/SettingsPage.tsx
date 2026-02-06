@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Card } from '@/components/ui/Card'
-import { updateAIConfig } from '@/api/gemini'
+import { updateAIConfig } from '@/api/mita'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import {

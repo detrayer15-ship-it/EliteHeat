@@ -1,7 +1,7 @@
-import { sendTextMessage } from './gemini'
+import { sendTextMessage } from './mita'
 
 /**
- * Generate roadmap based on project idea using Gemini AI
+ * Generate roadmap based on project idea using Mita AI
  */
 export async function generateRoadmap(projectIdea: string, projectTitle: string) {
     const prompt = `Act as a Senior Project Manager and Technical Mentor.
@@ -41,7 +41,7 @@ Make steps specific and actionable.`
 }
 
 /**
- * Generate prompts based on tech stack using Gemini AI
+ * Generate prompts based on tech stack using Mita AI
  */
 export async function generatePrompts(
     techStack: { frontend?: string; backend?: string; db?: string },
@@ -103,7 +103,7 @@ Each prompt should be detailed and include:
 }
 
 /**
- * Generate presentation slides using Gemini AI
+ * Generate presentation slides using Mita AI
  */
 export async function generateSlides(projectData: {
     title: string

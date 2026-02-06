@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { sendTextMessage } from '@/api/gemini'
+import { sendTextMessage } from '@/api/mita'
 
-export const GeminiTest = () => {
+export const MitaTest = () => {
     const [input, setInput] = useState('')
     const [response, setResponse] = useState('')
     const [loading, setLoading] = useState(false)
@@ -19,7 +19,7 @@ export const GeminiTest = () => {
             setResponse(result)
         } catch (err: any) {
             setError(err.message || 'Ошибка')
-            console.error('Gemini Error:', err)
+            console.error('Mita Error:', err)
         } finally {
             setLoading(false)
         }
@@ -27,12 +27,12 @@ export const GeminiTest = () => {
 
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">🧪 Тест Gemini API</h2>
+            <h2 className="text-2xl font-bold mb-4">🧪 Тест Mita AI</h2>
 
             <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium mb-2">
-                        Вопрос для Gemini:
+                        Вопрос для Миты:
                     </label>
                     <input
                         type="text"
@@ -60,7 +60,7 @@ export const GeminiTest = () => {
 
                 {response && (
                     <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm font-semibold text-green-900 mb-2">✅ Ответ Gemini:</p>
+                        <p className="text-sm font-semibold text-green-900 mb-2">✅ Ответ Миты:</p>
                         <p className="text-gray-800 whitespace-pre-wrap">{response}</p>
                     </div>
                 )}
@@ -68,7 +68,7 @@ export const GeminiTest = () => {
 
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-900">
-                    💡 Этот компонент тестирует прямое подключение к Gemini API
+                    💡 Этот компонент тестирует прямое подключение к Mita AI (OpenAI)
                 </p>
             </div>
         </div>

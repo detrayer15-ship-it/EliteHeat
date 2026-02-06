@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Send, Sparkles, Code, Bug, Lightbulb, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { sendTextMessage } from '@/api/gemini'
+import { sendTextMessage } from '@/api/mita'
 import type { Project } from '@/types/project'
 
 interface AIAssistantPanelProps {

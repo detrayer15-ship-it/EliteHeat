@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { OpenAI } from 'openai';
 import { AI_CONFIG, MITA_PERSONALITY } from '../config/ai.config.js';
 import { cacheService } from './cache.service.js';
 import { contextService } from './context.service.js';
@@ -51,46 +52,96 @@ class GeminiProvider {
 }
 
 /**
+ * OpenAI Provider - Battle-tested and stable
+ */
+class OpenAIProvider {
+    constructor(apiKey) {
+        this.client = apiKey ? new OpenAI({ apiKey }) : null;
+    }
+
+    async generateResponse({ model, systemInstruction, history, message, options = {} }) {
+        if (!this.client) throw new Error('OpenAI API key not configured');
+
+        const modelId = model || AI_CONFIG.DEFAULT_MODEL || 'gpt-4o-mini';
+
+        try {
+            const response = await this.client.chat.completions.create({
+                model: modelId,
+                messages: [
+                    { role: 'system', content: systemInstruction },
+                    ...history.map(msg => ({
+                        role: msg.role === 'user' ? 'user' : 'assistant',
+                        content: msg.content
+                    })),
+                    { role: 'user', content: message }
+                ],
+                temperature: options.temperature || AI_CONFIG.GENERATION_DEFAULTS.temperature,
+                max_tokens: options.maxOutputTokens || AI_CONFIG.GENERATION_DEFAULTS.maxOutputTokens,
+            });
+
+            return {
+                text: response.choices[0].message.content,
+                usage: {
+                    inputTokens: response.usage?.prompt_tokens || 0,
+                    outputTokens: response.usage?.completion_tokens || 0,
+                }
+            };
+        } catch (error) {
+            console.error(`[OPENAI] Model ${modelId} failed:`, error.message);
+            throw error;
+        }
+    }
+}
+
+/**
  * Enhanced AI Service v2.0 - With Caching and Context Memory
  */
 class AIService {
     constructor() {
-        const key = AI_CONFIG.PROVIDERS.GEMINI.apiKey;
-        const keyStatus = key ? `Loaded (${key.substring(0, 10)}...)` : 'Not Found';
-        console.log(`[MITA AI v2.0] Gemini Key: ${keyStatus}`);
-        console.log(`[MITA AI v2.0] Cache: Enabled | Context Memory: Enabled`);
-
-        this.provider = new GeminiProvider(AI_CONFIG.PROVIDERS.GEMINI.apiKey);
+        this.initialize();
 
         // Quick responses for common greetings (not blocking AI for other questions)
         this.QUICK_RESPONSES = {
-            "привет": `👋 **Привет!** Я Мита — твой AI-помощник.
-
-Я могу помочь тебе с:
-- 🐍 **Python** — код, ошибки, концепции
-- 🎨 **Figma** — дизайн, UI/UX, макеты
-- 💻 **Программирование** — любые вопросы
-
-Просто напиши свой вопрос!`,
-
-            "здравствуй": `👋 **Здравствуйте!** Я Мита, ваш AI-ассистент.
-
-Чем могу помочь сегодня?`,
-
-            "кто ты": `Я **Мита** — умный AI-помощник платформы EliteHeat.
-
-Меня создал **Даниял** для помощи в обучении программированию и дизайну.
-
-Я использую технологии Google Gemini для генерации ответов и могу помочь с Python, Figma и многим другим! 🚀`,
-
-            "кто твой создатель": "Моим создателем является **Даниял**. 🙂",
-            "кто тебя создал": "Меня создал **Даниял** — разработчик платформы EliteHeat. 👨‍💻",
-
-            "как дела": "У меня всё отлично! 😊 Готова помогать тебе с Python, Figma и программированием. Что тебя интересует?",
-            "спасибо": "Пожалуйста! 🌟 Рада была помочь. Если будут ещё вопросы — обращайся!",
-            "пока": "До встречи! 👋 Удачи в обучении! Возвращайся, если понадобится помощь.",
-            "хай": "👋 Хай! Я Мита. Чем могу помочь?"
+            "привет": `Привет! Я Мита 🙂 Чем помочь? Python или Figma?`,
+            "дай ответ": "Хорошо. Напиши вопрос — отвечу сразу.",
+            "ответь": "Хорошо. Напиши вопрос — отвечу сразу.",
+            "помоги": "Привет! Я Мита 🙂 Чем помочь? Могу подсказать по Python или Figma.",
+            "что ты умеешь": "Я помогаю изучать Python, Figma и делать проекты. Спрашивай 🙂",
+            "кто ты": "Я Мита — дружелюбный AI-помощник образовательной платформы. 🙂",
+            "как дела": "Всё отлично 🙂 Хочешь заняться Python или Figma?",
+            "спасибо": "Всегда рада помочь! 🌟",
+            "пока": "До встречи! 👋 Удачи в обучении!",
+            "привет!": "Привет! Я Мита 🙂 Чем помочь? Python или Figma?",
+            "хай": "Привет! Чем могу помочь?"
         };
+    }
+
+    /**
+     * Initialize or re-initialize providers based on current config
+     */
+    initialize() {
+        const geminiKey = AI_CONFIG.PROVIDERS.GEMINI.apiKey;
+        const openaiKey = AI_CONFIG.PROVIDERS.OPENAI.apiKey;
+
+        // Prioritize OpenAI for stability as per recent feedback
+        if (openaiKey) {
+            console.log(`[MITA AI v2.5] Using OpenAI Provider (Stable)`);
+            this.provider = new OpenAIProvider(openaiKey);
+        } else if (geminiKey) {
+            console.log(`[MITA AI v2.5] Using Gemini Provider (Legacy)`);
+            this.provider = new GeminiProvider(geminiKey);
+        } else {
+            console.warn(`[MITA AI v2.5] No AI Providers configured! Fallbacks will be used.`);
+            this.provider = null;
+        }
+    }
+
+    /**
+     * Hot-reloading of AI keys and models
+     */
+    reinitialize() {
+        console.log(`[MITA AI] Re-initializing providers...`);
+        this.initialize();
     }
 
     /**
@@ -102,10 +153,22 @@ class AIService {
         mode = 'tutor',
         sessionId = null,
         model = AI_CONFIG.DEFAULT_MODEL,
-        options = {}
+        options = {},
+        requestId = 'internal'
     }) {
         const startTime = Date.now();
         const lowerMessage = message.toLowerCase().trim();
+
+        // 0. Safety check: If no provider is configured, go straight to fallback
+        if (!this.provider) {
+            console.warn(`[AI][${requestId}] No provider available. Using hard fallback.`);
+            return {
+                success: true,
+                reply: this.getFallbackResponse(message),
+                cached: false,
+                usage: { model: 'hard-fallback', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
+            };
+        }
 
         // 1. Check quick responses only for exact greetings
         for (const [key, text] of Object.entries(this.QUICK_RESPONSES)) {
@@ -166,6 +229,7 @@ class AIService {
                 systemInstruction = `${systemInstruction}\n\n${contextSummary}`;
             }
 
+            console.log(`[AI][${requestId}] Provider Call using ${model}`);
             const result = await this.provider.generateResponse({
                 model,
                 systemInstruction,
@@ -197,7 +261,7 @@ class AIService {
                 }
             };
         } catch (error) {
-            console.error('AIService Error:', error);
+            console.error(`[AI][${requestId}] AIService Error:`, error.message);
 
             const isRateLimit = error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED');
 
@@ -205,7 +269,8 @@ class AIService {
                 return {
                     success: true,
                     reply: "⏳ Подождите немного, я обрабатываю много запросов. Попробуйте через минуту!",
-                    cached: false
+                    cached: false,
+                    requestId
                 };
             }
 
@@ -213,7 +278,8 @@ class AIService {
             return {
                 success: true,
                 reply: this.getFallbackResponse(message),
-                cached: false
+                cached: false,
+                requestId
             };
         }
     }
@@ -224,53 +290,16 @@ class AIService {
     getFallbackResponse(message) {
         const lower = message.toLowerCase();
 
-        if (lower.includes('python') || lower.includes('код') || lower.includes('программ')) {
-            return `🐍 **Python — отличный выбор!**
+        return `👋 **Я Мита, твой напарник по обучению!**
 
-К сожалению, сейчас я не могу дать полный ответ (проблемы с подключением).
+Извини, сейчас у меня временные трудности с подключением к «мозговому центру» (AI-серверу).
 
-**Пока можете:**
-1. Посмотреть документацию: [python.org](https://python.org)
-2. Попробовать снова через минуту
-3. Сформулировать вопрос конкретнее
+**Что можно сделать сейчас:**
+1. Попробуй повторить вопрос через минуту.
+2. Проверь интернет-соединение.
+3. Если ты изучаешь **Python** или **Figma**, загляни в официальную документацию — там много полезного!
 
-Я скоро вернусь! 🔄`;
-        }
-
-        if (lower.includes('figma') || lower.includes('дизайн') || lower.includes('ui') || lower.includes('ux')) {
-            return `🎨 **Figma — мощный инструмент!**
-
-Сейчас у меня временные трудности с подключением.
-
-**Полезные ресурсы:**
-1. [Figma Help](https://help.figma.com)
-2. [Figma Community](https://figma.com/community)
-
-Попробуйте спросить снова через минуту! 🔄`;
-        }
-
-        if (lower.includes('html') || lower.includes('css') || lower.includes('javascript') || lower.includes('веб')) {
-            return `🌐 **Веб-разработка — важная тема!**
-
-Сейчас у меня временные трудности с подключением.
-
-**Полезные ресурсы:**
-1. [MDN Web Docs](https://developer.mozilla.org)
-2. [W3Schools](https://w3schools.com)
-
-Попробуйте спросить снова через минуту! 🔄`;
-        }
-
-        return `🔄 **Временные трудности**
-
-Извините, сейчас у меня проблемы с подключением к AI-серверу.
-
-Попробуйте:
-1. Повторить вопрос через минуту
-2. Обновить страницу
-3. Проверить интернет-соединение
-
-Я обычно отвечаю на вопросы о Python и Figma очень хорошо! 🚀`;
+Я скоро вернусь в строй и отвечу на все вопросы! 🚀`;
     }
 
     /**
