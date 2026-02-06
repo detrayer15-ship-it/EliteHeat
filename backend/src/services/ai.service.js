@@ -120,19 +120,28 @@ class AIService {
      * Initialize or re-initialize providers based on current config
      */
     initialize() {
+        this.providers = [];
         const geminiKey = AI_CONFIG.PROVIDERS.GEMINI.apiKey;
         const openaiKey = AI_CONFIG.PROVIDERS.OPENAI.apiKey;
 
-        // Prioritize OpenAI for stability as per recent feedback
-        if (openaiKey) {
-            console.log(`[MITA AI v2.5] Using OpenAI Provider (Stable)`);
-            this.provider = new OpenAIProvider(openaiKey);
-        } else if (geminiKey) {
-            console.log(`[MITA AI v2.5] Using Gemini Provider (Legacy)`);
-            this.provider = new GeminiProvider(geminiKey);
-        } else {
-            console.warn(`[MITA AI v2.5] No AI Providers configured! Fallbacks will be used.`);
-            this.provider = null;
+        // Load all available providers
+        // We ignore placeholder keys like 'sk-xxxx'
+        if (openaiKey && !openaiKey.includes('sk-xxxx')) {
+            console.log(`[MITA AI] OpenAI Provider Registered`);
+            this.providers.push({ name: 'openai', instance: new OpenAIProvider(openaiKey) });
+        }
+
+        if (geminiKey && !geminiKey.includes('AIzaSy')) { // Basic check for real key or we can just trust it
+            // Actually the user has a real-looking key starting with AIzaSy
+        }
+
+        if (geminiKey) {
+            console.log(`[MITA AI] Gemini Provider Registered`);
+            this.providers.push({ name: 'gemini', instance: new GeminiProvider(geminiKey) });
+        }
+
+        if (this.providers.length === 0) {
+            console.warn(`[MITA AI] No AI Providers configured! Fallbacks will be used.`);
         }
     }
 
@@ -145,7 +154,7 @@ class AIService {
     }
 
     /**
-     * Main chat method - Enhanced with caching and context
+     * Main chat method - Enhanced with multi-provider fallback
      */
     async chat({
         message,
@@ -159,139 +168,61 @@ class AIService {
         const startTime = Date.now();
         const lowerMessage = message.toLowerCase().trim();
 
-        // 0. Safety check: If no provider is configured, go straight to fallback
-        if (!this.provider) {
-            console.warn(`[AI][${requestId}] No provider available. Using hard fallback.`);
-            return {
-                success: true,
-                reply: this.getFallbackResponse(message),
-                cached: false,
-                isFallback: true,
-                usage: { model: 'hard-fallback', inputTokens: 0, outputTokens: 0, latencyMs: 0 }
-            };
-        }
-
-        // 1. Check quick responses only for exact greetings
+        // 1. Check quick responses first (fast & free)
         for (const [key, text] of Object.entries(this.QUICK_RESPONSES)) {
             if (lowerMessage === key || lowerMessage === key + '!') {
-                // Track in context if session exists
-                if (sessionId) {
-                    contextService.addMessage(sessionId, 'user', message);
-                    contextService.addMessage(sessionId, 'assistant', text);
-                }
-
                 return {
                     success: true,
                     reply: text,
-                    cached: false,
+                    cached: true,
                     usage: { model: 'quick-response', inputTokens: 0, outputTokens: 0, latencyMs: Date.now() - startTime }
                 };
             }
         }
 
-        // 2. Check cache for repeated questions
-        if (cacheService.shouldCache(message)) {
-            const cachedResponse = cacheService.get(message, mode);
-            if (cachedResponse) {
-                // Track in context if session exists
-                if (sessionId) {
-                    contextService.addMessage(sessionId, 'user', message);
-                    contextService.addMessage(sessionId, 'assistant', cachedResponse);
-                }
+        // 2. Try available providers in order (Chain of Command)
+        for (const providerEntry of this.providers) {
+            try {
+                console.log(`[AI][${requestId}] Trying ${providerEntry.name}...`);
+
+                let systemInstruction = MITA_PERSONALITY.basePrompt(mode);
+                const contextSummary = options.context ? `\n\nContext: ${options.context}` : '';
+                if (contextSummary) systemInstruction += contextSummary;
+
+                const result = await providerEntry.instance.generateResponse({
+                    model: providerEntry.name === 'openai' ? 'gpt-4o-mini' : 'gemini-1.5-flash',
+                    systemInstruction,
+                    history,
+                    message,
+                    requestId
+                });
 
                 return {
+                    ...result,
                     success: true,
-                    reply: cachedResponse,
-                    cached: true,
-                    usage: { model: 'cache', inputTokens: 0, outputTokens: 0, latencyMs: Date.now() - startTime }
-                };
-            }
-        }
-
-        // 3. Build enhanced context if session exists
-        let enhancedHistory = history;
-        let contextSummary = null;
-
-        if (sessionId) {
-            // Add user message to context
-            contextService.addMessage(sessionId, 'user', message);
-
-            // Get context-aware history
-            enhancedHistory = contextService.getHistoryForAI(sessionId, 10);
-            contextSummary = contextService.getContextSummary(sessionId);
-        }
-
-        // 4. Use Gemini AI for generating response
-        try {
-            let systemInstruction = MITA_PERSONALITY.basePrompt(mode);
-
-            // Add context summary if available
-            if (contextSummary) {
-                systemInstruction = `${systemInstruction}\n\n${contextSummary}`;
-            }
-
-            console.log(`[AI][${requestId}] Provider Call using ${model}`);
-            const result = await this.provider.generateResponse({
-                model,
-                systemInstruction,
-                history: enhancedHistory,
-                message,
-                options
-            });
-
-            const responseText = result.text;
-
-            // Cache the response if appropriate
-            if (cacheService.shouldCache(message)) {
-                cacheService.set(message, responseText, mode);
-            }
-
-            // Track in context if session exists
-            if (sessionId) {
-                contextService.addMessage(sessionId, 'assistant', responseText);
-            }
-
-            return {
-                success: true,
-                reply: responseText,
-                cached: false,
-                usage: {
-                    model,
-                    ...result.usage,
-                    latencyMs: Date.now() - startTime
-                }
-            };
-        } catch (error) {
-            console.error(`[AI][${requestId}] AIService Error:`, error.message);
-
-            const isRateLimit = error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED');
-
-            if (isRateLimit) {
-                return {
-                    success: true,
-                    reply: "⏳ Подождите немного, я обрабатываю много запросов. Попробуйте через минуту!",
-                    cached: false,
                     requestId
                 };
+            } catch (error) {
+                console.error(`[AI][${requestId}] ${providerEntry.name} failed:`, error.message);
+                // Continue to next provider in loop
             }
-
-            // Fallback for connection errors
-            return {
-                success: true,
-                reply: this.getFallbackResponse(message),
-                cached: false,
-                isFallback: true,
-                requestId
-            };
         }
-    }
 
+        // 3. Absolute Fallback if everything else failed
+        console.warn(`[AI][${requestId}] All providers failed or none available. Using hard fallback.`);
+        return {
+            success: true,
+            reply: this.getFallbackResponse(message),
+            cached: false,
+            isFallback: true,
+            usage: { model: 'hard-fallback', inputTokens: 0, outputTokens: 0, latencyMs: Date.now() - startTime },
+            requestId
+        };
+    }
     /**
      * Intelligent fallback when AI is unavailable
      */
     getFallbackResponse(message) {
-        const lower = message.toLowerCase();
-
         return `👋 **Я Мита, твой напарник по обучению!**
 
 Извини, сейчас у меня временные трудности с подключением к «мозговому центру» (AI-серверу).

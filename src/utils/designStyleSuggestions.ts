@@ -1,4 +1,4 @@
-import { sendTextMessage } from '@/api/gemini'
+import { sendTextMessage } from '@/api/mita'
 
 /**
  * Предлагает варианты стилей дизайна на основе описания студента
