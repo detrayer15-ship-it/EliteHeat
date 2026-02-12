@@ -44,13 +44,12 @@ const navGroups: NavGroup[] = [
         ]
     },
     {
-        title: 'Администрирование',
+        title: 'Мониторинг',
         roles: ['admin', 'developer', 'teacher'],
         items: [
             { path: '/admin', labelKey: 'adminPanel', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
             { path: '/admin/tasks', labelKey: 'checkTasks', icon: <CheckSquare className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
             { path: '/admin/users', labelKey: 'students', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
-            { path: '/admin/groups', labelKey: 'groups', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
             { path: '/admin/group-chat', labelKey: 'adminChat', icon: <MessageCircle className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
             { path: '/admin/ranks', labelKey: 'ranks', icon: <Award className="w-5 h-5" />, roles: ['admin', 'developer'] },
             { path: '/admin/support-chats', labelKey: 'supportChats', icon: <HelpCircle className="w-5 h-5" />, roles: ['admin', 'developer'] },
@@ -94,13 +93,15 @@ export const Sidebar = () => {
                 </div>
             </button>
 
-            {/* Sidebar Shell - масштаб 85% */}
-            <div className={`
-                w-[272px] h-screen fixed left-0 top-0 z-40 flex flex-col
-                transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
-                ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-                bg-[#0c0d10] border-r border-white/[0.03]
-            `}>
+            {/* Sidebar Shell - масштаб 100% */}
+            <div
+                className={`
+                    w-[272px] h-screen fixed left-0 top-0 z-40 flex flex-col
+                    transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
+                    ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                    bg-[#0c0d10] border-r border-white/[0.03]
+                `}
+            >
                 {/* Subtle glow */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-600/5 rounded-full blur-[80px] -mr-20 -mt-20"></div>
 

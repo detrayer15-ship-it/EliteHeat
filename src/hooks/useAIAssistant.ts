@@ -43,7 +43,7 @@ export const useAIAssistant = (context?: { projectId?: string; page?: string }) 
         return () => unsubscribe()
     }, [currentConversation?.id, setMessages])
 
-    const sendMessage = async (userMessage: string) => {
+    const sendMessage = async (userMessage: string, image?: { type: string, base64: string }) => {
         let chatId = currentConversation?.id
 
         // If no active conversation, start one first
@@ -66,7 +66,7 @@ export const useAIAssistant = (context?: { projectId?: string; page?: string }) 
                 ? `[Context: ${sharedContext.globalContext.currentProject}] ${userMessage}`
                 : userMessage
 
-            await sendAIChatMessage(chatId!, contextPrompt)
+            await sendAIChatMessage(chatId!, contextPrompt, image)
 
             // Achievement: Chat Explorer
             const chatExplorer = getAchievement('chat-explorer')

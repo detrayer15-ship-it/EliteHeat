@@ -1,6 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { sendAIMessage, sendAIChatMessage, clearSession, getSessionHistory, checkAIStatus, updateAIConfig } from '../controllers/ai.controller.js';
+import { sendAIMessage, sendAIChatMessage, sendSimpleChat, clearSession, getSessionHistory, checkAIStatus, updateAIConfig } from '../controllers/ai.controller.js';
 import { generateTask } from '../controllers/ai.controller.generateTask.js';
 import { validate } from '../middleware/validator.js';
 
@@ -54,7 +54,7 @@ router.post(
             .withMessage('История должна быть массивом'),
         body('mode')
             .optional()
-            .isIn(['tutor', 'developer', 'debug', 'product'])
+            .isIn(['tutor', 'developer', 'debug', 'product', 'assistant'])
             .withMessage('Неверный режим')
     ],
     validate,
@@ -83,6 +83,12 @@ router.post(
     validate,
     sendAIMessage
 );
+
+/**
+ * POST /api/ai/simple-chat
+ * Gold Standard diagnostic bridge
+ */
+router.post('/simple-chat', sendSimpleChat);
 
 /**
  * DELETE /api/ai/session/:session_id

@@ -6,7 +6,7 @@ import {
     User as FirebaseUser
 } from 'firebase/auth'
 import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore'
-import { auth, db } from '@/config/firebase'
+import { auth, db, isFirestoreBroken, markFirestoreAsBroken } from '@/config/firebase'
 
 export interface UserData {
     id: string
@@ -32,6 +32,7 @@ export interface UserData {
     subscriptionDaysRemaining?: number
     subscriptionStatus?: 'active' | 'expired' | 'cancelled'
     createdAt: Date
+    lastActiveAt?: Date
 }
 
 export const firebaseAuthAPI = {
@@ -58,7 +59,8 @@ export const firebaseAuthAPI = {
                 name,
                 city,
                 role,
-                createdAt: now
+                createdAt: now,
+                lastActiveAt: now
             }
 
             // Add subscription fields if plan is selected
@@ -80,7 +82,17 @@ export const firebaseAuthAPI = {
                 userData.tasksReviewed = 0
             }
 
-            await setDoc(doc(db, 'users', user.uid), userData)
+            if (isFirestoreBroken()) {
+                console.warn("Firestore is broken, skipping profile creation.");
+            } else {
+                try {
+                    await setDoc(doc(db, 'users', user.uid), userData)
+                } catch (firestoreError: any) {
+                    if (firestoreError?.message?.includes('INTERNAL ASSERTION FAILED')) {
+                        markFirestoreAsBroken(firestoreError);
+                    }
+                }
+            }
 
             return {
                 success: true,
@@ -119,14 +131,58 @@ export const firebaseAuthAPI = {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)
             const user = userCredential.user
 
-            // Get user data from Firestore
-            const userDoc = await getDoc(doc(db, 'users', user.uid))
+            let userData: UserData;
 
-            if (!userDoc.exists()) {
-                throw new Error('Данные пользователя не найдены')
+            if (isFirestoreBroken()) {
+                // Fallback to minimal data from Auth
+                userData = {
+                    id: user.uid,
+                    email: user.email!,
+                    name: 'Пользователь (Offline)',
+                    city: 'Не указан',
+                    role: 'student',
+                    createdAt: new Date(),
+                    lastActiveAt: new Date()
+                };
+            } else {
+                try {
+                    // Get user data from Firestore
+                    const userDoc = await getDoc(doc(db, 'users', user.uid))
+
+                    if (!userDoc.exists()) {
+                        throw new Error('Данные пользователя не найдены')
+                    }
+
+                    userData = userDoc.data() as UserData
+                } catch (firestoreError: any) {
+                    if (firestoreError?.message?.includes('INTERNAL ASSERTION FAILED')) {
+                        markFirestoreAsBroken(firestoreError);
+                        // Fallback
+                        userData = {
+                            id: user.uid,
+                            email: user.email!,
+                            name: 'Пользователь (Reduced)',
+                            city: 'Не указан',
+                            role: 'student',
+                            createdAt: new Date(),
+                            lastActiveAt: new Date()
+                        };
+                    } else {
+                        throw firestoreError;
+                    }
+                }
             }
 
-            const userData = userDoc.data() as UserData
+            // Update lastActiveAt on every login
+            if (!isFirestoreBroken()) {
+                try {
+                    await setDoc(doc(db, 'users', user.uid), {
+                        lastActiveAt: Timestamp.now()
+                    }, { merge: true })
+                } catch (e) {
+                    console.error('Error updating lastActiveAt:', e)
+                }
+            }
 
             return {
                 success: true,
@@ -187,15 +243,35 @@ export const firebaseAuthAPI = {
                 throw new Error('Не авторизован')
             }
 
-            const userDoc = await getDoc(doc(db, 'users', user.uid))
-
-            if (!userDoc.exists()) {
-                throw new Error('Данные пользователя не найдены')
+            if (isFirestoreBroken()) {
+                return {
+                    success: true,
+                    data: {
+                        id: user.uid,
+                        email: user.email!,
+                        name: 'Пользователь',
+                        role: 'student',
+                        createdAt: new Date()
+                    } as any
+                };
             }
 
-            return {
-                success: true,
-                data: userDoc.data() as UserData
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid))
+
+                if (!userDoc.exists()) {
+                    throw new Error('Данные пользователя не найдены')
+                }
+
+                return {
+                    success: true,
+                    data: userDoc.data() as UserData
+                }
+            } catch (firestoreError: any) {
+                if (firestoreError?.message?.includes('INTERNAL ASSERTION FAILED')) {
+                    markFirestoreAsBroken(firestoreError);
+                }
+                throw firestoreError;
             }
         } catch (error: any) {
             return {
@@ -216,38 +292,67 @@ export const firebaseAuthAPI = {
             const result = await signInWithPopup(auth, provider)
             const user = result.user
 
-            // Check if user exists in Firestore
-            const userDoc = await getDoc(doc(db, 'users', user.uid))
+            let userData: UserData;
 
-            if (!userDoc.exists()) {
-                // Create new user document
-                const now = Timestamp.now()
-                const userData: UserData = {
+            if (isFirestoreBroken()) {
+                userData = {
                     id: user.uid,
                     email: user.email!,
                     name: user.displayName || 'Пользователь',
                     city: 'Не указан',
                     role: 'student' as const,
                     photoURL: user.photoURL || undefined,
-                    createdAt: now.toDate()
+                    createdAt: new Date()
                 }
+            } else {
+                try {
+                    // Check if user exists in Firestore
+                    const userDoc = await getDoc(doc(db, 'users', user.uid))
 
-                await setDoc(doc(db, 'users', user.uid), {
-                    ...userData,
-                    createdAt: now
-                })
+                    if (!userDoc.exists()) {
+                        // Create new user document
+                        const now = Timestamp.now()
+                        userData = {
+                            id: user.uid,
+                            email: user.email!,
+                            name: user.displayName || 'Пользователь',
+                            city: 'Не указан',
+                            role: 'student' as const,
+                            photoURL: user.photoURL || undefined,
+                            createdAt: now.toDate()
+                        }
 
-                return {
-                    success: true,
-                    data: {
-                        user: userData,
-                        token: await user.getIdToken()
+                        await setDoc(doc(db, 'users', user.uid), {
+                            ...userData,
+                            createdAt: now,
+                            lastActiveAt: now
+                        })
+                    } else {
+                        userData = userDoc.data() as UserData
+                        // Update last active
+                        await setDoc(doc(db, 'users', user.uid), {
+                            lastActiveAt: Timestamp.now()
+                        }, { merge: true })
+                    }
+                } catch (firestoreError: any) {
+                    if (firestoreError?.message?.includes('INTERNAL ASSERTION FAILED')) {
+                        markFirestoreAsBroken(firestoreError);
+                        // Fallback logic
+                        userData = {
+                            id: user.uid,
+                            email: user.email!,
+                            name: user.displayName || 'Пользователь',
+                            city: 'Не указан',
+                            role: 'student' as const,
+                            photoURL: user.photoURL || undefined,
+                            createdAt: new Date()
+                        }
+                    } else {
+                        throw firestoreError;
                     }
                 }
             }
 
-            // Return existing user
-            const userData = userDoc.data() as UserData
             return {
                 success: true,
                 data: {

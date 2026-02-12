@@ -1,228 +1,320 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { OpenAI } from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AI_CONFIG, MITA_PERSONALITY } from '../config/ai.config.js';
 import { cacheService } from './cache.service.js';
 import { contextService } from './context.service.js';
 
 /**
- * Gemini Provider - Enhanced for ChatGPT-like responses
- */
-class GeminiProvider {
-    constructor(apiKey) {
-        this.genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
-    }
-
-    async generateResponse({ model, systemInstruction, history, message, options = {} }) {
-        if (!this.genAI) throw new Error('Gemini API key not configured');
-
-        const modelId = model || AI_CONFIG.DEFAULT_MODEL || 'gemini-1.5-flash';
-
-        try {
-            const genModel = this.genAI.getGenerativeModel({
-                model: modelId,
-                generationConfig: {
-                    ...AI_CONFIG.GENERATION_DEFAULTS,
-                    ...options
-                },
-                systemInstruction: systemInstruction,
-            });
-
-            const chat = genModel.startChat({
-                history: history.map(msg => ({
-                    role: msg.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: msg.content }]
-                })),
-            });
-
-            const result = await chat.sendMessage(message);
-            const response = await result.response;
-
-            return {
-                text: response.text(),
-                usage: {
-                    inputTokens: response.usageMetadata?.promptTokenCount || 0,
-                    outputTokens: response.usageMetadata?.candidatesTokenCount || 0,
-                }
-            };
-        } catch (error) {
-            console.error(`[GEMINI] Model ${modelId} failed:`, error.message);
-            throw error;
-        }
-    }
-}
-
-/**
- * OpenAI Provider - Battle-tested and stable
+ * OpenAI Provider - Battle-tested and stable (Gold Standard)
  */
 class OpenAIProvider {
     constructor(apiKey) {
         this.client = apiKey ? new OpenAI({ apiKey }) : null;
+        console.log(`[OPENAI] Provider initialized: ${apiKey ? 'API key present' : 'NO API KEY'}`);
     }
 
-    async generateResponse({ model, systemInstruction, history, message, options = {} }) {
+    async generateResponse({ models, systemInstruction, history, message, image, requestId }) {
         if (!this.client) throw new Error('OpenAI API key not configured');
 
-        const modelId = model || AI_CONFIG.DEFAULT_MODEL || 'gpt-4o-mini';
+        const modelList = models || AI_CONFIG.PROVIDERS.OPENAI.models;
+        let lastError = null;
 
-        try {
-            const response = await this.client.chat.completions.create({
-                model: modelId,
-                messages: [
-                    { role: 'system', content: systemInstruction },
-                    ...history.map(msg => ({
-                        role: msg.role === 'user' ? 'user' : 'assistant',
-                        content: msg.content
-                    })),
-                    { role: 'user', content: message }
-                ],
-                temperature: options.temperature || AI_CONFIG.GENERATION_DEFAULTS.temperature,
-                max_tokens: options.maxOutputTokens || AI_CONFIG.GENERATION_DEFAULTS.maxOutputTokens,
-            });
-
-            return {
-                text: response.choices[0].message.content,
-                usage: {
-                    inputTokens: response.usage?.prompt_tokens || 0,
-                    outputTokens: response.usage?.completion_tokens || 0,
+        for (const modelId of modelList) {
+            console.log(`[OPENAI][${requestId}] Trying model: ${modelId}`);
+            try {
+                let userContent;
+                if (image && image.base64) {
+                    console.log(`[OPENAI][${requestId}] Sending with Vision Context`);
+                    userContent = [
+                        { type: 'text', text: message },
+                        {
+                            type: 'image_url',
+                            image_url: { url: `data:${image.type};base64,${image.base64}` }
+                        }
+                    ];
+                } else {
+                    userContent = message;
                 }
-            };
-        } catch (error) {
-            console.error(`[OPENAI] Model ${modelId} failed:`, error.message);
-            throw error;
+
+                const response = await this.client.chat.completions.create({
+                    model: modelId,
+                    messages: [
+                        { role: 'system', content: systemInstruction },
+                        ...history.map(msg => ({
+                            role: msg.role === 'user' ? 'user' : 'assistant',
+                            content: msg.content
+                        })),
+                        { role: 'user', content: userContent }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2048,
+                });
+
+                console.log(`[OPENAI][${requestId}] Response received successfully from ${modelId}!`);
+                return {
+                    text: response.choices[0].message.content,
+                    usage: {
+                        inputTokens: response.usage?.prompt_tokens || 0,
+                        outputTokens: response.usage?.completion_tokens || 0,
+                    }
+                };
+            } catch (error) {
+                console.error(`[OPENAI][${requestId}] ${modelId} FAILED:`, error.message);
+                lastError = error;
+                if (error.message.includes('quota') || error.message.includes('429')) {
+                    console.warn(`[OPENAI] Quota exceeded for ${modelId}. Trying next model/provider...`);
+                    continue;
+                }
+                continue;
+            }
         }
+        throw lastError || new Error('All OpenAI models failed');
     }
 }
 
 /**
- * Enhanced AI Service v2.0 - With Caching and Context Memory
+ * Gemini Provider - High speed and large context (The Silver Shield)
+ */
+class GeminiProvider {
+    constructor(apiKey) {
+        this.genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+        console.log(`[GEMINI] Provider initialized: ${apiKey ? 'API key present' : 'NO API KEY'}`);
+    }
+
+    async generateResponse({ models, systemInstruction, history, message, image, requestId }) {
+        if (!this.genAI) throw new Error('Gemini API key not configured');
+
+        const modelList = models || AI_CONFIG.PROVIDERS.GEMINI.models;
+        let lastError = null;
+
+        for (const modelId of modelList) {
+            console.log(`[GEMINI][${requestId}] Trying model: ${modelId}`);
+            try {
+                // Fix: Pass systemInstruction as a Part object for better compatibility
+                const model = this.genAI.getGenerativeModel({
+                    model: modelId,
+                    systemInstruction: {
+                        role: 'system',
+                        parts: [{ text: systemInstruction }]
+                    }
+                });
+
+                const chat = model.startChat({
+                    history: history.map(msg => ({
+                        role: msg.role === 'user' ? 'user' : 'model',
+                        parts: [{ text: msg.content }]
+                    }))
+                });
+
+                let response;
+                if (image && image.base64) {
+                    console.log(`[GEMINI][${requestId}] Sending with Vision Content (Parts)`);
+                    const parts = [
+                        { text: message },
+                        {
+                            inlineData: {
+                                data: image.base64,
+                                mimeType: image.type
+                            }
+                        }
+                    ];
+                    response = await model.generateContent(parts);
+                } else {
+                    response = await chat.sendMessage(message);
+                }
+
+                // Get result text safely
+                const result = await response.response;
+                const responseText = result.text();
+
+                console.log(`[GEMINI][${requestId}] Response received successfully from ${modelId}!`);
+
+                return {
+                    text: responseText,
+                    usage: {
+                        inputTokens: result.usageMetadata?.promptTokenCount || 0,
+                        outputTokens: result.usageMetadata?.candidatesTokenCount || 0,
+                    }
+                };
+            } catch (error) {
+                console.error(`[GEMINI][${requestId}] ${modelId} FAILED:`, error.message);
+                lastError = error;
+                continue;
+            }
+        }
+        throw lastError || new Error('All Gemini models failed');
+    }
+}
+
+/**
+ * Enhanced AI Service v8.0 - Gemini 2.0 Priority (Hybrid Resilience)
  */
 class AIService {
     constructor() {
-        this.initialize();
-
-        // Quick responses for common greetings (not blocking AI for other questions)
-        this.QUICK_RESPONSES = {
-            "привет": `Привет! Я Мита 🙂 Чем помочь? Python или Figma?`,
-            "дай ответ": "Хорошо. Напиши вопрос — отвечу сразу.",
-            "ответь": "Хорошо. Напиши вопрос — отвечу сразу.",
-            "помоги": "Привет! Я Мита 🙂 Чем помочь? Могу подсказать по Python или Figma.",
-            "что ты умеешь": "Я помогаю изучать Python, Figma и делать проекты. Спрашивай 🙂",
-            "кто ты": "Я Мита — дружелюбный AI-помощник образовательной платформы. 🙂",
-            "как дела": "Всё отлично 🙂 Хочешь заняться Python или Figma?",
-            "спасибо": "Всегда рада помочь! 🌟",
-            "пока": "До встречи! 👋 Удачи в обучении!",
-            "привет!": "Привет! Я Мита 🙂 Чем помочь? Python или Figma?",
-            "хай": "Привет! Чем могу помочь?"
-        };
+        this.providers = [];
+        this.reinitialize();
     }
 
     /**
-     * Initialize or re-initialize providers based on current config
+     * Initialize providers based on current config (Gemini Priority)
      */
     initialize() {
         this.providers = [];
-        const geminiKey = AI_CONFIG.PROVIDERS.GEMINI.apiKey;
         const openaiKey = AI_CONFIG.PROVIDERS.OPENAI.apiKey;
+        const geminiKey = AI_CONFIG.PROVIDERS.GEMINI.apiKey;
 
-        // Load all available providers
-        // We ignore placeholder keys like 'sk-xxxx'
-        if (openaiKey && !openaiKey.includes('sk-xxxx')) {
-            console.log(`[MITA AI] OpenAI Provider Registered`);
-            this.providers.push({ name: 'openai', instance: new OpenAIProvider(openaiKey) });
-        }
-
-        if (geminiKey && !geminiKey.includes('AIzaSy')) { // Basic check for real key or we can just trust it
-            // Actually the user has a real-looking key starting with AIzaSy
-        }
-
-        if (geminiKey) {
-            console.log(`[MITA AI] Gemini Provider Registered`);
+        // Gemini 2.0 is now the primary engine
+        if (geminiKey && !geminiKey.includes('AIza')) {
+            console.log(`[MITA AI] Gemini 2.0 Provider Registered (Primary)`);
             this.providers.push({ name: 'gemini', instance: new GeminiProvider(geminiKey) });
         }
 
+        if (openaiKey && !openaiKey.includes('sk-xxxx')) {
+            console.log(`[MITA AI] OpenAI Provider Registered (Fallback)`);
+            this.providers.push({ name: 'openai', instance: new OpenAIProvider(openaiKey) });
+        }
+
         if (this.providers.length === 0) {
-            console.warn(`[MITA AI] No AI Providers configured! Fallbacks will be used.`);
+            console.warn(`[MITA AI] No AI providers configured! Fallbacks will be used.`);
         }
     }
 
     /**
-     * Hot-reloading of AI keys and models
+     * Hot-reloading of API keys
      */
     reinitialize() {
-        console.log(`[MITA AI] Re-initializing providers...`);
-        this.initialize();
+        this.providers = [];
+        const openaiKey = process.env.OPENAI_API_KEY || AI_CONFIG.PROVIDERS.OPENAI.apiKey;
+        const geminiKey = process.env.GEMINI_API_KEY || AI_CONFIG.PROVIDERS.GEMINI.apiKey;
+
+        if (geminiKey && geminiKey.length > 10) {
+            this.providers.push({ name: 'gemini', instance: new GeminiProvider(geminiKey) });
+        }
+
+        if (openaiKey && !openaiKey.includes('sk-xxxx')) {
+            this.providers.push({ name: 'openai', instance: new OpenAIProvider(openaiKey) });
+        }
+
+        console.log(`[AI] Service re-initialized with ${this.providers.length} providers (Gemini Primary).`);
     }
 
     /**
-     * Main chat method - Enhanced with multi-provider fallback
+     * Detect user intent for precise mode selection (v6.0 - Vision aware)
+     */
+    detectIntent(message, hasImage) {
+        const low = message.toLowerCase().trim();
+
+        // Priority: Vision > Code > Tutor > Direct
+        if (hasImage) return 'VISION';
+
+        const codeKeywords = ['код', 'пример', 'напиши', 'реализация', 'разработчик', 'функци', 'клас'];
+        const tutorKeywords = ['почему', 'объясни', 'расскажи', 'подробно', 'как работает', 'разбери'];
+        const directKeywords = ['где', 'как', 'что', 'сколько', 'можно ли', 'найди', 'ссылк'];
+
+        const hasCode = codeKeywords.some(k => low.includes(k));
+        const hasTutor = tutorKeywords.some(k => low.includes(k));
+        const hasDirect = directKeywords.some(k => low.includes(k));
+
+        if (hasCode && hasTutor) return 'CODE_EXPLAIN';
+        if (hasCode) return 'CODE';
+        if (hasTutor) return 'TUTOR';
+
+        return 'DIRECT'; // Default for everything else
+    }
+
+    /**
+     * Main chat method - v6.0 Visual Assistant
      */
     async chat({
         message,
         history = [],
-        mode = 'tutor',
-        sessionId = null,
-        model = AI_CONFIG.DEFAULT_MODEL,
-        options = {},
+        image = null,
+        mode = null,
         requestId = 'internal'
     }) {
         const startTime = Date.now();
-        const lowerMessage = message.toLowerCase().trim();
+        const errors = [];
 
-        // 1. Check quick responses first (fast & free)
-        for (const [key, text] of Object.entries(this.QUICK_RESPONSES)) {
-            if (lowerMessage === key || lowerMessage === key + '!') {
-                return {
-                    success: true,
-                    reply: text,
-                    cached: true,
-                    usage: { model: 'quick-response', inputTokens: 0, outputTokens: 0, latencyMs: Date.now() - startTime }
-                };
-            }
+        // 1. Available providers check
+        if (this.providers.length === 0) {
+            return {
+                success: true,
+                reply: this.getFallbackResponse(message, 'NO_PROVIDERS_CONFIGURED'),
+                isFallback: true,
+                usage: { model: 'hard-fallback', inputTokens: 0, outputTokens: 0, latencyMs: Date.now() - startTime },
+                requestId
+            };
         }
 
-        // 2. Try available providers in order (Chain of Command)
+        // 2. Intent Classification
+        const intent = mode?.toUpperCase() || this.detectIntent(message, !!image);
+        console.log(`[MITA][${requestId}] intent=${intent} vision=${!!image}`);
+
+        // Inject mode-specific instruction (v6.0 Vision & Self-Correction)
+        const intentInstructions = {
+            'DIRECT': 'РЕЖИМ: DIRECT. Давай краткий, но полный и готовый ответ сразу.',
+            'TUTOR': 'РЕЖИМ: TUTOR. Давай готовое решение и подробно объясняй, как оно работает. Не ограничивайся подсказками.',
+            'CODE': 'РЕЖИМ: CODE. Дай исправленный или новый код в блоке и кратко поясни логику решения.',
+            'CODE_EXPLAIN': 'РЕЖИМ: CODE_EXPLAIN. Проведи подробный разбор кода и исправь ошибки, если они есть.',
+            'VISION': 'РЕЖИМ: VISION. Тщательно проанализируй изображение. Если это ошибка в коде — дай исправленный код. Если это дизайн в Figma — дай конкретные советы по улучшению (цвета, шрифты, анимация).'
+        };
+
+        const instruction = intentInstructions[intent] || intentInstructions['DIRECT'];
+        const augmentedMessage = `${instruction}\n\nВОПРОС: ${message}`;
+
+        // 3. Chain of Command
         for (const providerEntry of this.providers) {
             try {
                 console.log(`[AI][${requestId}] Trying ${providerEntry.name}...`);
 
-                let systemInstruction = MITA_PERSONALITY.basePrompt(mode);
-                const contextSummary = options.context ? `\n\nContext: ${options.context}` : '';
-                if (contextSummary) systemInstruction += contextSummary;
+                let systemInstruction = MITA_PERSONALITY.basePrompt(intent.toLowerCase());
 
                 const result = await providerEntry.instance.generateResponse({
-                    model: providerEntry.name === 'openai' ? 'gpt-4o-mini' : 'gemini-1.5-flash',
+                    models: providerEntry.name === 'openai' ? AI_CONFIG.PROVIDERS.OPENAI.models : AI_CONFIG.PROVIDERS.GEMINI.models,
                     systemInstruction,
                     history,
-                    message,
+                    message: augmentedMessage,
+                    image,
                     requestId
                 });
 
+                let cleanReply = result.text.replace(/РЕЖИМ:.*?\n\n/gi, '').trim();
+
                 return {
-                    ...result,
+                    reply: cleanReply,
+                    usage: result.usage,
                     success: true,
-                    requestId
+                    requestId,
+                    intent,
+                    provider: providerEntry.name,
+                    isVision: !!image
                 };
             } catch (error) {
                 console.error(`[AI][${requestId}] ${providerEntry.name} failed:`, error.message);
+                errors.push(`${providerEntry.name}: ${error.message}`);
                 // Continue to next provider in loop
             }
         }
 
-        // 3. Absolute Fallback if everything else failed
-        console.warn(`[AI][${requestId}] All providers failed or none available. Using hard fallback.`);
+        // 4. Absolute Fallback
+        console.warn(`[AI][${requestId}] All providers failed. Errors:`, errors.join(' | '));
         return {
             success: true,
-            reply: this.getFallbackResponse(message),
-            cached: false,
+            reply: this.getFallbackResponse(message, errors.join('\n')),
             isFallback: true,
             usage: { model: 'hard-fallback', inputTokens: 0, outputTokens: 0, latencyMs: Date.now() - startTime },
-            requestId
+            requestId,
+            intent,
+            debugErrors: errors
         };
     }
+
     /**
      * Intelligent fallback when AI is unavailable
      */
-    getFallbackResponse(message) {
+    getFallbackResponse(message, errorHint = '') {
+        const debugInfo = process.env.NODE_ENV === 'development' ? `\n\n*(Debug: ${errorHint})*` : '';
+
         return `👋 **Я Мита, твой напарник по обучению!**
 
 Извини, сейчас у меня временные трудности с подключением к «мозговому центру» (AI-серверу).
@@ -232,7 +324,7 @@ class AIService {
 2. Проверь интернет-соединение.
 3. Если ты изучаешь **Python** или **Figma**, загляни в официальную документацию — там много полезного!
 
-Я скоро вернусь в строй и отвечу на все вопросы! 🚀`;
+Я скоро вернусь в строй и отвечу на все вопросы! 🚀${debugInfo}`;
     }
 
     /**

@@ -11,6 +11,7 @@ import {
     updateDoc,
     Timestamp
 } from 'firebase/firestore';
+import { isFirestoreBroken } from '@/config/firebase';
 
 // export type ChatMode = 'tutor' | 'developer' | 'debug' | 'product';
 
@@ -28,6 +29,7 @@ export interface AIChat {
 export async function createAIChat(title: string): Promise<AIChat> {
     const user = auth.currentUser;
     if (!user) throw new Error('Not authenticated');
+    if (isFirestoreBroken()) return null as any;
 
     const chatData = {
         userId: user.uid,
@@ -50,6 +52,7 @@ export async function createAIChat(title: string): Promise<AIChat> {
 export async function getUserAIChats(): Promise<AIChat[]> {
     const user = auth.currentUser;
     if (!user) throw new Error('Not authenticated');
+    if (isFirestoreBroken()) return [];
 
     const q = query(
         collection(db, 'aiChats'),

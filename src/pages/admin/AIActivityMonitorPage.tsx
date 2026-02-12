@@ -1,7 +1,25 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 import { collection, query, orderBy, limit, getDocs, where } from 'firebase/firestore'
 import { db } from '@/config/firebase'
+import {
+    Cpu,
+    Search,
+    Clock,
+    AlertTriangle,
+    ShieldCheck,
+    MessageSquare,
+    Terminal,
+    Activity,
+    ChevronRight,
+    ArrowLeft,
+    Filter,
+    Layers,
+    Bot
+} from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface AIUsageLog {
     id: string
@@ -34,6 +52,7 @@ interface StudentAIStats {
 }
 
 export const AIActivityMonitorPage = () => {
+    const navigate = useNavigate()
     const [logs, setLogs] = useState<AIUsageLog[]>([])
     const [studentStats, setStudentStats] = useState<StudentAIStats[]>([])
     const [selectedStudent, setSelectedStudent] = useState<string | null>(null)
@@ -47,14 +66,12 @@ export const AIActivityMonitorPage = () => {
     const loadAIActivityData = async () => {
         setLoading(true)
         try {
-            // 1. Fetch Students
             const usersSnapshot = await getDocs(query(collection(db, 'users'), where('role', '==', 'student')))
             const studentsMap = new Map()
             usersSnapshot.docs.forEach(doc => {
                 studentsMap.set(doc.id, { id: doc.id, ...doc.data() })
             })
 
-            // 2. Fetch AI Messages
             const messagesSnapshot = await getDocs(query(
                 collection(db, 'aiMessages'),
                 orderBy('timestamp', 'desc'),
@@ -86,7 +103,6 @@ export const AIActivityMonitorPage = () => {
                 }
             })
 
-            // 3. Calculate Stats
             const statsMap = new Map<string, StudentAIStats>()
 
             realLogs.forEach(log => {
@@ -108,18 +124,16 @@ export const AIActivityMonitorPage = () => {
                 if (log.suspicious) s.suspiciousRequests++
                 if (log.timestamp > s.lastUsed) s.lastUsed = log.timestamp
 
-                // Track features (simplified)
                 if (log.feature === 'chat') s.features.chat++
                 else if (log.feature === 'code-review') s.features.codeReview++
             })
 
-            // Finalize stats
             const finalStats = Array.from(statsMap.values()).map(s => {
-                s.suspicionScore = Math.min(100, Math.round((s.suspiciousRequests / s.totalRequests) * 100 * 2)) // Scaled for visibility
+                s.suspicionScore = Math.min(100, Math.round((s.suspiciousRequests / s.totalRequests) * 100 * 2))
                 return s
             })
 
-            setLogs(realLogs.filter(l => l.prompt !== '(Ответ AI)')) // Show only user prompts for clarity in logs
+            setLogs(realLogs.filter(l => l.prompt !== '(Ответ AI)'))
             setStudentStats(finalStats)
         } catch (error) {
             console.error('Error loading AI activity:', error)
@@ -128,16 +142,10 @@ export const AIActivityMonitorPage = () => {
         }
     }
 
-    const getSuspicionColor = (score: number) => {
-        if (score >= 70) return 'text-red-600 bg-red-50'
-        if (score >= 40) return 'text-yellow-600 bg-yellow-50'
-        return 'text-green-600 bg-green-50'
-    }
-
-    const getSuspicionLabel = (score: number) => {
-        if (score >= 70) return 'Высокий риск'
-        if (score >= 40) return 'Средний риск'
-        return 'Низкий риск'
+    const getRiskDetails = (score: number) => {
+        if (score >= 70) return { color: 'text-red-500', label: 'CRITICAL', bg: 'bg-red-500/10', border: 'border-red-500/20' }
+        if (score >= 40) return { color: 'text-yellow-500', label: 'MODERATE', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20' }
+        return { color: 'text-emerald-500', label: 'MINIMAL', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' }
     }
 
     const formatTimestamp = (date: Date) => {
@@ -147,261 +155,203 @@ export const AIActivityMonitorPage = () => {
         const hours = Math.floor(minutes / 60)
         const days = Math.floor(hours / 24)
 
-        if (minutes < 60) return `${minutes} мин назад`
-        if (hours < 24) return `${hours} ч назад`
-        return `${days} дн назад`
+        if (minutes < 60) return `${minutes}m ago`
+        if (hours < 24) return `${hours}h ago`
+        return `${days}d ago`
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#08090a] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 border-t-2 border-blue-500 rounded-full animate-spin"></div>
+                    <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">Synching AI Neural Logs...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
-        <div className="p-6 space-y-6">
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    🔍 Мониторинг использования AI
-                </h1>
-                <p className="text-gray-600">
-                    Отслеживание активности AI и обнаружение подозрительного поведения
-                </p>
+        <div className="min-h-screen bg-[#08090a] text-white selection:bg-blue-500/30">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-blue-600/5 rounded-full blur-[120px]"></div>
+                <div className="absolute bottom-[20%] left-[15%] w-[30%] h-[30%] bg-indigo-600/5 rounded-full blur-[100px]"></div>
             </div>
 
-            {/* Filters */}
-            <Card className="p-4">
-                <div className="flex gap-4 items-center">
-                    <label className="text-sm font-medium text-gray-700">Период:</label>
-                    <div className="flex gap-2">
-                        {(['today', 'week', 'month', 'all'] as const).map((filter) => (
-                            <button
-                                key={filter}
-                                onClick={() => setTimeFilter(filter)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${timeFilter === filter
-                                        ? 'bg-primary text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
-                            >
-                                {filter === 'today' && 'Сегодня'}
-                                {filter === 'week' && 'Неделя'}
-                                {filter === 'month' && 'Месяц'}
-                                {filter === 'all' && 'Все время'}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </Card>
+            <div className="max-w-7xl mx-auto px-6 py-10 relative z-10">
+                {/* Header */}
+                <div className="mb-12">
+                    <button
+                        onClick={() => navigate('/admin')}
+                        className="group flex items-center gap-2 text-white/30 hover:text-blue-400 transition-colors mb-6 text-[10px] font-black uppercase tracking-widest"
+                    >
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Back to Command Center
+                    </button>
 
-            {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="p-4">
-                    <div className="text-sm text-gray-600 mb-1">Всего запросов</div>
-                    <div className="text-3xl font-bold text-gray-900">
-                        {studentStats.reduce((sum, s) => sum + s.totalRequests, 0)}
-                    </div>
-                </Card>
-                <Card className="p-4">
-                    <div className="text-sm text-gray-600 mb-1">Подозрительных</div>
-                    <div className="text-3xl font-bold text-red-600">
-                        {studentStats.reduce((sum, s) => sum + s.suspiciousRequests, 0)}
-                    </div>
-                </Card>
-                <Card className="p-4">
-                    <div className="text-sm text-gray-600 mb-1">Активных студентов</div>
-                    <div className="text-3xl font-bold text-blue-600">
-                        {studentStats.length}
-                    </div>
-                </Card>
-                <Card className="p-4">
-                    <div className="text-sm text-gray-600 mb-1">Средний риск</div>
-                    <div className="text-3xl font-bold text-yellow-600">
-                        {Math.round(
-                            studentStats.reduce((sum, s) => sum + s.suspicionScore, 0) /
-                            studentStats.length
-                        )}
-                        %
-                    </div>
-                </Card>
-            </div>
-
-            {/* Student Stats Table */}
-            <Card className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    📊 Статистика по студентам
-                </h2>
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="text-left py-3 px-4 font-semibold text-gray-700">
-                                    Студент
-                                </th>
-                                <th className="text-center py-3 px-4 font-semibold text-gray-700">
-                                    Запросов
-                                </th>
-                                <th className="text-center py-3 px-4 font-semibold text-gray-700">
-                                    Подозрительных
-                                </th>
-                                <th className="text-center py-3 px-4 font-semibold text-gray-700">
-                                    Последняя активность
-                                </th>
-                                <th className="text-center py-3 px-4 font-semibold text-gray-700">
-                                    Риск списывания
-                                </th>
-                                <th className="text-center py-3 px-4 font-semibold text-gray-700">
-                                    Действия
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {studentStats.map((student) => (
-                                <tr
-                                    key={student.studentId}
-                                    className="border-b hover:bg-gray-50 transition-colors"
-                                >
-                                    <td className="py-3 px-4">
-                                        <div className="font-medium text-gray-900">
-                                            {student.studentName}
-                                        </div>
-                                    </td>
-                                    <td className="text-center py-3 px-4 text-gray-700">
-                                        {student.totalRequests}
-                                    </td>
-                                    <td className="text-center py-3 px-4">
-                                        <span className="text-red-600 font-semibold">
-                                            {student.suspiciousRequests}
-                                        </span>
-                                    </td>
-                                    <td className="text-center py-3 px-4 text-gray-600 text-sm">
-                                        {formatTimestamp(student.lastUsed)}
-                                    </td>
-                                    <td className="text-center py-3 px-4">
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-sm font-semibold ${getSuspicionColor(
-                                                student.suspicionScore
-                                            )}`}
-                                        >
-                                            {student.suspicionScore}% -{' '}
-                                            {getSuspicionLabel(student.suspicionScore)}
-                                        </span>
-                                    </td>
-                                    <td className="text-center py-3 px-4">
-                                        <button
-                                            onClick={() => setSelectedStudent(student.studentId)}
-                                            className="text-primary hover:text-primary-dark font-medium text-sm"
-                                        >
-                                            Подробнее
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </Card>
-
-            {/* Recent Activity Log */}
-            <Card className="p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    📝 Последняя активность AI
-                </h2>
-                <div className="space-y-4">
-                    {logs.map((log) => (
-                        <div
-                            key={log.id}
-                            className={`p-4 rounded-lg border-2 ${log.suspicious
-                                    ? 'border-red-200 bg-red-50'
-                                    : 'border-gray-200 bg-white'
-                                }`}
-                        >
-                            <div className="flex justify-between items-start mb-2">
-                                <div>
-                                    <div className="font-semibold text-gray-900">
-                                        {log.studentName}
-                                    </div>
-                                    <div className="text-sm text-gray-600">
-                                        {log.studentEmail}
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-sm text-gray-600">
-                                        {formatTimestamp(log.timestamp)}
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                        {log.tokensUsed} токенов
-                                    </div>
-                                </div>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-blue-400 mb-2">
+                                <Cpu className="w-3 h-3" />
+                                Neural Activity Monitor
                             </div>
-
-                            <div className="mb-2">
-                                <span className="text-xs font-semibold text-gray-600 uppercase">
-                                    {log.feature === 'chat' && '💬 Чат'}
-                                    {log.feature === 'code-review' && '🔍 Проверка кода'}
-                                    {log.feature === 'assistant' && '🤖 Ассистент'}
-                                    {log.feature === 'image-analysis' && '🖼️ Анализ изображения'}
-                                </span>
-                            </div>
-
-                            <div className="bg-white p-3 rounded border border-gray-200 mb-2">
-                                <div className="text-sm font-medium text-gray-700 mb-1">
-                                    Запрос:
-                                </div>
-                                <div className="text-sm text-gray-900">{log.prompt}</div>
-                            </div>
-
-                            {log.suspicious && (
-                                <div className="bg-red-100 p-3 rounded border border-red-300">
-                                    <div className="text-sm font-semibold text-red-800 mb-2">
-                                        ⚠️ Подозрительная активность:
-                                    </div>
-                                    <ul className="list-disc list-inside space-y-1">
-                                        {log.suspicionReasons.map((reason, idx) => (
-                                            <li key={idx} className="text-sm text-red-700">
-                                                {reason}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
+                            <h1 className="text-4xl md:text-5xl font-black tracking-tighter">
+                                Анализ <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">интеллекта</span>
+                            </h1>
+                            <p className="text-white/40 text-sm font-medium">Контроль взаимодействия с AI-системами и детектирование академической нечестности</p>
                         </div>
+
+                        <div className="flex gap-2 bg-white/[0.03] p-1 rounded-2xl border border-white/5 backdrop-blur-md">
+                            {(['today', 'week', 'month', 'all'] as const).map((filter) => (
+                                <button
+                                    key={filter}
+                                    onClick={() => setTimeFilter(filter)}
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${timeFilter === filter
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                                            : 'text-white/40 hover:text-white hover:bg-white/5'
+                                        }`}
+                                >
+                                    {filter}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Stats Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
+                    {[
+                        { label: 'Neural Queries', value: studentStats.reduce((sum, s) => sum + s.totalRequests, 0), icon: <Activity className="w-4 h-4" />, color: 'text-blue-400' },
+                        { label: 'Academic Risks', value: studentStats.reduce((sum, s) => sum + s.suspiciousRequests, 0), icon: <AlertTriangle className="w-4 h-4" />, color: 'text-red-400' },
+                        { label: 'Active Mindset', value: studentStats.length, icon: <Bot className="w-4 h-4" />, color: 'text-indigo-400' },
+                        { label: 'Avg System Flux', value: `${Math.round(studentStats.reduce((sum, s) => sum + s.suspicionScore, 0) / (studentStats.length || 1))}%`, icon: <Layers className="w-4 h-4" />, color: 'text-emerald-400' },
+                    ].map((stat, i) => (
+                        <Card key={i} className="p-6 bg-white/[0.02] border-white/5 backdrop-blur-xl group hover:bg-white/[0.05] transition-all">
+                            <div className={`p-2 w-fit rounded-lg bg-white/5 ${stat.color} mb-3`}>
+                                {stat.icon}
+                            </div>
+                            <div className="text-3xl font-black tracking-tighter tabular-nums mb-1">{stat.value}</div>
+                            <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">{stat.label}</div>
+                        </Card>
                     ))}
                 </div>
-            </Card>
 
-            {/* Anti-Cheating Indicators */}
-            <Card className="p-6 bg-gradient-to-r from-purple-50 to-blue-50">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    🛡️ Индикаторы анти-списывания
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <div className="text-sm font-semibold text-gray-700 mb-2">
-                            Паттерны списывания
-                        </div>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                            <li>✓ Запросы готовых решений</li>
-                            <li>✓ Копирование без понимания</li>
-                            <li>✓ Частые запросы за короткий период</li>
-                        </ul>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Student Stats Table */}
+                    <div className="lg:col-span-12 xl:col-span-7">
+                        <Card className="bg-white/[0.02] border-white/5 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
+                            <div className="p-8 border-b border-white/5 flex justify-between items-center">
+                                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-white/40">Student Intelligence Matrix</h2>
+                                <Search className="w-4 h-4 text-white/20" />
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="border-b border-white/5 bg-white/[0.01]">
+                                            <th className="text-left py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Identifier</th>
+                                            <th className="text-center py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Activity</th>
+                                            <th className="text-center py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Risk Factor</th>
+                                            <th className="text-right py-4 px-8"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {studentStats.map((student) => {
+                                            const risk = getRiskDetails(student.suspicionScore)
+                                            return (
+                                                <tr key={student.studentId} className="group hover:bg-white/[0.02] transition-colors">
+                                                    <td className="py-6 px-8">
+                                                        <div className="font-bold text-sm tracking-tight">{student.studentName}</div>
+                                                        <div className="text-[10px] text-white/20 font-medium">Internal ID: {student.studentId.slice(0, 8)}</div>
+                                                    </td>
+                                                    <td className="py-6 px-8 text-center text-sm font-black tabular-nums">{student.totalRequests} q</td>
+                                                    <td className="py-6 px-8 text-center">
+                                                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${risk.bg} ${risk.border} ${risk.color}`}>
+                                                            {risk.label} ({student.suspicionScore}%)
+                                                        </span>
+                                                    </td>
+                                                    <td className="py-6 px-8 text-right">
+                                                        <button
+                                                            onClick={() => setSelectedStudent(student.studentId)}
+                                                            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-blue-500/20 hover:border-blue-500/20 transition-all group-hover:scale-110"
+                                                        >
+                                                            <ChevronRight className="w-4 h-4 text-white/40" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </Card>
                     </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <div className="text-sm font-semibold text-gray-700 mb-2">
-                            Анализ поведения
+
+                    {/* Recent Intelligence Logs */}
+                    <div className="lg:col-span-12 xl:col-span-5 space-y-6">
+                        <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] px-2 flex items-center gap-2">
+                            <Terminal className="w-4 h-4" /> Live Neural Stream
+                        </h3>
+                        <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            {logs.map((log) => (
+                                <motion.div
+                                    key={log.id}
+                                    layout
+                                    className={`p-5 rounded-2xl border bg-white/[0.02] backdrop-blur-md transition-all ${log.suspicious ? 'border-red-500/30' : 'border-white/5'}`}
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <div className="text-xs font-bold tracking-tight mb-1">{log.studentName}</div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[8px] font-black text-blue-400 uppercase tracking-widest">[{log.feature}]</span>
+                                                <span className="text-[8px] font-medium text-white/20 uppercase tracking-widest">{formatTimestamp(log.timestamp)}</span>
+                                            </div>
+                                        </div>
+                                        {log.suspicious && <AlertTriangle className="w-4 h-4 text-red-500 animate-pulse" />}
+                                    </div>
+                                    <div className="bg-black/40 border border-white/5 rounded-xl p-4 text-[11px] font-mono text-white/60 leading-relaxed mb-3 break-words">
+                                        {log.prompt}
+                                    </div>
+                                    {log.suspicious && (
+                                        <div className="text-[9px] font-bold text-red-400/80 bg-red-400/10 px-3 py-2 rounded-lg border border-red-400/10">
+                                            DETECTED: {log.suspicionReasons[0]}
+                                        </div>
+                                    )}
+                                </motion.div>
+                            ))}
                         </div>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                            <li>✓ Время между запросами</li>
-                            <li>✓ Качество вопросов</li>
-                            <li>✓ Использование подсказок</li>
-                        </ul>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <div className="text-sm font-semibold text-gray-700 mb-2">
-                            Защита данных
-                        </div>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                            <li>✓ Логирование всех запросов</li>
-                            <li>✓ Шифрование данных</li>
-                            <li>✓ Прозрачность для учителя</li>
-                        </ul>
                     </div>
                 </div>
-            </Card>
+
+                {/* Technical Overview Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <Card className="p-8 bg-gradient-to-br from-blue-600/10 to-transparent border-blue-500/10 rounded-[2.5rem]">
+                        <ShieldCheck className="w-6 h-6 text-blue-400 mb-4" />
+                        <h4 className="text-sm font-black uppercase tracking-wider text-blue-300 mb-2">Integrity Engine</h4>
+                        <p className="text-[11px] text-blue-200/40 leading-relaxed">Continuous verification of student responses against global solution patterns.</p>
+                    </Card>
+                    <Card className="p-8 bg-gradient-to-br from-indigo-600/10 to-transparent border-indigo-500/10 rounded-[2.5rem]">
+                        <Terminal className="w-6 h-6 text-indigo-400 mb-4" />
+                        <h4 className="text-sm font-black uppercase tracking-wider text-indigo-300 mb-2">Protocol Analysis</h4>
+                        <p className="text-[11px] text-indigo-200/40 leading-relaxed">Real-time monitoring of RESTful communication between user agents and LLM endpoints.</p>
+                    </Card>
+                    <Card className="p-8 bg-gradient-to-br from-emerald-600/10 to-transparent border-emerald-500/10 rounded-[2.5rem]">
+                        <Activity className="w-6 h-6 text-emerald-400 mb-4" />
+                        <h4 className="text-sm font-black uppercase tracking-wider text-emerald-300 mb-2">Neural Metrics</h4>
+                        <p className="text-[11px] text-emerald-200/40 leading-relaxed">Aggregated data points reflecting the quality and complexity of student-AI interaction.</p>
+                    </Card>
+                </div>
+            </div>
+
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
+            `}</style>
         </div>
     )
 }
+
+export default AIActivityMonitorPage
+

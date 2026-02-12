@@ -1,308 +1,296 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import { getRankByPoints, getProgressToNextRank } from '@/utils/adminRanks'
-import { Users, MessageSquare, FileText, TrendingUp, Award, ClipboardCheck, Sparkles } from 'lucide-react'
+import { getProgressToNextRank } from '@/utils/adminRanks'
+import {
+    Users,
+    MessageCircle,
+    TrendingUp,
+    Award,
+    ClipboardCheck,
+    Activity,
+    ShieldCheck,
+    Zap,
+    Cpu,
+    Bell,
+    ExternalLink,
+    ChevronRight,
+    PieChart
+} from 'lucide-react'
+import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 
 export const AdminDashboardPage = () => {
     const navigate = useNavigate()
     const currentUser = useAuthStore((state) => state.user)
     const [loading, setLoading] = useState(true)
+    const [currentTime, setCurrentTime] = useState(new Date())
 
     useEffect(() => {
         setLoading(false)
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+        return () => clearInterval(timer)
     }, [])
 
     if (currentUser?.role !== 'admin' && currentUser?.role !== 'developer' && currentUser?.role !== 'teacher') {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-red-600 mb-4">Доступ запрещён</h1>
-                    <p className="text-gray-600">Эта страница доступна только учителям, администраторам и разработчикам</p>
-                </div>
+            <div className="min-h-screen flex items-center justify-center bg-[#0c0d10]">
+                <Card className="p-8 text-center max-w-md bg-white/5 border-white/10 backdrop-blur-xl">
+                    <ShieldCheck className="w-16 h-16 text-red-500 mx-auto mb-4 opacity-50" />
+                    <h1 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Доступ ограничен</h1>
+                    <p className="text-white/40 text-sm mb-6">Требуется уровень доступа: АДМИНИСТРАТОР или РАЗРАБОТЧИК</p>
+                    <Button onClick={() => navigate('/dashboard')} className="w-full bg-indigo-600 hover:bg-indigo-500 rounded-xl py-6 text-xs font-bold uppercase tracking-widest">
+                        Вернуться на главную
+                    </Button>
+                </Card>
             </div>
         )
     }
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="text-4xl mb-4">⏳</div>
-                    <p className="text-gray-600">Загрузка...</p>
+            <div className="min-h-screen flex items-center justify-center bg-[#0c0d10]">
+                <div className="relative">
+                    <div className="w-24 h-24 border-2 border-indigo-500/20 rounded-full animate-ping absolute inset-0"></div>
+                    <div className="w-24 h-24 border-t-2 border-indigo-500 rounded-full animate-spin relative z-10 text-xs flex items-center justify-center text-indigo-400 font-bold uppercase tracking-widest">
+                        Syncing
+                    </div>
                 </div>
             </div>
         )
     }
 
-    // Get admin rank
     const adminPoints = currentUser?.adminPoints || 0
     const rankInfo = getProgressToNextRank(adminPoints)
     const currentRank = rankInfo.current
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-                        👑 Админ-панель
-                    </h1>
-                    <p className="text-gray-600">Управление платформой EliteHeat</p>
-                </div>
+        <div className="min-h-screen bg-[#08090a] text-white selection:bg-indigo-500/30">
+            {/* Animated Background Elements */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-blue-600/5 rounded-full blur-[100px]"></div>
+            </div>
 
-                {/* Admin Rank Card */}
-                <div className="mb-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-2xl p-8 text-white">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6">
-                            <div className="text-7xl">{currentRank.icon}</div>
-                            <div>
-                                <h2 className="text-3xl font-bold mb-2">{currentRank.name}</h2>
-                                <p className="text-purple-100 mb-1">Уровень {currentRank.level}</p>
-                                <p className="text-sm text-purple-200">{currentRank.description}</p>
-                            </div>
+            <div className="max-w-7xl mx-auto px-6 py-10 relative z-10">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400/80 mb-2">
+                            <Activity className="w-3 h-3 animate-pulse" />
+                            Live System Monitor
                         </div>
-                        <div className="text-right">
-                            <div className="text-5xl font-bold mb-2">{adminPoints}</div>
-                            <p className="text-purple-100">очков</p>
-                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white">
+                            Центр <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">Мониторинга</span>
+                        </h1>
+                        <p className="text-white/40 text-sm font-medium">Контроль и управление образовательной экосистемой EliteHeat</p>
                     </div>
 
-                    {/* Progress to next rank */}
-                    {rankInfo.next && (
-                        <div className="mt-6">
-                            <div className="flex items-center justify-between text-sm mb-2">
-                                <span>До следующего ранга: {rankInfo.next.name}</span>
-                                <span>{Math.round(rankInfo.progress)}%</span>
+                    <div className="flex items-center gap-3">
+                        <div className="px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/5 backdrop-blur-md">
+                            <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest leading-none mb-1">System Time</div>
+                            <div className="text-lg font-mono font-bold text-white/80 tabular-nums">
+                                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                <span className="animate-pulse">:</span>
+                                {currentTime.toLocaleTimeString([], { second: '2-digit' })}
                             </div>
-                            <div className="w-full bg-purple-400/30 rounded-full h-3">
-                                <div
-                                    className="bg-white rounded-full h-3 transition-all duration-500"
-                                    style={{ width: `${rankInfo.progress}%` }}
-                                />
-                            </div>
-                            <p className="text-xs text-purple-200 mt-2">
-                                {rankInfo.next.minPoints - adminPoints} очков до {rankInfo.next.name}
-                            </p>
                         </div>
-                    )}
-                </div>
-
-                {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <button
-                        onClick={() => navigate('/admin/users')}
-                        className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                    >
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                <Users className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900">Пользователи</h3>
-                        </div>
-                        <p className="text-gray-600">Управление пользователями платформы</p>
-                    </button>
-
-                    <button
-                        onClick={() => navigate('/admin/chat')}
-                        className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                    >
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                <MessageSquare className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900">Чат с учениками</h3>
-                        </div>
-                        <p className="text-gray-600">Ответы на вопросы учеников</p>
-                    </button>
-
-                    <button
-                        onClick={() => navigate('/admin/groups')}
-                        className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                    >
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                <Users className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900">Группы</h3>
-                        </div>
-                        <p className="text-gray-600">Управление группами учеников</p>
-                    </button>
-
-                    <button
-                        onClick={() => navigate('/admin/review')}
-                        className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                    >
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                <ClipboardCheck className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900">Проверка заданий</h3>
-                        </div>
-                        <p className="text-gray-600">Проверяйте домашние задания студентов</p>
-                    </button>
-
-                    <button
-                        onClick={() => navigate('/admin/ranks')}
-                        className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                    >
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                <Award className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-xl font-bold text-white">Ранги и очки</h3>
-                        </div>
-                        <p className="text-yellow-50">Просмотр системы рангов</p>
-                    </button>
-
-                </div>
-
-                {/* Enhanced Features */}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">🚀 Расширенные функции</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <button
-                            onClick={() => navigate('/admin/enhanced-users')}
-                            className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <Users className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Расширенное управление</h3>
-                            </div>
-                            <p className="text-indigo-50">Фильтры, детали, заметки</p>
-                        </button>
-
-                        <button
-                            onClick={() => navigate('/admin/student-monitoring')}
-                            className="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <TrendingUp className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Мониторинг учеников</h3>
-                            </div>
-                            <p className="text-red-50">Кто застрял, флаги проблем</p>
-                        </button>
-
-                        <button
-                            onClick={() => navigate('/admin/enhanced-review')}
-                            className="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <ClipboardCheck className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Улучшенная проверка</h3>
-                            </div>
-                            <p className="text-orange-50">Шаблоны, авто-очки</p>
-                        </button>
-
-                        <button
-                            onClick={() => navigate('/admin/enhanced-groups')}
-                            className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <Users className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Расширенные группы</h3>
-                            </div>
-                            <p className="text-cyan-50">Прогресс, массовые действия</p>
-                        </button>
-
-                        <button
-                            onClick={() => navigate('/admin/live-ranks')}
-                            className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <Award className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Живые ранги</h3>
-                            </div>
-                            <p className="text-yellow-50">Логи очков, анти-накрутка</p>
-                        </button>
-
-                        <button
-                            onClick={() => navigate('/admin/analytics')}
-                            className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <TrendingUp className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Аналитика</h3>
-                            </div>
-                            <p className="text-green-50">Эффективность, потери</p>
-                        </button>
-
-                        <button
-                            onClick={() => navigate('/admin/enhanced-chat')}
-                            className="bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <MessageSquare className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Улучшенный чат</h3>
-                            </div>
-                            <p className="text-pink-50">Теги, FAQ, приоритеты</p>
-                        </button>
-
-                        <button
-                            onClick={() => navigate('/admin/ai-activity')}
-                            className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 text-left group"
-                        >
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                                    <Sparkles className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white">Активность AI</h3>
-                            </div>
-                            <p className="text-indigo-50">Анализ запросов, подозрения</p>
+                        <button className="p-4 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-600/20 transition-all flex items-center justify-center relative group">
+                            <Bell className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                            <div className="absolute top-3 right-3 w-2 h-2 bg-indigo-500 rounded-full animate-ping"></div>
                         </button>
                     </div>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white rounded-xl shadow-lg p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Заданий проверено</h3>
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <FileText className="w-5 h-5 text-blue-600" />
+                {/* Dashboard Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+                    {/* Main Stats Panel */}
+                    <div className="lg:col-span-8 flex flex-col gap-6">
+                        {/* System Authority Panel (Replaced Rank with Access Status) */}
+                        <div className="bg-gradient-to-br from-[#1a1c24] to-[#0c0d10] border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl">
+                            {/* Technical grid background */}
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+
+                            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-24 h-24 rounded-3xl bg-indigo-500/10 backdrop-blur-xl border border-indigo-500/20 flex items-center justify-center text-4xl shadow-inner text-indigo-400">
+                                        <ShieldCheck className="w-12 h-12" />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-[9px] font-black uppercase tracking-widest text-indigo-400 border border-indigo-500/20">Tier {currentRank.level} Authorization</span>
+                                            <h2 className="text-3xl font-black text-white tracking-tight leading-none">{currentUser?.role === 'developer' ? 'Root Access' : 'Super Admin'}</h2>
+                                        </div>
+                                        <p className="text-white/40 text-sm font-medium">Статус безопасности: ВЫСОКИЙ • Все системы управления доступны</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-end">
+                                    <div className="text-5xl font-black text-white tracking-tighter tabular-nums mb-1">{adminPoints}</div>
+                                    <div className="text-[10px] font-bold text-indigo-400/50 uppercase tracking-[0.2em]">Operational Rep Score</div>
+                                </div>
                             </div>
+
+                            {rankInfo.next && (
+                                <div className="mt-8 relative z-10">
+                                    <div className="flex items-center justify-between text-[11px] font-bold text-white/30 mb-3 uppercase tracking-widest">
+                                        <div className="flex items-center gap-2">
+                                            Next Authority Level: <span className="text-white/60">Tier {rankInfo.next.level}</span>
+                                        </div>
+                                        <div>{Math.round(rankInfo.progress)}% Capacity</div>
+                                    </div>
+                                    <div className="h-2 bg-white/[0.03] rounded-full overflow-hidden border border-white/[0.05]">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-indigo-600 to-blue-500 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(79,70,229,0.3)]"
+                                            style={{ width: `${rankInfo.progress}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        <p className="text-3xl font-bold text-gray-900">0</p>
-                        <p className="text-sm text-gray-500 mt-2">За всё время</p>
+
+                        {/* Interaction Cards Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <MonitorCard
+                                title="Ученики"
+                                description="Мониторинг прогресса и активности"
+                                icon={<Users className="w-6 h-6" />}
+                                color="blue"
+                                onClick={() => navigate('/admin/users')}
+                                value="98.4%"
+                                label="Retention"
+                            />
+                            <MonitorCard
+                                title="Проверка"
+                                description="Контроль качества выполнения задач"
+                                icon={<ClipboardCheck className="w-6 h-6" />}
+                                color="orange"
+                                onClick={() => navigate('/admin/tasks')}
+                                value="14"
+                                label="Pending"
+                            />
+                            <MonitorCard
+                                title="Аналитика"
+                                description="Глубокий анализ эффективности"
+                                icon={<PieChart className="w-6 h-6" />}
+                                color="emerald"
+                                onClick={() => navigate('/admin/analytics')}
+                                value="+22%"
+                                label="Growth"
+                            />
+                            <MonitorCard
+                                title="Поддержка"
+                                description="Чат и помощь пользователям"
+                                icon={<MessageCircle className="w-6 h-6" />}
+                                color="pink"
+                                onClick={() => navigate('/admin/support-chats')}
+                                value="2 мин"
+                                label="Avg Response"
+                            />
+                        </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Всего очков</h3>
-                            <div className="p-2 bg-purple-100 rounded-lg">
-                                <Award className="w-5 h-5 text-purple-600" />
-                            </div>
-                        </div>
-                        <p className="text-3xl font-bold text-gray-900">{adminPoints}</p>
-                        <p className="text-sm text-gray-500 mt-2">Текущий баланс</p>
-                    </div>
+                    {/* Side Sidebar Panel */}
+                    <div className="lg:col-span-4 flex flex-col gap-6">
+                        {/* Quick Action Links */}
+                        <Card className="bg-white/[0.02] border-white/5 backdrop-blur-xl p-6 rounded-[2rem] flex flex-col gap-4">
+                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] px-2 mb-2">Операционные модули</h3>
+                            <ActionLink icon={<TrendingUp className="w-4 h-4" />} title="Мониторинг риска" onClick={() => navigate('/admin/student-monitoring')} />
+                            <ActionLink icon={<Zap className="w-4 h-4" />} title="Активность AI" onClick={() => navigate('/admin/ai-activity')} />
+                            <ActionLink icon={<Award className="w-4 h-4" />} title="Управление рангами" onClick={() => navigate('/admin/ranks')} />
+                            <ActionLink icon={<MessageCircle className="w-4 h-4" />} title="Служебный чат" onClick={() => navigate('/admin/group-chat')} />
+                        </Card>
 
-                    <div className="bg-white rounded-xl shadow-lg p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Активность</h3>
-                            <div className="p-2 bg-green-100 rounded-lg">
-                                <TrendingUp className="w-5 h-5 text-green-600" />
+                        {/* System Health Card */}
+                        <Card className="bg-gradient-to-br from-zinc-800 to-zinc-900 border-white/5 p-6 rounded-[2rem] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                <Cpu className="w-24 h-24" />
                             </div>
-                        </div>
-                        <p className="text-3xl font-bold text-gray-900">100%</p>
-                        <p className="text-sm text-gray-500 mt-2">За последнюю неделю</p>
+                            <div className="relative z-10">
+                                <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-4">Статус систем</h3>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-zinc-300">API Core</span>
+                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                                            <span className="text-[9px] font-bold text-emerald-400 uppercase">Stable</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-zinc-300">AI Engine</span>
+                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                                            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></div>
+                                            <span className="text-[9px] font-bold text-indigo-400 uppercase">Active</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-zinc-300">Database</span>
+                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                                            <span className="text-[9px] font-bold text-emerald-400 uppercase">99.9%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Button
+                                    className="w-full mt-6 bg-zinc-700/50 hover:bg-zinc-700 text-zinc-400 rounded-xl h-10 border border-zinc-600/30 text-xs font-bold uppercase tracking-widest"
+                                    onClick={() => navigate('/developer/panel')}
+                                >
+                                    Developer Panel
+                                </Button>
+                            </div>
+                        </Card>
                     </div>
                 </div>
             </div>
         </div>
     )
 }
+
+// Components
+const MonitorCard = ({ title, description, icon, color, onClick, value, label }: any) => {
+    const colors: any = {
+        indigo: 'from-indigo-500 to-indigo-600 shadow-indigo-500/10 border-indigo-500/20',
+        blue: 'from-blue-500 to-cyan-500 shadow-blue-500/10 border-blue-500/20',
+        orange: 'from-orange-500 to-red-500 shadow-orange-500/10 border-orange-500/20',
+        emerald: 'from-emerald-500 to-teal-500 shadow-emerald-500/10 border-emerald-500/20',
+        pink: 'from-pink-500 to-rose-600 shadow-pink-500/10 border-pink-500/20'
+    }
+
+    return (
+        <button
+            onClick={onClick}
+            className={`group p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 backdrop-blur-xl transition-all duration-300 hover:bg-white/[0.05] hover:scale-[1.02] text-left relative overflow-hidden`}
+        >
+            <div className={`p-3 w-fit rounded-2xl bg-gradient-to-br ${colors[color]} text-white mb-4 group-hover:scale-110 transition-transform duration-500`}>
+                {icon}
+            </div>
+            <h3 className="text-lg font-black text-white tracking-tight mb-1">{title}</h3>
+            <p className="text-white/30 text-[11px] leading-snug mb-4 group-hover:text-white/50 transition-colors uppercase font-bold tracking-wider">{description}</p>
+
+            <div className="flex items-end justify-between mt-auto">
+                <div className="flex flex-col">
+                    <span className="text-2xl font-black text-white tracking-tighter tabular-nums">{value}</span>
+                    <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">{label}</span>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/20 transition-all">
+                    <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all" />
+                </div>
+            </div>
+        </button>
+    )
+}
+
+const ActionLink = ({ icon, title, onClick }: any) => (
+    <button
+        onClick={onClick}
+        className="flex items-center justify-between w-full p-4 rounded-2xl border border-white/[0.03] hover:bg-white/[0.02] hover:border-white/10 transition-all group"
+    >
+        <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-white/5 text-white/40 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-all">
+                {icon}
+            </div>
+            <span className="text-xs font-bold text-white/60 tracking-tight group-hover:text-white transition-colors">{title}</span>
+        </div>
+        <ExternalLink className="w-3 h-3 text-white/10 group-hover:text-white/40 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+    </button>
+)

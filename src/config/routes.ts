@@ -23,7 +23,6 @@ export const FamilySubscriptionPage = lazy(() => import('../pages/FamilySubscrip
 export const NotFoundPage = lazy(() => import('../pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 export const AdminUsersPage = lazy(() => import('../pages/admin/AdminUsersPage').then(m => ({ default: m.AdminUsersPage })));
 export const AdminUserEditPage = lazy(() => import('../pages/AdminUserEditPage').then(m => ({ default: m.AdminUserEditPage })));
-export const AdminGroupsPage = lazy(() => import('../pages/AdminGroupsPage').then(m => ({ default: m.AdminGroupsPage })));
 export const MyAssignmentsPage = lazy(() => import('../pages/MyAssignmentsPage').then(m => ({ default: m.MyAssignmentsPage })));
 export const AdminChatPage = lazy(() => import('../pages/AdminChatPage').then(m => ({ default: m.AdminChatPage })));
 export const AdminGroupChatPage = lazy(() => import('../pages/AdminGroupChatPage').then(m => ({ default: m.AdminGroupChatPage })));
@@ -57,7 +56,6 @@ export const APITestPage = lazy(() => import('../pages/developer/APITestPage'));
 // Admin pages
 export const StudentMonitoringPage = lazy(() => import('../pages/admin/StudentMonitoringPage').then(m => ({ default: m.StudentMonitoringPage })));
 export const EnhancedReviewPage = lazy(() => import('../pages/admin/EnhancedReviewPage').then(m => ({ default: m.EnhancedReviewPage })));
-export const EnhancedGroupsPage = lazy(() => import('../pages/admin/EnhancedGroupsPage').then(m => ({ default: m.EnhancedGroupsPage })));
 export const AnalyticsPage = lazy(() => import('../pages/admin/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
 export const EnhancedChatPage = lazy(() => import('../pages/admin/EnhancedChatPage').then(m => ({ default: m.EnhancedChatPage })));
 export const AdminOpsChat = lazy(() => import('../pages/admin/AdminOpsChat').then(m => ({ default: m.AdminOpsChat })));

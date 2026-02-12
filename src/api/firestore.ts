@@ -10,12 +10,13 @@ import {
     orderBy,
     Timestamp
 } from 'firebase/firestore'
-import { db } from '@/config/firebase'
+import { db, isFirestoreBroken, markFirestoreAsBroken } from '@/config/firebase'
 
 // Admin API
 export const adminAPI = {
     // Get admin stats
     getStats: async (userId: string) => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             const userDoc = await getDoc(doc(db, 'users', userId))
             if (!userDoc.exists()) {
@@ -52,6 +53,7 @@ export const adminAPI = {
 
     // Get all users
     getUsers: async () => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             const usersSnapshot = await getDocs(collection(db, 'users'))
             const users = usersSnapshot.docs.map(doc => ({
@@ -73,6 +75,7 @@ export const adminAPI = {
 
     // Add points to admin
     addPoints: async (userId: string, points: number) => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             const userRef = doc(db, 'users', userId)
             const userDoc = await getDoc(userRef)
@@ -113,6 +116,7 @@ export const adminAPI = {
 export const submissionsAPI = {
     // Create submission
     create: async (studentId: string, taskTitle: string, description: string, fileUrl?: string) => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             const submissionRef = doc(collection(db, 'submissions'))
             await setDoc(submissionRef, {
@@ -140,6 +144,7 @@ export const submissionsAPI = {
 
     // Get all submissions (admin)
     getAll: async () => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             const submissionsSnapshot = await getDocs(
                 query(collection(db, 'submissions'), orderBy('createdAt', 'desc'))
@@ -178,6 +183,7 @@ export const submissionsAPI = {
 
     // Review submission
     review: async (submissionId: string, adminId: string, status: 'approved' | 'rejected', comment: string) => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             const submissionRef = doc(db, 'submissions', submissionId)
 
@@ -208,6 +214,7 @@ export const submissionsAPI = {
 export const chatsAPI = {
     // Get or create chat
     getOrCreate: async (studentId: string, adminId: string) => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             // Try to find existing chat
             const chatsSnapshot = await getDocs(
@@ -258,6 +265,7 @@ export const chatsAPI = {
 
     // Send message
     sendMessage: async (chatId: string, senderId: string, text: string) => {
+        if (isFirestoreBroken()) return { success: false, message: 'Firestore offline' };
         try {
             const chatRef = doc(db, 'chats', chatId)
             const chatDoc = await getDoc(chatRef)

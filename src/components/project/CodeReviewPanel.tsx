@@ -39,8 +39,8 @@ export const CodeReviewPanel = () => {
             Код для ревью:
             ${code}`
 
-            const response = await sendTextMessage(prompt)
-            const jsonMatch = response.match(/\{[\s\S]*\}/)
+            const { reply } = await sendTextMessage(prompt)
+            const jsonMatch = reply.match(/\{[\s\S]*\}/)
             if (jsonMatch) {
                 setReview(JSON.parse(jsonMatch[0]))
             }

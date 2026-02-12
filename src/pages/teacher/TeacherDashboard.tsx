@@ -24,12 +24,12 @@ export const TeacherDashboard = () => {
         setLoading(false)
     }, [])
 
-    if (currentUser?.role !== 'admin') {
+    if (currentUser?.role !== 'admin' && currentUser?.role !== 'developer' && currentUser?.role !== 'teacher') {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold text-red-600 mb-4">Доступ запрещён</h1>
-                    <p className="text-gray-600">Эта страница доступна только учителям</p>
+                    <p className="text-gray-600">Эта страница доступна только сотрудникам</p>
                 </div>
             </div>
         )
@@ -97,7 +97,7 @@ export const TeacherDashboard = () => {
             {/* MAIN ACTIONS */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <button
-                    onClick={() => navigate('/admin/enhanced-users')}
+                    onClick={() => navigate('/admin/users')}
                     className="glass-premium p-8 rounded-[2.5rem] border border-white/60 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all text-left group"
                 >
                     <div className="flex items-center gap-4 mb-4">
@@ -136,19 +136,6 @@ export const TeacherDashboard = () => {
                 </button>
 
                 <button
-                    onClick={() => navigate('/admin/enhanced-groups')}
-                    className="glass-premium p-8 rounded-[2.5rem] border border-white/60 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all text-left group"
-                >
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl text-white group-hover:scale-110 transition-transform">
-                            <Users className="w-8 h-8" />
-                        </div>
-                        <h3 className="text-2xl font-black text-indigo-950">Группы</h3>
-                    </div>
-                    <p className="text-indigo-950/60 font-medium">Управление учебными группами</p>
-                </button>
-
-                <button
                     onClick={() => navigate('/admin/analytics')}
                     className="glass-premium p-8 rounded-[2.5rem] border border-white/60 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all text-left group"
                 >
@@ -180,7 +167,8 @@ export const TeacherDashboard = () => {
                 </button>
             </div>
 
-            <style>{`
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 .glass-premium {
                     background: rgba(255, 255, 255, 0.4);
                     backdrop-filter: blur(20px) saturate(180%);
@@ -191,7 +179,7 @@ export const TeacherDashboard = () => {
                 }
                 .animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
                 .animation-delay-2000 { animation-delay: 2s; }
-            `}</style>
+            ` }} />
         </div>
     )
 }

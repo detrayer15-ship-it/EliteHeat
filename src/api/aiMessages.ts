@@ -10,6 +10,7 @@ import {
     Timestamp,
     QuerySnapshot
 } from 'firebase/firestore';
+import { isFirestoreBroken, markFirestoreAsBroken } from '@/config/firebase';
 
 export interface AIMessage {
     id: string;
@@ -32,6 +33,7 @@ export interface AIMessage {
 export async function addUserMessage(chatId: string, content: string): Promise<AIMessage> {
     const user = auth.currentUser;
     if (!user) throw new Error('Not authenticated');
+    if (isFirestoreBroken()) return null as any;
 
     const messageData = {
         chatId,
@@ -41,12 +43,18 @@ export async function addUserMessage(chatId: string, content: string): Promise<A
         timestamp: Timestamp.now()
     };
 
-    const docRef = await addDoc(collection(db, 'aiMessages'), messageData);
-
-    return {
-        id: docRef.id,
-        ...messageData
-    };
+    try {
+        const docRef = await addDoc(collection(db, 'aiMessages'), messageData);
+        return {
+            id: docRef.id,
+            ...messageData
+        };
+    } catch (error: any) {
+        if (error?.message?.includes('INTERNAL ASSERTION FAILED')) {
+            markFirestoreAsBroken(error);
+        }
+        throw error;
+    }
 }
 
 /**
@@ -59,6 +67,7 @@ export async function addAssistantMessage(
 ): Promise<AIMessage> {
     const user = auth.currentUser;
     if (!user) throw new Error('Not authenticated');
+    if (isFirestoreBroken()) return null as any;
 
     const messageData = {
         chatId,
@@ -69,12 +78,18 @@ export async function addAssistantMessage(
         timestamp: Timestamp.now()
     };
 
-    const docRef = await addDoc(collection(db, 'aiMessages'), messageData);
-
-    return {
-        id: docRef.id,
-        ...messageData
-    };
+    try {
+        const docRef = await addDoc(collection(db, 'aiMessages'), messageData);
+        return {
+            id: docRef.id,
+            ...messageData
+        };
+    } catch (error: any) {
+        if (error?.message?.includes('INTERNAL ASSERTION FAILED')) {
+            markFirestoreAsBroken(error);
+        }
+        throw error;
+    }
 }
 
 /**
@@ -106,25 +121,43 @@ export function subscribeToAIChatMessages(
     callback: (messages: AIMessage[]) => void
 ): () => void {
     const user = auth.currentUser;
-    if (!user) {
-        console.error("Not authenticated for subscription");
+    if (!user || isFirestoreBroken()) {
+        if (isFirestoreBroken()) console.warn("Firestore subscription blocked: SDK is in corrupted state.");
         return () => { };
     }
 
-    const q = query(
-        collection(db, 'aiMessages'),
-        where('chatId', '==', chatId),
-        where('userId', '==', user.uid),
-        orderBy('timestamp', 'asc')
-    );
+    try {
+        const q = query(
+            collection(db, 'aiMessages'),
+            where('chatId', '==', chatId),
+            where('userId', '==', user.uid),
+            orderBy('timestamp', 'asc')
+        );
 
-    return onSnapshot(q, (snapshot: QuerySnapshot) => {
-        const messages = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        } as AIMessage));
-        callback(messages);
-    }, (error) => {
-        console.error("AI Message Listener Error:", error);
-    });
+        return onSnapshot(q, (snapshot: QuerySnapshot) => {
+            try {
+                const messages = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                } as AIMessage));
+                callback(messages);
+            } catch (innerError: any) {
+                console.error("Firestore callback error:", innerError);
+                if (innerError?.message?.includes('INTERNAL ASSERTION FAILED')) {
+                    markFirestoreAsBroken(innerError);
+                }
+            }
+        }, (error: any) => {
+            console.warn("AI Message Listener Stream Error:", error);
+            if (error?.message?.includes('INTERNAL ASSERTION FAILED')) {
+                markFirestoreAsBroken(error);
+            }
+        });
+    } catch (outerError: any) {
+        console.error("Firestore subscription setup error:", outerError);
+        if (outerError?.message?.includes('INTERNAL ASSERTION FAILED')) {
+            markFirestoreAsBroken(outerError);
+        }
+        return () => { };
+    }
 }

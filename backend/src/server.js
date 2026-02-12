@@ -16,6 +16,7 @@ import authRoutes from './routes/auth.routes.js'
 import adminRoutes from './routes/admin.routes.js'
 import chatRoutes from './routes/chat.routes.js'
 import aiRoutes from './routes/ai.routes.js'
+import { sendSimpleChat, sendAutoAI } from './controllers/ai.controller.js'
 
 // Connect to database (optional - not needed for AI Assistant)
 // MongoDB is only used for auth, chat, and submissions
@@ -36,17 +37,25 @@ app.use(helmet({
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
             "script-src": ["'self'", "'unsafe-inline'", "https://apis.google.com"],
             "img-src": ["'self'", "data:", "https://*.google.com"],
-            "connect-src": ["'self'", "https://*.googleapis.com", "http://localhost:3000", "http://localhost:5173"]
+            "connect-src": ["'self'", "https://*.googleapis.com", "http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3001", "http://localhost:5173", "http://localhost:5174"]
         },
     },
 }))
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'http://localhost:5175',
-        'https://eliteheat-2ee0b.web.app',
-        'https://eliteheat-2ee0b.firebaseapp.com'
-    ],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl, etc.)
+        if (!origin) return callback(null, true);
+
+        // Allow all localhost ports and production domains
+        if (origin.startsWith('http://localhost:') ||
+            origin.startsWith('http://127.0.0.1:') ||
+            origin.includes('eliteheat-2ee0b.web.app') ||
+            origin.includes('eliteheat-2ee0b.firebaseapp.com')) {
+            return callback(null, true);
+        }
+
+        callback(new Error('Not allowed by CORS'));
+    },
     credentials: true
 }))
 app.use(express.json())
@@ -69,6 +78,8 @@ app.get('/api/admin/audit-logs', getAuditLogs)
 app.use('/api/auth', authRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/ai', aiRoutes)
+app.post('/api/chat', sendSimpleChat)
+app.post('/api/ask', sendAutoAI) // Exact user spec alias
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -98,7 +109,7 @@ app.use((err, req, res, next) => {
 })
 
 // Start server
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3001
 
 server.listen(PORT, () => {
     console.log(`

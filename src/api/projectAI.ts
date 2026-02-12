@@ -25,10 +25,10 @@ Return ONLY a JSON object in this exact format (no markdown, no explanation):
 Make steps specific and actionable.`
 
     try {
-        const response = await sendTextMessage(prompt)
+        const { reply } = await sendTextMessage(prompt)
 
         // Try to extract JSON from response
-        const jsonMatch = response.match(/\{[\s\S]*\}/)
+        const jsonMatch = reply.match(/\{[\s\S]*\}/)
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0])
         }
@@ -90,8 +90,8 @@ Each prompt should be detailed and include:
 - Best practices to follow`
 
     try {
-        const response = await sendTextMessage(prompt)
-        const jsonMatch = response.match(/\{[\s\S]*\}/)
+        const { reply } = await sendTextMessage(prompt)
+        const jsonMatch = reply.match(/\{[\s\S]*\}/)
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0])
         }
@@ -150,8 +150,8 @@ Speaker notes should be conversational and include:
 - Potential questions to address`
 
     try {
-        const response = await sendTextMessage(prompt)
-        const jsonMatch = response.match(/\{[\s\S]*\}/)
+        const { reply } = await sendTextMessage(prompt)
+        const jsonMatch = reply.match(/\{[\s\S]*\}/)
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0])
         }
@@ -225,7 +225,8 @@ Student's question: ${message}
 Provide a helpful, concise answer in Russian.`
 
     try {
-        return await sendTextMessage(fullPrompt)
+        const { reply } = await sendTextMessage(fullPrompt)
+        return reply
     } catch (error) {
         console.error('Error in project AI chat:', error)
         throw error

@@ -196,7 +196,7 @@ export const Header = () => {
                                                         }}
                                                         className="mt-2 w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
                                                     >
-                                                        Перейти в админ-панель
+                                                        Центр Мониторинга
                                                     </button>
                                                 </div>
                                             </div>

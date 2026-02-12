@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react'
+import { useState, useEffect, createContext, useContext, ReactNode, forwardRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
 
@@ -75,67 +75,72 @@ const ToastContainer = ({ toasts, removeToast }: { toasts: Toast[], removeToast:
 }
 
 // Single Toast Item
-const ToastItem = ({ toast, onClose }: { toast: Toast, onClose: () => void }) => {
-    useEffect(() => {
-        const timer = setTimeout(onClose, toast.duration || 5000)
-        return () => clearTimeout(timer)
-    }, [toast.duration, onClose])
+const ToastItem = forwardRef<HTMLDivElement, { toast: Toast, onClose: () => void }>(
+    ({ toast, onClose }, ref) => {
+        useEffect(() => {
+            const timer = setTimeout(onClose, toast.duration || 5000)
+            return () => clearTimeout(timer)
+        }, [toast.duration, onClose])
 
-    const icons = {
-        success: <CheckCircle className="w-5 h-5 text-emerald-500" />,
-        error: <AlertCircle className="w-5 h-5 text-red-500" />,
-        info: <Info className="w-5 h-5 text-blue-500" />,
-        warning: <AlertTriangle className="w-5 h-5 text-amber-500" />
-    }
+        const icons: Record<ToastType, JSX.Element> = {
+            success: <CheckCircle className="w-5 h-5 text-emerald-500" />,
+            error: <AlertCircle className="w-5 h-5 text-red-500" />,
+            info: <Info className="w-5 h-5 text-blue-500" />,
+            warning: <AlertTriangle className="w-5 h-5 text-amber-500" />
+        }
 
-    const colors = {
-        success: 'bg-emerald-50 border-emerald-200',
-        error: 'bg-red-50 border-red-200',
-        info: 'bg-blue-50 border-blue-200',
-        warning: 'bg-amber-50 border-amber-200'
-    }
+        const colors: Record<ToastType, string> = {
+            success: 'bg-emerald-50 border-emerald-200',
+            error: 'bg-red-50 border-red-200',
+            info: 'bg-blue-50 border-blue-200',
+            warning: 'bg-amber-50 border-amber-200'
+        }
 
-    const titleColors = {
-        success: 'text-emerald-900',
-        error: 'text-red-900',
-        info: 'text-blue-900',
-        warning: 'text-amber-900'
-    }
+        const titleColors: Record<ToastType, string> = {
+            success: 'text-emerald-900',
+            error: 'text-red-900',
+            info: 'text-blue-900',
+            warning: 'text-amber-900'
+        }
 
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 100, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className={`pointer-events-auto ${colors[toast.type]} border rounded-2xl p-4 shadow-xl backdrop-blur-sm flex items-start gap-3`}
-        >
-            <div className="flex-shrink-0 mt-0.5">
-                {icons[toast.type]}
-            </div>
-            <div className="flex-1 min-w-0">
-                <p className={`font-bold text-sm ${titleColors[toast.type]}`}>{toast.title}</p>
-                {toast.message && (
-                    <p className="text-xs text-slate-600 mt-1">{toast.message}</p>
-                )}
-            </div>
-            <button
-                onClick={onClose}
-                className="flex-shrink-0 p-1 hover:bg-white/50 rounded-lg transition-colors"
-            >
-                <X className="w-4 h-4 text-slate-400" />
-            </button>
-
-            {/* Progress bar */}
+        return (
             <motion.div
-                initial={{ width: '100%' }}
-                animate={{ width: '0%' }}
-                transition={{ duration: (toast.duration || 5000) / 1000, ease: 'linear' }}
-                className="absolute bottom-0 left-0 h-1 bg-current opacity-20 rounded-b-2xl"
-                style={{ color: toast.type === 'success' ? '#10b981' : toast.type === 'error' ? '#ef4444' : toast.type === 'warning' ? '#f59e0b' : '#3b82f6' }}
-            />
-        </motion.div>
-    )
-}
+                ref={ref}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 100, scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className={`pointer-events-auto ${colors[toast.type]} border rounded-2xl p-4 shadow-xl backdrop-blur-sm flex items-start gap-3 relative`}
+            >
+                <div className="flex-shrink-0 mt-0.5">
+                    {icons[toast.type]}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className={`font-bold text-sm ${titleColors[toast.type]}`}>{toast.title}</p>
+                    {toast.message && (
+                        <p className="text-xs text-slate-600 mt-1">{toast.message}</p>
+                    )}
+                </div>
+                <button
+                    onClick={onClose}
+                    className="flex-shrink-0 p-1 hover:bg-white/50 rounded-lg transition-colors"
+                >
+                    <X className="w-4 h-4 text-slate-400" />
+                </button>
+
+                {/* Progress bar */}
+                <motion.div
+                    initial={{ width: '100%' }}
+                    animate={{ width: '0%' }}
+                    transition={{ duration: (toast.duration || 5000) / 1000, ease: 'linear' }}
+                    className="absolute bottom-0 left-0 h-1 bg-current opacity-20 rounded-b-2xl"
+                    style={{ color: toast.type === 'success' ? '#10b981' : toast.type === 'error' ? '#ef4444' : toast.type === 'warning' ? '#f59e0b' : '#3b82f6' }}
+                />
+            </motion.div>
+        )
+    }
+)
+
+ToastItem.displayName = 'ToastItem'
 
 export default ToastProvider

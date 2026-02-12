@@ -1,404 +1,264 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '@/store/authStore'
+import { collection, query, getDocs, where, orderBy } from 'firebase/firestore'
+import { db } from '@/config/firebase'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { ArrowLeft, Search, Filter, AlertTriangle, TrendingDown, TrendingUp, Trash2, Edit, Mail, Shield, User as UserIcon } from 'lucide-react'
-import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore'
-import { db } from '@/config/firebase'
+import {
+    Search,
+    ChevronRight,
+    ArrowLeft,
+    ShieldAlert,
+    Activity,
+    Users,
+    Zap,
+    AlertCircle
+} from 'lucide-react'
+import { motion } from 'framer-motion'
 
-interface User {
+interface UserData {
     id: string
     name: string
     email: string
     role: 'student' | 'teacher' | 'admin' | 'developer'
-    teacherRank?: number
-    createdAt: Date
-    lastActive?: number
-    coursesProgress?: { python: number; figma: number }
-    activeProjects?: number
-    warnings?: number
-    adminNotes?: string
-    adminPoints?: number
-    city?: string
+    lastActiveAt?: any
+    createdAt?: any
+    progress?: number
+    completedTasks?: number
+    xp?: number
 }
 
 export const AdminUsersPage = () => {
     const navigate = useNavigate()
-    const currentUser = useAuthStore((state) => state.user)
-    const [users, setUsers] = useState<User[]>([])
+    const [users, setUsers] = useState<UserData[]>([])
     const [loading, setLoading] = useState(true)
-    const [searchQuery, setSearchQuery] = useState('')
-    const [filterRole, setFilterRole] = useState<'all' | 'student' | 'teacher' | 'admin' | 'developer'>('all')
-    const [filterActivity, setFilterActivity] = useState<'all' | 'active' | 'inactive' | 'risk'>('all')
-    const [selectedUser, setSelectedUser] = useState<User | null>(null)
-
-    // Access check
-    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'developer' && currentUser.role !== 'teacher')) {
-        return (
-            <div className="p-6 flex items-center justify-center min-h-screen">
-                <Card className="p-8 text-center max-w-md">
-                    <div className="text-6xl mb-4">🔒</div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Доступ запрещён</h1>
-                    <p className="text-gray-600 mb-6">Эта страница доступна только администраторам и разработчикам.</p>
-                    <Button onClick={() => navigate('/dashboard')} className="w-full">
-                        Вернуться на главную
-                    </Button>
-                </Card>
-            </div>
-        )
-    }
-
-    const loadUsers = async () => {
-        setLoading(true)
-        try {
-            const usersSnapshot = await getDocs(collection(db, 'users'))
-            const loadedUsers: User[] = usersSnapshot.docs.map(doc => {
-                const data = doc.data()
-                return {
-                    id: doc.id,
-                    name: data.name || 'Пользователь',
-                    email: data.email || '',
-                    role: data.role || 'student',
-                    teacherRank: data.teacherRank,
-                    createdAt: data.createdAt?.toDate() || new Date(),
-                    lastActive: data.lastActiveAt?.toDate().getTime() || data.createdAt?.toDate().getTime() || Date.now(),
-                    coursesProgress: {
-                        python: data.progress || 0,
-                        figma: data.figmaProgress || 0
-                    },
-                    activeProjects: data.activeProjects || 0,
-                    warnings: data.warnings || 0,
-                    adminNotes: data.adminNotes || '',
-                    adminPoints: data.adminPoints || 0,
-                    city: data.city || ''
-                }
-            })
-            setUsers(loadedUsers)
-        } catch (error) {
-            console.error('Error loading users:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
+    const [searchTerm, setSearchTerm] = useState('')
+    const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive' | 'risk'>('all')
 
     useEffect(() => {
+        const loadUsers = async () => {
+            try {
+                const q = query(
+                    collection(db, 'users'),
+                    where('role', '==', 'student'),
+                    orderBy('createdAt', 'desc')
+                )
+                const snapshot = await getDocs(q)
+                const userData = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                })) as UserData[]
+                setUsers(userData)
+            } catch (error) {
+                console.error('Error loading students:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
         loadUsers()
     }, [])
 
-    const handleDeleteUser = async (userId: string, e: React.MouseEvent) => {
-        e.stopPropagation()
-        if (!confirm('Вы уверены, что хотите удалить этого пользователя? Это действие необратимо.')) return
+    const filteredUsers = users.filter(user => {
+        const matchesSearch = (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+            (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
 
-        try {
-            await deleteDoc(doc(db, 'users', userId))
-            setUsers(users.filter(u => u.id !== userId))
-        } catch (error) {
-            console.error('Error deleting user:', error)
-            alert('Ошибка при удалении пользователя')
+        if (statusFilter === 'active') {
+            const lastActive = user.lastActiveAt?.toDate() || new Date(0)
+            return matchesSearch && (Date.now() - lastActive.getTime() < 3 * 24 * 60 * 60 * 1000)
         }
-    }
-
-    // Filtering
-    const filteredUsers = users.filter(u => {
-        if (searchQuery && !u.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !u.email.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return false
+        if (statusFilter === 'inactive') {
+            const lastActive = user.lastActiveAt?.toDate() || new Date(0)
+            return matchesSearch && (Date.now() - lastActive.getTime() >= 7 * 24 * 60 * 60 * 1000)
         }
-
-        if (filterRole !== 'all' && u.role !== filterRole) {
-            return false
+        if (statusFilter === 'risk') {
+            return matchesSearch && (user.progress || 0) < 10
         }
-
-        if (filterActivity === 'active' && (!u.lastActive || Date.now() - u.lastActive > 24 * 60 * 60 * 1000)) {
-            return false
-        }
-        if (filterActivity === 'inactive' && u.lastActive && Date.now() - u.lastActive <= 7 * 24 * 60 * 60 * 1000) {
-            return false
-        }
-        if (filterActivity === 'risk' && (!u.lastActive || Date.now() - u.lastActive <= 14 * 24 * 60 * 60 * 1000)) {
-            return false
-        }
-
-        return true
+        return matchesSearch
     })
 
-    const getActivityStatus = (lastActive?: number) => {
-        if (!lastActive) return { label: 'Неизвестно', color: 'bg-gray-100 text-gray-700' }
-        const days = Math.floor((Date.now() - lastActive) / (24 * 60 * 60 * 1000))
-        if (days === 0) return { label: 'Сегодня', color: 'bg-green-100 text-green-700' }
-        if (days <= 3) return { label: `${days} дн назад`, color: 'bg-blue-100 text-blue-700' }
-        if (days <= 7) return { label: `${days} дн назад`, color: 'bg-yellow-100 text-yellow-700' }
-        if (days <= 14) return { label: `${days} дн назад`, color: 'bg-orange-100 text-orange-700' }
-        return { label: `${days} дн назад`, color: 'bg-red-100 text-red-700' }
+    const stats = {
+        total: users.length,
+        active: users.filter(u => {
+            const lastActive = u.lastActiveAt?.toDate() || new Date(0)
+            return (Date.now() - lastActive.getTime() < 3 * 24 * 60 * 60 * 1000)
+        }).length,
+        atRisk: users.filter(u => (u.progress || 0) < 10).length,
+        graduated: users.filter(u => (u.progress || 0) >= 90).length
     }
 
     if (loading) {
         return (
-            <div className="p-6 flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <div className="text-6xl mb-4 animate-pulse">⏳</div>
-                    <p className="text-gray-600 font-medium">Синхронизация данных...</p>
+            <div className="min-h-screen bg-[#08090a] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
+                    <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">Accessing Student Database...</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <Button
-                        variant="ghost"
+        <div className="min-h-screen bg-[#08090a] text-white selection:bg-indigo-500/30">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[10%] left-[5%] w-[40%] h-[40%] bg-indigo-600/5 rounded-full blur-[120px]"></div>
+                <div className="absolute bottom-[10%] right-[5%] w-[30%] h-[30%] bg-blue-600/5 rounded-full blur-[100px]"></div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-6 py-10 relative z-10">
+                {/* Header */}
+                <div className="mb-12">
+                    <button
                         onClick={() => navigate('/admin')}
-                        className="mb-2 -ml-2 text-gray-500 hover:text-indigo-600"
+                        className="group flex items-center gap-2 text-white/30 hover:text-indigo-400 transition-colors mb-6 text-[10px] font-black uppercase tracking-widest"
                     >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Панель управления
-                    </Button>
-                    <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                        👥 Пользователи системы
-                    </h1>
-                </div>
-                <div className="flex gap-2">
-                    <Button variant="secondary" onClick={loadUsers} className="rounded-xl">
-                        Обновить
-                    </Button>
-                </div>
-            </div>
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Назад к мониторингу
+                    </button>
 
-            {/* Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: 'Всего', value: users.length, color: 'text-indigo-600', icon: <UserIcon className="w-4 h-4" /> },
-                    { label: 'Ученики', value: users.filter(u => u.role === 'student').length, color: 'text-blue-600', icon: <Shield className="w-4 h-4" /> },
-                    { label: 'Учителя', value: users.filter(u => u.role === 'teacher').length, color: 'text-orange-600', icon: <Shield className="w-4 h-4" /> },
-                    { label: 'Админы', value: users.filter(u => u.role === 'admin' || u.role === 'developer').length, color: 'text-purple-600', icon: <Shield className="w-4 h-4" /> },
-                    { label: 'В зоне риска', value: users.filter(u => u.lastActive && Date.now() - u.lastActive > 14 * 24 * 60 * 60 * 1000).length, color: 'text-red-600', icon: <AlertTriangle className="w-4 h-4" /> },
-                ].map((stat, i) => (
-                    <Card key={i} className="p-4 flex flex-col items-center justify-center space-y-1 bg-white/50 backdrop-blur-sm border-white/20">
-                        <div className={`text-2xl font-black ${stat.color}`}>{stat.value}</div>
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1">
-                            {stat.icon}
-                            {stat.label}
-                        </div>
-                    </Card>
-                ))}
-            </div>
-
-            {/* Filters */}
-            <Card className="p-6 bg-white shadow-sm border-gray-100 rounded-2xl">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Поиск</label>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <Input
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Имя или email..."
-                                className="pl-10 rounded-xl border-gray-200 focus:ring-indigo-500"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Роль</label>
-                        <select
-                            value={filterRole}
-                            onChange={(e) => setFilterRole(e.target.value as any)}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 transition-all outline-none text-sm"
-                        >
-                            <option value="all">Все роли</option>
-                            <option value="student">Ученики</option>
-                            <option value="teacher">Учителя</option>
-                            <option value="admin">Администраторы</option>
-                            <option value="developer">Разработчики</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Активность</label>
-                        <select
-                            value={filterActivity}
-                            onChange={(e) => setFilterActivity(e.target.value as any)}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 transition-all outline-none text-sm"
-                        >
-                            <option value="all">Любая активность</option>
-                            <option value="active">Активные (сегодня)</option>
-                            <option value="inactive">Неактивные (7+ дней)</option>
-                            <option value="risk">Риск отчисления (14+ дней)</option>
-                        </select>
-                    </div>
-                </div>
-            </Card>
-
-            {/* User List */}
-            <div className="space-y-3">
-                {filteredUsers.map((u) => {
-                    const activity = getActivityStatus(u.lastActive)
-                    const avgProgress = u.coursesProgress ? (u.coursesProgress.python + u.coursesProgress.figma) / 2 : 0
-
-                    return (
-                        <Card
-                            key={u.id}
-                            className="p-4 hover:shadow-md transition-all cursor-pointer group border-transparent hover:border-indigo-100 bg-white"
-                            onClick={() => setSelectedUser(u)}
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-indigo-100 shadow-lg">
-                                    {u.name.charAt(0)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <h3 className="font-bold text-gray-900 truncate">{u.name}</h3>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tighter ${u.role === 'student' ? 'bg-blue-50 text-blue-600' :
-                                            u.role === 'teacher' ? 'bg-orange-50 text-orange-600' :
-                                                u.role === 'admin' ? 'bg-purple-50 text-purple-600' :
-                                                    'bg-red-50 text-red-600'
-                                            }`}>
-                                            {u.role === 'student' ? 'Ученик' : u.role === 'teacher' ? 'Учитель' : u.role === 'admin' ? 'Админ' : 'Dev'}
-                                        </span>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activity.color}`}>
-                                            {activity.label}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
-                                        <Mail className="w-3 h-3" />
-                                        {u.email}
-                                    </div>
-                                </div>
-
-                                <div className="hidden md:flex items-center gap-8 px-4 border-l border-gray-100">
-                                    {u.role === 'student' && (
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Прогресс</span>
-                                            <span className="text-sm font-black text-gray-700">{Math.round(avgProgress)}%</span>
-                                        </div>
-                                    )}
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Очки</span>
-                                        <span className="text-sm font-black text-gray-700">{u.adminPoints || 0} XP</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-8 w-8 p-0 rounded-lg hover:bg-indigo-50 hover:text-indigo-600"
-                                        onClick={(e) => { e.stopPropagation(); navigate(`/admin/users/${u.id}/edit`); }}
-                                    >
-                                        <Edit className="w-4 h-4" />
-                                    </Button>
-                                    {currentUser.role === 'developer' && u.id !== currentUser.id && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-8 w-8 p-0 rounded-lg hover:bg-red-50 hover:text-red-600"
-                                            onClick={(e) => handleDeleteUser(u.id, e)}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    )}
-                                </div>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-2">
+                                <Users className="w-3 h-3" />
+                                Student Management Module
                             </div>
+                            <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white">
+                                База <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">учеников</span>
+                            </h1>
+                            <p className="text-white/40 text-sm font-medium">Централизованный реестр студентов и их академических показателей</p>
+                        </div>
+
+                        <div className="flex gap-4">
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-indigo-400 transition-colors" />
+                                <input
+                                    type="text"
+                                    placeholder="Search identifier..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm text-white placeholder-white/10 focus:ring-1 focus:ring-indigo-500/50 transition-all outline-none w-full md:w-80"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Performance HUD */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                    {[
+                        { label: 'Total Students', value: stats.total, icon: <Users className="w-4 h-4" />, color: 'text-white' },
+                        { label: 'Active (72h)', value: stats.active, icon: <Activity className="w-4 h-4" />, color: 'text-emerald-400' },
+                        { label: 'Risk Protocol', value: stats.atRisk, icon: <ShieldAlert className="w-4 h-4" />, color: 'text-red-400' },
+                        { label: 'High Potential', value: stats.graduated, icon: <Zap className="w-4 h-4" />, color: 'text-yellow-400' },
+                    ].map((stat, i) => (
+                        <Card key={i} className="p-6 bg-white/[0.02] border-white/5 backdrop-blur-xl flex flex-col gap-2 group hover:bg-white/[0.05] transition-all">
+                            <div className={`p-2 w-fit rounded-lg bg-white/5 ${stat.color} mb-2`}>
+                                {stat.icon}
+                            </div>
+                            <div className="text-3xl font-black tracking-tighter tabular-nums">{stat.value}</div>
+                            <div className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">{stat.label}</div>
                         </Card>
-                    )
-                })}
-            </div>
-
-            {filteredUsers.length === 0 && (
-                <Card className="p-12 text-center bg-transparent border-dashed border-2 border-gray-200 shadow-none">
-                    <div className="text-4xl mb-2">🔎</div>
-                    <p className="text-gray-500 font-medium">Никого не нашли по вашему запросу</p>
-                </Card>
-            )}
-
-            {/* Detailed Modal */}
-            {selectedUser && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setSelectedUser(null)}>
-                    <Card className="max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto space-y-8 animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-start justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center text-white font-bold text-3xl shadow-xl shadow-indigo-100">
-                                    {selectedUser.name.charAt(0)}
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-black text-gray-900">{selectedUser.name}</h2>
-                                    <p className="text-gray-500">{selectedUser.email}</p>
-                                </div>
-                            </div>
-                            <Button variant="ghost" className="rounded-full w-10 h-10 p-0" onClick={() => setSelectedUser(null)}>✕</Button>
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="p-4 bg-gray-50 rounded-2xl">
-                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Роль</div>
-                                <div className="font-bold text-gray-900">{selectedUser.role}</div>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-2xl">
-                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Зарегистрирован</div>
-                                <div className="font-bold text-gray-900">{selectedUser.createdAt.toLocaleDateString()}</div>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-2xl">
-                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Очки</div>
-                                <div className="font-bold text-indigo-600">{selectedUser.adminPoints || 0} XP</div>
-                            </div>
-                            <div className="p-4 bg-gray-50 rounded-2xl">
-                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Город</div>
-                                <div className="font-bold text-gray-900">{selectedUser.city || '—'}</div>
-                            </div>
-                        </div>
-
-                        {selectedUser.role === 'student' && selectedUser.coursesProgress && (
-                            <div className="space-y-4">
-                                <h3 className="font-bold text-gray-800 flex items-center gap-2">
-                                    <TrendingUp className="w-4 h-4 text-indigo-500" />
-                                    Академический прогресс
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {Object.entries(selectedUser.coursesProgress).map(([lang, progress]) => (
-                                        <div key={lang} className="space-y-2">
-                                            <div className="flex justify-between text-xs font-bold uppercase text-gray-500">
-                                                <span>{lang}</span>
-                                                <span className="text-gray-900">{progress}%</span>
-                                            </div>
-                                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                                <div
-                                                    className={`h-full transition-all duration-1000 ${lang === 'python' ? 'bg-blue-500' : 'bg-purple-500'}`}
-                                                    style={{ width: `${progress}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="space-y-4">
-                            <h3 className="font-bold text-gray-800 flex items-center gap-2">
-                                <Shield className="w-4 h-4 text-orange-500" />
-                                Примечания администратора
-                            </h3>
-                            <textarea
-                                className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 min-h-[120px] transition-all text-sm"
-                                placeholder="Служебная информация об этом пользователе..."
-                                defaultValue={selectedUser.adminNotes}
-                            />
-                        </div>
-
-                        <div className="flex gap-3">
-                            <Button onClick={() => setSelectedUser(null)} className="flex-1 h-12 rounded-2xl text-gray-500 border-gray-200" variant="secondary">
-                                Отмена
-                            </Button>
-                            <Button className="flex-1 h-12 rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100">
-                                Сохранить изменения
-                            </Button>
-                        </div>
-                    </Card>
+                    ))}
                 </div>
-            )}
+
+                {/* User Matrix Table */}
+                <Card className="bg-white/[0.02] border-white/5 backdrop-blur-xl rounded-[2.5rem] overflow-hidden">
+                    <div className="p-8 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-6 overflow-x-auto w-full pb-2 md:pb-0">
+                            {(['all', 'active', 'inactive', 'risk'] as const).map((filter) => (
+                                <button
+                                    key={filter}
+                                    onClick={() => setStatusFilter(filter)}
+                                    className={`text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${statusFilter === filter ? 'text-indigo-400 pb-1 border-b-2 border-indigo-400' : 'text-white/20 hover:text-white/40'
+                                        }`}
+                                >
+                                    {filter === 'all' && 'All Systems'}
+                                    {filter === 'active' && 'Active'}
+                                    {filter === 'inactive' && 'Inactive'}
+                                    {filter === 'risk' && 'Stalled'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="border-b border-white/5 bg-white/[0.01]">
+                                    <th className="text-left py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Candidate</th>
+                                    <th className="text-center py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Engagement</th>
+                                    <th className="text-center py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Efficiency</th>
+                                    <th className="text-right py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Status</th>
+                                    <th className="text-right py-4 px-8"></th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {filteredUsers.map((user) => {
+                                    const lastActive = user.lastActiveAt?.toDate() || new Date(0)
+                                    const isActive = Date.now() - lastActive.getTime() < 3 * 24 * 60 * 60 * 1000
+                                    const isInactive = Date.now() - lastActive.getTime() >= 7 * 24 * 60 * 60 * 1000
+
+                                    return (
+                                        <tr key={user.id} className="group hover:bg-white/[0.02] transition-colors">
+                                            <td className="py-6 px-8">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-sm font-black border border-white/5 text-indigo-400">
+                                                        {user.name?.charAt(0) || 'U'}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-sm tracking-tight">{user.name}</div>
+                                                        <div className="text-[10px] font-medium text-white/20 lowercase tracking-tight">{user.email}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-6 px-8 text-center">
+                                                <div className="text-xs font-bold tabular-nums">{user.completedTasks || 0} tasks</div>
+                                                <div className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{user.xp || 0} Score</div>
+                                            </td>
+                                            <td className="py-6 px-8">
+                                                <div className="max-w-[100px] mx-auto">
+                                                    <div className="flex justify-between items-center mb-1 text-[9px] font-bold tabular-nums">
+                                                        <span className="text-white/40">Progression</span>
+                                                        <span>{user.progress || 0}%</span>
+                                                    </div>
+                                                    <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-indigo-500 rounded-full transition-all duration-1000"
+                                                            style={{ width: `${user.progress || 0}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-6 px-8 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : isInactive ? 'bg-red-500' : 'bg-white/20'}`} />
+                                                    <span className={`text-[9px] font-black uppercase tracking-widest ${isActive ? 'text-emerald-400' : isInactive ? 'text-red-400' : 'text-white/20'}`}>
+                                                        {isActive ? 'Live' : isInactive ? 'Offline' : 'Idle'}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="py-6 px-8 text-right">
+                                                <button
+                                                    onClick={() => navigate(`/admin/users/${user.id}`)}
+                                                    className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-indigo-500/20 hover:border-indigo-500/20 transition-all group-hover:scale-110"
+                                                >
+                                                    <ChevronRight className="w-4 h-4 text-white/40" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                    {filteredUsers.length === 0 && (
+                        <div className="p-20 text-center">
+                            <AlertCircle className="w-12 h-12 text-white/5 mx-auto mb-4" />
+                            <p className="text-white/20 text-sm font-black uppercase tracking-[0.2em]">No Candidates Found</p>
+                        </div>
+                    )}
+                </Card>
+            </div>
         </div>
     )
 }

@@ -24,8 +24,8 @@ export async function suggestDesignStyles(description: string) {
 Верни только JSON, без markdown.`
 
     try {
-        const response = await sendTextMessage(prompt)
-        const jsonMatch = response.match(/\{[\s\S]*\}/)
+        const { reply } = await sendTextMessage(prompt)
+        const jsonMatch = reply.match(/\{[\s\S]*\}/)
 
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0])

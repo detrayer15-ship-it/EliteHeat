@@ -14,7 +14,7 @@ export const translations = {
             myAssignments: 'Мои задания',
             assignments: 'Задания',
             chats: 'Чаты',
-            adminPanel: 'Админ-панель',
+            adminPanel: 'Мониторинг',
             logout: 'Выйти',
         },
         // Общие
@@ -107,7 +107,7 @@ export const translations = {
         roles: {
             admin: 'Администратор',
             student: 'Ученик',
-            adminDesc: 'У вас есть доступ к админ-панели и управлению пользователями',
+            adminDesc: 'У вас есть доступ к центру мониторинга и управлению пользователями',
             studentDesc: 'Вы можете проходить курсы и выполнять задания',
         },
         // Уведомления
@@ -150,7 +150,7 @@ export const translations = {
             myAssignments: 'My Assignments',
             assignments: 'Assignments',
             chats: 'Chats',
-            adminPanel: 'Admin Panel',
+            adminPanel: 'Monitoring',
             logout: 'Logout',
         },
         // Common
@@ -243,7 +243,7 @@ export const translations = {
         roles: {
             admin: 'Administrator',
             student: 'Student',
-            adminDesc: 'You have access to admin panel and user management',
+            adminDesc: 'You have access to Monitoring center and user management',
             studentDesc: 'You can take courses and complete assignments',
         },
         // Notifications
@@ -286,7 +286,7 @@ export const translations = {
             myAssignments: 'Менің тапсырмаларым',
             assignments: 'Тапсырмалар',
             chats: 'Чаттар',
-            adminPanel: 'Әкімші панелі',
+            adminPanel: 'Мониторинг',
             logout: 'Шығу',
         },
         // Жалпы
@@ -379,7 +379,7 @@ export const translations = {
         roles: {
             admin: 'Әкімші',
             student: 'Студент',
-            adminDesc: 'Сізде әкімші панеліне және пайдаланушыларды басқаруға қол жетімділік бар',
+            adminDesc: 'Сізде мониторинг орталығына және пайдаланушыларды басқаруға қол жетімділік бар',
             studentDesc: 'Сіз курстарды өтіп, тапсырмаларды орындай аласыз',
         },
         // Хабарландырулар

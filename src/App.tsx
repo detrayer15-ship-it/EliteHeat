@@ -70,8 +70,8 @@ function App() {
                             <Route path="/submit-assignment" element={<ProtectedPage><P.SubmitAssignmentPage /></ProtectedPage>} />
                             <Route path="/my-assignments" element={<ProtectedPage><P.MyAssignmentsPage /></ProtectedPage>} />
                             <Route path="/progress" element={<ProtectedPage><P.ProgressTrackerPage /></ProtectedPage>} />
-                            <Route path="/analyzer" element={<ProtectedPage><P.AIReviewPage /></ProtectedPage>} />
-                            <Route path="/ai-assistant" element={<ProtectedPage><P.AIAssistantPage /></ProtectedPage>} />
+                            <Route path="/analyzer" element={<ProtectedPage><ErrorBoundary><P.AIReviewPage /></ErrorBoundary></ProtectedPage>} />
+                            <Route path="/ai-assistant" element={<ProtectedPage><ErrorBoundary><P.AIAssistantPage /></ErrorBoundary></ProtectedPage>} />
                             <Route path="/locations" element={<ProtectedPage><P.LocationsPage /></ProtectedPage>} />
                             <Route path="/family-subscription" element={<ProtectedPage><P.FamilySubscriptionPage /></ProtectedPage>} />
                             <Route path="/payment" element={<ProtectedPage><P.PaymentPage /></ProtectedPage>} />
@@ -108,7 +108,6 @@ function App() {
                             <Route path="/admin/ranks" element={<ProtectedPage><P.AdminRanksPage /></ProtectedPage>} />
                             <Route path="/admin/student-monitoring" element={<ProtectedPage><P.StudentMonitoringPage /></ProtectedPage>} />
                             <Route path="/admin/enhanced-review" element={<ProtectedPage><P.EnhancedReviewPage /></ProtectedPage>} />
-                            <Route path="/admin/enhanced-groups" element={<ProtectedPage><P.EnhancedGroupsPage /></ProtectedPage>} />
                             <Route path="/admin/analytics" element={<ProtectedPage><P.AnalyticsPage /></ProtectedPage>} />
                             <Route path="/admin/enhanced-chat" element={<ProtectedPage><P.EnhancedChatPage /></ProtectedPage>} />
                             <Route path="/admin/ops-chat" element={<ProtectedPage><P.AdminOpsChat /></ProtectedPage>} />
@@ -119,7 +118,6 @@ function App() {
                             <Route path="/admin/group-chat" element={<ProtectedPage><P.AdminGroupChatPage /></ProtectedPage>} />
                             <Route path="/admin/review" element={<ProtectedPage><P.ReviewAssignmentsPage /></ProtectedPage>} />
                             <Route path="/admin/users" element={<ProtectedPage><P.AdminUsersPage /></ProtectedPage>} />
-                            <Route path="/admin/groups" element={<ProtectedPage><P.AdminGroupsPage /></ProtectedPage>} />
                             <Route path="/admin/support-chats" element={<ProtectedPage><P.SupportChatsPage /></ProtectedPage>} />
 
                             {/* Student routes */}

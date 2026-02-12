@@ -65,10 +65,10 @@ export const ProjectCreationChat = () => {
   "needsClarification": false
 }`
 
-            const response = await sendTextMessage(analysisPrompt)
+            const { reply } = await sendTextMessage(analysisPrompt)
 
             // Пытаемся извлечь JSON из ответа
-            const jsonMatch = response.match(/\{[\s\S]*\}/)
+            const jsonMatch = reply.match(/\{[\s\S]*\}/)
             if (jsonMatch) {
                 return JSON.parse(jsonMatch[0])
             }
@@ -125,10 +125,10 @@ export const ProjectCreationChat = () => {
 Верни только JSON массив из 3 названий:
 ["Название 1", "Название 2", "Название 3"]`
 
-            const response = await sendTextMessage(namePrompt)
+            const { reply } = await sendTextMessage(namePrompt)
 
             // Пытаемся извлечь JSON массив
-            const jsonMatch = response.match(/\[[\s\S]*?\]/)
+            const jsonMatch = reply.match(/\[[\s\S]*?\]/)
             if (jsonMatch) {
                 const names = JSON.parse(jsonMatch[0])
                 if (Array.isArray(names) && names.length === 3) {

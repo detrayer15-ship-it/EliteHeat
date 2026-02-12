@@ -16,7 +16,7 @@ export const MitaTest = () => {
 
         try {
             const result = await sendTextMessage(input)
-            setResponse(result)
+            setResponse(result.reply)
         } catch (err: any) {
             setError(err.message || 'Ошибка')
             console.error('Mita Error:', err)

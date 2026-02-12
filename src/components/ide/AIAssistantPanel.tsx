@@ -70,11 +70,11 @@ ${currentCode ? `\nКод файла:\n\`\`\`\n${currentCode}\n\`\`\`\n` : ''}
 
 Дай конкретный и полезный ответ. Если нужно показать код, используй примеры.`
 
-            const response = await sendTextMessage(contextPrompt)
+            const { reply } = await sendTextMessage(contextPrompt)
 
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: response
+                content: reply
             }])
         } catch (error) {
             console.error('AI Error:', error)
