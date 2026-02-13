@@ -61,8 +61,6 @@ export const AdminDashboardPage = () => {
     }
 
     const adminPoints = currentUser?.adminPoints || 0
-    const rankInfo = getProgressToNextRank(adminPoints)
-    const currentRank = rankInfo.current
 
     return (
         <div className="min-h-screen bg-[#08090a] text-white selection:bg-indigo-500/30">
@@ -106,59 +104,44 @@ export const AdminDashboardPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
                     {/* Main Stats Panel */}
                     <div className="lg:col-span-8 flex flex-col gap-6">
-                        {/* System Authority Panel (Replaced Rank with Access Status) */}
-                        <div className="bg-gradient-to-br from-[#1a1c24] to-[#0c0d10] border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl">
-                            {/* Technical grid background */}
-                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+                        {/* System Metrics Panel */}
+                        <div className="bg-gradient-to-br from-[#111218] to-[#08090a] border border-white/[0.05] rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl mb-8">
+                            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
                             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                                 <div className="flex items-center gap-6">
-                                    <div className="w-24 h-24 rounded-3xl bg-indigo-500/10 backdrop-blur-xl border border-indigo-500/20 flex items-center justify-center text-4xl shadow-inner text-indigo-400">
-                                        <ShieldCheck className="w-12 h-12" />
+                                    <div className="w-20 h-20 rounded-3xl bg-indigo-500/10 backdrop-blur-xl border border-indigo-500/20 flex items-center justify-center text-4xl shadow-inner text-indigo-400">
+                                        <ShieldCheck className="w-10 h-10" />
                                     </div>
                                     <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-[9px] font-black uppercase tracking-widest text-indigo-400 border border-indigo-500/20">Tier {currentRank.level} Authorization</span>
-                                            <h2 className="text-3xl font-black text-white tracking-tight leading-none">{currentUser?.role === 'developer' ? 'Root Access' : 'Super Admin'}</h2>
-                                        </div>
-                                        <p className="text-white/40 text-sm font-medium">Статус безопасности: ВЫСОКИЙ • Все системы управления доступны</p>
+                                        <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-2">Панель управления</h2>
+                                        <p className="text-white/30 text-sm font-medium">Доступ разрешен • Системы мониторинга активны</p>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col items-end">
-                                    <div className="text-5xl font-black text-white tracking-tighter tabular-nums mb-1">{adminPoints}</div>
-                                    <div className="text-[10px] font-bold text-indigo-400/50 uppercase tracking-[0.2em]">Operational Rep Score</div>
+                                <div className="flex gap-8">
+                                    <div className="text-right">
+                                        <div className="text-3xl font-black text-white tracking-tighter tabular-nums leading-none">99.9%</div>
+                                        <div className="text-[9px] font-bold text-indigo-400/50 uppercase tracking-[0.2em] mt-1">Uptime</div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-3xl font-black text-white tracking-tighter tabular-nums leading-none">24ms</div>
+                                        <div className="text-[9px] font-bold text-indigo-400/50 uppercase tracking-[0.2em] mt-1">Latency</div>
+                                    </div>
                                 </div>
                             </div>
-
-                            {rankInfo.next && (
-                                <div className="mt-8 relative z-10">
-                                    <div className="flex items-center justify-between text-[11px] font-bold text-white/30 mb-3 uppercase tracking-widest">
-                                        <div className="flex items-center gap-2">
-                                            Next Authority Level: <span className="text-white/60">Tier {rankInfo.next.level}</span>
-                                        </div>
-                                        <div>{Math.round(rankInfo.progress)}% Capacity</div>
-                                    </div>
-                                    <div className="h-2 bg-white/[0.03] rounded-full overflow-hidden border border-white/[0.05]">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-indigo-600 to-blue-500 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(79,70,229,0.3)]"
-                                            style={{ width: `${rankInfo.progress}%` }}
-                                        ></div>
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         {/* Interaction Cards Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <MonitorCard
-                                title="Ученики"
-                                description="Мониторинг прогресса и активности"
+                                title="База учеников"
+                                description="Просмотр и управление базой учеников"
                                 icon={<Users className="w-6 h-6" />}
                                 color="blue"
                                 onClick={() => navigate('/admin/users')}
-                                value="98.4%"
-                                label="Retention"
+                                value="Синхронизировано"
+                                label="Состояние базы"
                             />
                             <MonitorCard
                                 title="Проверка"
@@ -179,8 +162,8 @@ export const AdminDashboardPage = () => {
                                 label="Growth"
                             />
                             <MonitorCard
-                                title="Поддержка"
-                                description="Чат и помощь пользователям"
+                                title="Обращения"
+                                description="Ответы на вопросы и помощь"
                                 icon={<MessageCircle className="w-6 h-6" />}
                                 color="pink"
                                 onClick={() => navigate('/admin/support-chats')}
@@ -197,12 +180,11 @@ export const AdminDashboardPage = () => {
                             <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] px-2 mb-2">Операционные модули</h3>
                             <ActionLink icon={<TrendingUp className="w-4 h-4" />} title="Мониторинг риска" onClick={() => navigate('/admin/student-monitoring')} />
                             <ActionLink icon={<Zap className="w-4 h-4" />} title="Активность AI" onClick={() => navigate('/admin/ai-activity')} />
-                            <ActionLink icon={<Award className="w-4 h-4" />} title="Управление рангами" onClick={() => navigate('/admin/ranks')} />
-                            <ActionLink icon={<MessageCircle className="w-4 h-4" />} title="Служебный чат" onClick={() => navigate('/admin/group-chat')} />
+                            <ActionLink icon={<MessageCircle className="w-4 h-4" />} title="Чат админов" onClick={() => navigate('/admin/group-chat')} />
                         </Card>
 
                         {/* System Health Card */}
-                        <Card className="bg-gradient-to-br from-zinc-800 to-zinc-900 border-white/5 p-6 rounded-[2rem] relative overflow-hidden">
+                        <Card className="bg-gradient-to-br from-[#111218] to-[#08090a] border-white/5 p-6 rounded-[2rem] relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-10">
                                 <Cpu className="w-24 h-24" />
                             </div>

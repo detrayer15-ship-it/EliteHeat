@@ -22,12 +22,17 @@ import { Footer } from '@/components/landing/Footer'
 export const LandingPage = () => {
     const navigate = useNavigate()
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+    const user = useAuthStore((state) => state.user)
 
     useEffect(() => {
-        if (isAuthenticated) {
-            navigate('/dashboard')
+        if (isAuthenticated && user) {
+            if (user.role === 'admin' || user.role === 'developer' || user.role === 'teacher') {
+                navigate('/admin')
+            } else {
+                navigate('/dashboard')
+            }
         }
-    }, [isAuthenticated, navigate])
+    }, [isAuthenticated, user, navigate])
 
     return (
         <div className="min-h-screen relative overflow-hidden smooth-scroll bg-white text-gray-900">

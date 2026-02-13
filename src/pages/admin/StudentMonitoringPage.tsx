@@ -14,7 +14,9 @@ import {
     ChevronRight,
     Search,
     TrendingDown,
-    Zap
+    Zap,
+    Copy,
+    MessageSquareOff
 } from 'lucide-react'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/config/firebase'
@@ -268,9 +270,4 @@ const IssueBadge = ({ icon, label, color }: any) => {
     )
 }
 
-const MessageSquareOff = ({ className }: any) => (
-    <div className={className}>
-        <MessageSquare className="w-3 h-3 opacity-50" />
-    </div>
-)
 

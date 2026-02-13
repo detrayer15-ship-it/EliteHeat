@@ -19,9 +19,9 @@ export const Button = ({
     const baseStyles = 'font-medium rounded-xl transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 btn-animate mobile-full mobile-text-sm mobile-p-2'
 
     const variants = {
-        primary: 'bg-gradient-to-r from-primary via-purple-600 to-purple-700 text-white hover:shadow-2xl hover:from-primary-dark hover:via-purple-700 hover:to-purple-800',
-        secondary: 'bg-white text-text border-2 border-gray-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:border-primary hover:shadow-lg',
-        ghost: 'text-text hover:bg-gradient-to-r hover:from-primary/10 hover:to-purple-600/10 hover:text-primary',
+        primary: 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 text-white hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]',
+        secondary: 'bg-white/[0.03] text-white border border-white/10 hover:bg-white/[0.08] hover:border-white/20 hover:shadow-xl',
+        ghost: 'text-white/60 hover:bg-white/[0.05] hover:text-white',
     }
 
     const sizes = {

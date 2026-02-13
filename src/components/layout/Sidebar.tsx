@@ -44,15 +44,14 @@ const navGroups: NavGroup[] = [
         ]
     },
     {
-        title: 'Мониторинг',
+        title: 'Управление',
         roles: ['admin', 'developer', 'teacher'],
         items: [
             { path: '/admin', labelKey: 'adminPanel', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
             { path: '/admin/tasks', labelKey: 'checkTasks', icon: <CheckSquare className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
-            { path: '/admin/users', labelKey: 'students', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
+            { path: '/admin/users', labelKey: 'studentDatabase', icon: <Users className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
             { path: '/admin/group-chat', labelKey: 'adminChat', icon: <MessageCircle className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
-            { path: '/admin/ranks', labelKey: 'ranks', icon: <Award className="w-5 h-5" />, roles: ['admin', 'developer'] },
-            { path: '/admin/support-chats', labelKey: 'supportChats', icon: <HelpCircle className="w-5 h-5" />, roles: ['admin', 'developer'] },
+            { path: '/admin/support-chats', labelKey: 'supportChats', icon: <HelpCircle className="w-5 h-5" />, roles: ['admin', 'developer', 'teacher'] },
         ]
     },
     {

@@ -126,7 +126,7 @@ function App() {
                             <Route path="/support" element={<ProtectedPage><P.SupportPage /></ProtectedPage>} />
 
                             {/* Teacher routes */}
-                            <Route path="/teacher/dashboard" element={<ProtectedPage><P.TeacherDashboard /></ProtectedPage>} />
+                            <Route path="/teacher/dashboard" element={<ProtectedPage><P.AdminDashboardPage /></ProtectedPage>} />
 
                             {/* 404 Route */}
                             <Route path="*" element={<P.NotFoundPage />} />

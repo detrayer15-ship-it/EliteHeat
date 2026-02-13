@@ -40,6 +40,12 @@ export const Dashboard = () => {
     const nextRank = getNextRank(totalPoints)
 
     useEffect(() => {
+        if (user?.role === 'admin' || user?.role === 'developer' || user?.role === 'teacher') {
+            navigate('/admin')
+        }
+    }, [user, navigate])
+
+    useEffect(() => {
         if (totalPoints > prevPoints) {
             const oldRank = getRankByPoints(prevPoints)
             if (currentRank.id !== oldRank.id) {

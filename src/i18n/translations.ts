@@ -14,7 +14,12 @@ export const translations = {
             myAssignments: 'Мои задания',
             assignments: 'Задания',
             chats: 'Чаты',
-            adminPanel: 'Мониторинг',
+            adminPanel: 'Панель управления',
+            checkTasks: 'Проверка задач',
+            studentDatabase: 'База учеников',
+            adminChat: 'Чат админов',
+            supportChats: 'Обращения',
+            ranks: 'Ранги',
             logout: 'Выйти',
         },
         // Общие
