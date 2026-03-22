@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { EliteHeatLogo } from './EliteHeatLogo'
+import { EliteEduLogo } from './EliteEduLogo'
 
 export const LogoAnimation = () => {
     return (
@@ -18,7 +18,7 @@ export const LogoAnimation = () => {
                     }}
                     className="relative z-10"
                 >
-                    <EliteHeatLogo className="w-16 h-16" />
+                    <EliteEduLogo className="w-16 h-16" />
                 </motion.div>
 
                 {/* Background Glow Aura */}
@@ -42,7 +42,7 @@ export const LogoAnimation = () => {
                     Elite
                 </span>
                 <span className="ml-2 bg-gradient-to-b from-[#6366f1] to-[#3b82f6] bg-clip-text text-transparent">
-                    Heat
+                    Edu
                 </span>
             </h1>
 

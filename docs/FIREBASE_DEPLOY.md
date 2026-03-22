@@ -1,4 +1,4 @@
-# 🚀 Деплой EliteHeat в Firebase
+# 🚀 Деплой EliteEdu в Firebase
 
 ## 📋 Пошаговая инструкция
 

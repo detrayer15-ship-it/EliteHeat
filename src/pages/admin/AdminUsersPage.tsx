@@ -223,6 +223,7 @@ export const AdminUsersPage = () => {
                                     <tr className="border-b border-white/5 bg-white/[0.01]">
                                         <th className="text-left py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Студент</th>
                                         <th className="text-center py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Активность</th>
+                                        <th className="text-center py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Подписка</th>
                                         <th className="text-center py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Прогресс</th>
                                         <th className="text-right py-4 px-8 text-[9px] font-black uppercase tracking-widest text-white/30">Статус</th>
                                         <th className="text-right py-4 px-8"></th>
@@ -250,6 +251,21 @@ export const AdminUsersPage = () => {
                                                 <td className="py-6 px-8 text-center">
                                                     <div className="text-xs font-bold tabular-nums">{user.completedTasks || 0} задач</div>
                                                     <div className="text-[9px] font-bold text-indigo-400/40 uppercase tracking-widest">{user.xp || 0} XP</div>
+                                                </td>
+                                                <td className="py-6 px-8 text-center">
+                                                    <div className={`text-[10px] font-black uppercase tracking-widest py-1 px-3 rounded-full inline-block ${(user as any).subscriptionStatus === 'active'
+                                                            ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                                                            : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                                                        }`}>
+                                                        {(user as any).subscriptionPlan || 'No Plan'}
+                                                    </div>
+                                                    {(user as any).subscriptionEndDate && (
+                                                        <div className="text-[8px] text-white/20 mt-1">
+                                                            до {(user as any).subscriptionEndDate instanceof Date
+                                                                ? (user as any).subscriptionEndDate.toLocaleDateString()
+                                                                : (user as any).subscriptionEndDate?.toDate?.()?.toLocaleDateString() || 'N/A'}
+                                                        </div>
+                                                    )}
                                                 </td>
                                                 <td className="py-6 px-8">
                                                     <div className="max-w-[120px] mx-auto">

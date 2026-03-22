@@ -4,62 +4,59 @@
             "collectionGroup": "aiChats",
             "queryScope": "COLLECTION",
             "fields": [
-                {
-                    "fieldPath": "userId",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "updatedAt",
-                    "order": "DESCENDING"
-                }
+                { "fieldPath": "userId", "order": "ASCENDING" },
+                { "fieldPath": "updatedAt", "order": "DESCENDING" }
             ]
         },
         {
             "collectionGroup": "aiMessages",
             "queryScope": "COLLECTION",
             "fields": [
-                {
-                    "fieldPath": "chatId",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "userId",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "timestamp",
-                    "order": "ASCENDING"
-                }
+                { "fieldPath": "chatId", "order": "ASCENDING" },
+                { "fieldPath": "userId", "order": "ASCENDING" },
+                { "fieldPath": "timestamp", "order": "ASCENDING" }
             ]
         },
         {
             "collectionGroup": "notifications",
             "queryScope": "COLLECTION",
             "fields": [
-                {
-                    "fieldPath": "userId",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "timestamp",
-                    "order": "DESCENDING"
-                }
+                { "fieldPath": "userId", "order": "ASCENDING" },
+                { "fieldPath": "timestamp", "order": "DESCENDING" }
             ]
         },
         {
             "collectionGroup": "submissions",
             "queryScope": "COLLECTION",
             "fields": [
-                {
-                    "fieldPath": "studentId",
-                    "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "submittedAt",
-                    "order": "DESCENDING"
-                }
+                { "fieldPath": "studentId", "order": "ASCENDING" },
+                { "fieldPath": "submittedAt", "order": "DESCENDING" }
+            ]
+        },
+        {
+            "collectionGroup": "groups",
+            "queryScope": "COLLECTION",
+            "fields": [
+                { "fieldPath": "teacherId", "order": "ASCENDING" },
+                { "fieldPath": "createdAt", "order": "DESCENDING" }
+            ]
+        },
+        {
+            "collectionGroup": "lessons",
+            "queryScope": "COLLECTION",
+            "fields": [
+                { "fieldPath": "teacherId", "order": "ASCENDING" },
+                { "fieldPath": "day", "order": "ASCENDING" }
+            ]
+        },
+        {
+            "collectionGroup": "attendance",
+            "queryScope": "COLLECTION",
+            "fields": [
+                { "fieldPath": "groupId", "order": "ASCENDING" },
+                { "fieldPath": "date", "order": "ASCENDING" }
             ]
         }
     ],
     "fieldOverrides": []
-}
+}

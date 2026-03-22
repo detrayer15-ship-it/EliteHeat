@@ -40,13 +40,3 @@ export type {
   Assignment,
   CourseResponse,
 } from './courses';
-
-// Mita AI API
-export * from './mita';
-export {
-  sendTextMessage,
-  sendImageMessage,
-  checkCode,
-  helpWithPresentation,
-  checkAPIStatus,
-} from './mita';

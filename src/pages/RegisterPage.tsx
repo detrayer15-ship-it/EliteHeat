@@ -1,24 +1,60 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useToast } from '@/components/ui/Toast'
-import { User, Mail, Lock, ArrowRight, GraduationCap, School } from 'lucide-react'
-import { motion } from 'framer-motion'
+import {
+    User, Mail, Lock, ArrowRight, Sparkles, ChevronLeft,
+    GraduationCap, BookOpen, ChevronRight, CheckCircle2, Clock
+} from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { LogoAnimation } from '@/components/ui/LogoAnimation'
+
+type RoleChoice = 'student' | 'teacher'
+
+const ROLES: { id: RoleChoice; title: string; desc: string; icon: typeof GraduationCap; color: string; bg: string; border: string }[] = [
+    {
+        id: 'student',
+        title: 'Ученик',
+        desc: 'Изучаю курсы, выполняю задания и развиваю навыки',
+        icon: GraduationCap,
+        color: 'text-indigo-600',
+        bg: 'bg-indigo-50 hover:bg-indigo-100',
+        border: 'border-indigo-200',
+    },
+    {
+        id: 'teacher',
+        title: 'Учитель',
+        desc: 'Провожу уроки, проверяю работы студентов. Заявка рассматривается администратором.',
+        icon: BookOpen,
+        color: 'text-amber-600',
+        bg: 'bg-amber-50 hover:bg-amber-100',
+        border: 'border-amber-200',
+    },
+]
 
 export const RegisterPage = () => {
     const navigate = useNavigate()
+    const location = useLocation()
     const register = useAuthStore((state) => state.register)
-    const loginWithGoogle = useAuthStore((state) => state.loginWithGoogle)
     const { success: showSuccess, error: showError } = useToast()
+
+    const initialRole = location.state?.role === 'teacher' ? 'teacher' : 'student'
+    const [selectedRole, setSelectedRole] = useState<RoleChoice>(initialRole)
 
     const [formData, setFormData] = useState({
         email: '',
         name: '',
         password: '',
-        role: 'student' as 'student' | 'teacher',
+        teacherSubject: '',
+        direction: location.state?.direction || 'Веб разработчик'
     })
     const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(() => {
+        if (!location.state?.role && !location.state?.direction) {
+            navigate('/select-role', { replace: true })
+        }
+    }, [location, navigate])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -28,188 +64,194 @@ export const RegisterPage = () => {
             formData.email,
             formData.password,
             formData.name,
-            '', // city
-            formData.role
+            '',
+            selectedRole,
+            undefined,
+            formData.direction,
+            selectedRole === 'teacher' ? formData.teacherSubject : undefined
         )
 
         setIsLoading(false)
 
         if (result.success) {
-            showSuccess('Успешная регистрация', 'Ваш аккаунт создан')
+            if (selectedRole === 'teacher') {
+                showSuccess(
+                    'Заявка отправлена!',
+                    'Администратор рассмотрит вашу заявку на роль учителя. Пока вы можете пользоваться платформой как ученик.'
+                )
+            } else {
+                showSuccess('Успешная регистрация', 'Ваш аккаунт создан')
+            }
             navigate('/dashboard')
         } else {
             showError('Ошибка', result.message)
         }
     }
 
-    const handleGoogleRegister = async () => {
-        setIsLoading(true)
-        const result = await loginWithGoogle()
-        setIsLoading(false)
-
-        if (result.success) {
-            showSuccess('Добро пожаловать', 'Вход через Google успешен')
-            navigate('/dashboard')
-        } else {
-            if (result.message !== 'Вход отменён') {
-                showError('Ошибка', result.message)
-            }
-        }
-    }
-
     return (
-        <div className="min-h-screen bg-[#fafbfc] flex items-center justify-center p-6 relative overflow-hidden">
-            {/* Background Orbs */}
-            <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-50 rounded-full blur-[120px] opacity-60" />
-            <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-orange-50 rounded-full blur-[100px] opacity-40" />
+        <div className="min-h-screen bg-[#f8faff] flex items-center justify-center p-6 relative overflow-hidden">
+            {/* Background decorations */}
+            <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-100/40 rounded-full blur-[140px] animate-float-mega-slow pointer-events-none" />
+            <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-blue-100/30 rounded-full blur-[100px] animate-pulse-slow pointer-events-none" />
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="w-full max-w-md relative z-10"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full max-w-lg relative z-10"
             >
-                {/* Logo */}
-                <div className="flex justify-center mb-8">
+                <div className="flex flex-col items-center mb-10">
                     <LogoAnimation />
                 </div>
 
-                {/* Card */}
-                <div className="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-[0_32px_80px_-20px_rgba(0,0,0,0.06)] border border-slate-100">
-                    <div className="space-y-8">
-                        {/* Header */}
-                        <div className="text-center space-y-2">
-                            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Создать профиль</h1>
-                            <p className="text-slate-400 text-sm font-medium">Начните изучение новых технологий вместе с нами</p>
+                <div className="bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-2xl shadow-indigo-100/50 border border-white overflow-hidden">
+                    <div className="p-10 md:p-14">
+
+                        {/* Step label */}
+                        <div className="text-center mb-8 space-y-2">
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 shadow-sm"
+                            >
+                                <Sparkles className="w-3 h-3 text-indigo-500" />
+                                Последний шаг — Данные аккаунта
+                            </motion.div>
+                            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+                                Создайте аккаунт
+                            </h1>
+                            {selectedRole === 'student' && (
+                                <div className="flex items-center justify-center gap-2 pt-1">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-slate-400 font-bold text-xs uppercase tracking-widest">
+                                        {formData.direction}
+                                    </span>
+                                </div>
+                            )}
+                            {selectedRole === 'teacher' && (
+                                <div className="flex items-center justify-center gap-2 pt-1 text-amber-500 font-bold text-xs uppercase tracking-widest">
+                                    <BookOpen className="w-3 h-3" />
+                                    Заявка на преподавание
+                                </div>
+                            )}
                         </div>
 
-                        {/* Form */}
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="space-y-3">
+                        <motion.form
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            onSubmit={handleSubmit}
+                            className="space-y-5"
+                        >
+                            {/* Role badge */}
+                            <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border ${selectedRole === 'teacher' ? 'bg-amber-50 border-amber-100' : 'bg-indigo-50 border-indigo-100'}`}>
+                                {selectedRole === 'teacher'
+                                    ? <BookOpen className="w-4 h-4 text-amber-500 shrink-0" />
+                                    : <GraduationCap className="w-4 h-4 text-indigo-500 shrink-0" />
+                                }
+                                <span className={`text-xs font-black ${selectedRole === 'teacher' ? 'text-amber-700' : 'text-indigo-700'}`}>
+                                    Регистрация как: <strong>{selectedRole === 'teacher' ? 'Учитель (заявка)' : 'Ученик'}</strong>
+                                </span>
+                            </div>
+
+                            <div className="space-y-4">
                                 {/* Name */}
-                                <div className="relative group">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
-                                    <input
-                                        type="text"
-                                        placeholder="Ваше имя"
-                                        required
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-100 focus:bg-white transition-all placeholder:text-slate-400 font-medium"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    />
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Как вас зовут?</label>
+                                    <div className="relative">
+                                        <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                        <input
+                                            type="text"
+                                            placeholder="Имя Фамилия"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-[1.5rem] py-4 pl-12 pr-6 text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:bg-white transition-all placeholder:text-slate-300 font-bold"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Email */}
-                                <div className="relative group">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
-                                    <input
-                                        type="email"
-                                        placeholder="Email"
-                                        required
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-100 focus:bg-white transition-all placeholder:text-slate-400 font-medium"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    />
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Email</label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                        <input
+                                            type="email"
+                                            placeholder="email@example.com"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-[1.5rem] py-4 pl-12 pr-6 text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:bg-white transition-all placeholder:text-slate-300 font-bold"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Password */}
-                                <div className="relative group">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
-                                    <input
-                                        type="password"
-                                        placeholder="Пароль"
-                                        required
-                                        minLength={6}
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 text-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-100 focus:bg-white transition-all placeholder:text-slate-400 font-medium"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    />
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Пароль (мин. 6 символов)</label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                        <input
+                                            type="password"
+                                            placeholder="••••••••"
+                                            required
+                                            minLength={6}
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-[1.5rem] py-4 pl-12 pr-6 text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:bg-white transition-all placeholder:text-slate-300 font-bold"
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Role Selection */}
-                            <div className="grid grid-cols-2 gap-3 p-1 bg-slate-50 rounded-2xl border border-slate-100">
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, role: 'student' })}
-                                    className={`flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-sm ${formData.role === 'student'
-                                            ? 'bg-white text-blue-600 shadow-sm'
-                                            : 'text-slate-400 hover:text-slate-500'
-                                        }`}
-                                >
-                                    <GraduationCap className="w-4 h-4" />
-                                    Ученик
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, role: 'teacher' })}
-                                    className={`flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-sm ${formData.role === 'teacher'
-                                            ? 'bg-white text-orange-600 shadow-sm'
-                                            : 'text-slate-400 hover:text-slate-500'
-                                        }`}
-                                >
-                                    <School className="w-4 h-4" />
-                                    Учитель
-                                </button>
+                                {/* Teacher subject — only if teacher */}
+                                <AnimatePresence>
+                                    {selectedRole === 'teacher' && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-amber-500 ml-4">
+                                                    Предмет / Специализация
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Например: Python, Web-разработка, C#..."
+                                                    className="w-full bg-amber-50 border border-amber-100 rounded-[1.5rem] py-4 px-6 text-slate-900 focus:outline-none focus:ring-4 focus:ring-amber-50 focus:bg-white transition-all placeholder:text-amber-300 font-bold"
+                                                    value={formData.teacherSubject}
+                                                    onChange={(e) => setFormData({ ...formData, teacherSubject: e.target.value })}
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
                             {/* Submit */}
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-slate-200 mt-2"
+                                className="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-[1.5rem] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-2xl shadow-slate-200 mt-2"
                             >
-                                {isLoading ? 'Создание...' : 'Создать аккаунт'}
-                                {!isLoading && <ArrowRight className="w-5 h-5" />}
+                                {isLoading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        {selectedRole === 'teacher' ? 'Отправить заявку' : 'Завершить регистрацию'}
+                                        <ArrowRight className="w-5 h-5" />
+                                    </>
+                                )}
                             </button>
-                        </form>
 
-                        {/* Divider */}
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-slate-100" />
-                            </div>
-                            <div className="relative flex justify-center">
-                                <span className="bg-white px-4 text-xs text-slate-300 font-bold uppercase tracking-widest">или</span>
-                            </div>
-                        </div>
-
-                        {/* Google */}
-                        <button
-                            type="button"
-                            onClick={handleGoogleRegister}
-                            disabled={isLoading}
-                            className="w-full py-4 border border-slate-200 rounded-2xl flex items-center justify-center gap-3 text-slate-600 hover:bg-slate-50 transition-all font-bold text-sm disabled:opacity-50 shadow-sm"
-                        >
-                            <svg className="w-5 h-5" viewBox="0 0 24 24">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                            </svg>
-                            Продолжить с Google
-                        </button>
-
-                        {/* Footer Link */}
-                        <div className="text-center pt-2">
-                            <button
-                                onClick={() => navigate('/login')}
-                                className="text-sm text-slate-400 hover:text-slate-600 transition-colors font-medium"
-                            >
-                                Уже есть аккаунт? <span className="text-blue-600 font-bold">Войти</span>
-                            </button>
-                        </div>
+                        </motion.form>
                     </div>
                 </div>
 
-                {/* Return to Main */}
-                <div className="mt-8 text-center">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="text-xs text-slate-300 hover:text-slate-400 transition-colors font-bold uppercase tracking-widest"
-                    >
-                        ← На главную
-                    </button>
+                <div className="mt-10 text-center">
+                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">
+                        Безопасность данных гарантирована • 2028 EliteEdu
+                    </p>
                 </div>
             </motion.div>
         </div>

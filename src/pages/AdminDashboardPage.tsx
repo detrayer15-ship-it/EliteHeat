@@ -15,7 +15,8 @@ import {
     Bell,
     ExternalLink,
     ChevronRight,
-    PieChart
+    PieChart,
+    UserCheck
 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -81,7 +82,7 @@ export const AdminDashboardPage = () => {
                         <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white">
                             Центр <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">Мониторинга</span>
                         </h1>
-                        <p className="text-white/40 text-sm font-medium">Контроль и управление образовательной экосистемой EliteHeat</p>
+                        <p className="text-white/40 text-sm font-medium">Контроль и управление образовательной экосистемой EliteEdu</p>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -179,7 +180,8 @@ export const AdminDashboardPage = () => {
                         <Card className="bg-white/[0.02] border-white/5 backdrop-blur-xl p-6 rounded-[2rem] flex flex-col gap-4">
                             <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] px-2 mb-2">Операционные модули</h3>
                             <ActionLink icon={<TrendingUp className="w-4 h-4" />} title="Мониторинг риска" onClick={() => navigate('/admin/student-monitoring')} />
-                            <ActionLink icon={<Zap className="w-4 h-4" />} title="Активность AI" onClick={() => navigate('/admin/ai-activity')} />
+
+                            <ActionLink icon={<UserCheck className="w-4 h-4" />} title="Заявки учителей" onClick={() => navigate('/admin/teacher-applications')} />
                             <ActionLink icon={<MessageCircle className="w-4 h-4" />} title="Чат админов" onClick={() => navigate('/admin/group-chat')} />
                         </Card>
 
@@ -198,13 +200,7 @@ export const AdminDashboardPage = () => {
                                             <span className="text-[9px] font-bold text-emerald-400 uppercase">Stable</span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm font-semibold text-zinc-300">AI Engine</span>
-                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                                            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></div>
-                                            <span className="text-[9px] font-bold text-indigo-400 uppercase">Active</span>
-                                        </div>
-                                    </div>
+
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-semibold text-zinc-300">Database</span>
                                         <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">

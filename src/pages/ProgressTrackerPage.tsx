@@ -1,345 +1,295 @@
 import { useProjectStore } from '@/store/projectStore'
 import { useTaskStore } from '@/store/taskStore'
 import { useNavigate } from 'react-router-dom'
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import {
     Trophy,
     Target,
-    CheckCircle2,
-    Clock,
     TrendingUp,
     Award,
     Zap,
     Sparkles,
     Calendar,
-    Flame,
-    BarChart3,
-    Activity
+    Activity,
+    ChevronRight,
+    Star
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { AnimatedCounter } from '@/components/AnimatedCounter'
+import { useAuthStore } from '@/store/authStore'
+import { getCurriculumByDirection } from '@/data/directionCurriculum'
+import { motion } from 'framer-motion'
+
+const STORAGE_KEY = 'direction_lessons_completed'
 
 export const ProgressTrackerPage = () => {
     const projects = useProjectStore((state) => state.projects)
-    const tasks = useTaskStore((state) => state.tasks)
     const navigate = useNavigate()
 
-    // Динамический расчёт навыков
-    const skills = useMemo(() => {
-        const pythonLessons = JSON.parse(localStorage.getItem('python_lessons_progress') || '{}')
-        const figmaLessons = JSON.parse(localStorage.getItem('figma_lessons_progress') || '{}')
+    const user = useAuthStore(s => s.user)
+    const selectedDirection = user?.selectedDirection || 'Веб разработчик'
+    const curriculum = getCurriculumByDirection(selectedDirection)
 
-        const pythonCompleted = Object.values(pythonLessons).filter(Boolean).length
-        const pythonProgress = Math.round((pythonCompleted / 15) * 100)
+    // Прогресс по курсу
+    const courseStats = useMemo(() => {
+        const completedLessons = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+        const completedSet = new Set(completedLessons)
 
-        const figmaCompleted = Object.values(figmaLessons).filter(Boolean).length
-        const figmaProgress = Math.round((figmaCompleted / 17) * 100)
+        const allLessons = curriculum?.modules.flatMap(m => m.lessons) || []
+        const completedCount = allLessons.filter(l => completedSet.has(l.id)).length
+        const totalCount = allLessons.length
+        const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
 
-        const completedProjectTasks = tasks.filter(t => t.completed).length
-        const totalProjectTasks = tasks.length
-        const dataWorkProgress = totalProjectTasks > 0
-            ? Math.round((completedProjectTasks / totalProjectTasks) * 100)
-            : 0
+        const modulesProgress = curriculum?.modules.map(m => {
+            const modCompleted = m.lessons.filter(l => completedSet.has(l.id)).length
+            return {
+                id: m.id,
+                title: m.title,
+                index: m.index,
+                completed: modCompleted,
+                total: m.lessons.length,
+                pct: Math.round((modCompleted / m.lessons.length) * 100)
+            }
+        }) || []
 
-        return [
-            { name: 'Python Engineering', level: pythonProgress, icon: '🐍', color: 'from-blue-500 to-indigo-600', xp: pythonCompleted * 150 },
-            { name: 'Visual Design', level: figmaProgress, icon: '🎨', color: 'from-purple-500 to-pink-600', xp: figmaCompleted * 200 },
-            { name: 'Data Management', level: dataWorkProgress, icon: '📊', color: 'from-emerald-400 to-teal-600', xp: completedProjectTasks * 100 },
-        ]
-    }, [tasks])
+        return { completedCount, totalCount, progress, modulesProgress }
+    }, [curriculum])
 
-    // Статистика
-    const totalProjects = projects.length
-    const completedProjects = projects.filter(p => p.stage === 'completed' || p.status === 'completed').length
-    const inProgressProjects = totalProjects - completedProjects
+    // Навыки (динамические на основе модулей)
+    const categories = useMemo(() => {
+        const mods = courseStats.modulesProgress
+        if (mods.length === 0) return []
 
-    const totalTasks = tasks.length
-    const completedTasks = tasks.filter(t => t.completed).length
-    const overallProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
-
-    // Задачи с дедлайнами
-    const tasksWithDeadlines = tasks.filter(t => t.deadline && !t.completed)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    const overdueTasks = tasksWithDeadlines.filter(t => {
-        const deadline = new Date(t.deadline!)
-        deadline.setHours(0, 0, 0, 0)
-        return deadline < today
-    })
-
-    const upcomingTasks = tasksWithDeadlines.filter(t => {
-        const deadline = new Date(t.deadline!)
-        deadline.setHours(0, 0, 0, 0)
-        const threeDaysFromNow = new Date(today)
-        threeDaysFromNow.setDate(today.getDate() + 3)
-        return deadline >= today && deadline <= threeDaysFromNow
-    })
-
-    const formatDeadline = (deadline: string) => {
-        const date = new Date(deadline)
-        const diffTime = date.getTime() - today.getTime()
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-        if (diffDays < 0) return `Просрочено на ${Math.abs(diffDays)} дн.`
-        if (diffDays === 0) return 'Сегодня'
-        if (diffDays === 1) return 'Завтра'
-        return `Через ${diffDays} дн.`
-    }
-
-    const getSkillLevel = (level: number) => {
-        if (level >= 80) return { text: 'Expert', color: 'text-emerald-500' }
-        if (level >= 60) return { text: 'Advanced', color: 'text-blue-500' }
-        if (level >= 40) return { text: 'Intermediate', color: 'text-purple-500' }
-        return { text: 'Novice', color: 'text-indigo-400/60' }
-    }
+        return mods.slice(0, 3).map((m, i) => {
+            const mainColors = [
+                'from-indigo-500 to-blue-600',
+                'from-emerald-500 to-teal-500',
+                'from-orange-500 to-amber-500'
+            ]
+            const icons = ['💻', '🧠', '🛠️']
+            return {
+                name: m.title,
+                level: m.pct,
+                icon: icons[i % icons.length],
+                color: mainColors[i % mainColors.length],
+                points: m.completed * 100
+            }
+        })
+    }, [courseStats.modulesProgress])
 
     return (
-        <div className="min-h-full py-2 space-y-12 group/page">
+        <div className="min-h-full py-4 space-y-10">
+            {/* ── HEADER ── */}
             <ScrollReveal animation="fade">
-                {/* HERO HUB */}
-                <div className="relative overflow-hidden bg-[#0a0a0c] rounded-[3rem] p-12 lg:p-20 shadow-3xl">
-                    {/* Background Energy */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-indigo-600/20 rounded-full blur-[150px] animate-pulse-slow"></div>
-                        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 rounded-full blur-[120px] animate-pulse-slow animation-delay-3000"></div>
-                        <div className="absolute inset-0 flex items-center justify-center opacity-5">
-                            <Activity className="w-[800px] h-[800px] text-white" />
-                        </div>
-                    </div>
+                <div className="relative overflow-hidden bg-slate-900 rounded-[3rem] p-10 lg:p-16 border border-white/5">
+                    {/* Background decor */}
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px] -mr-20 -mt-20" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-600/10 rounded-full blur-[80px] -ml-10 -mb-10" />
 
-                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                        <div className="space-y-10">
-                            <div className="space-y-6">
-                                <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10">
-                                    <BarChart3 className="w-4 h-4 text-indigo-400" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Performance • Analytics Engine</span>
-                                </div>
-                                <h1 className="text-6xl lg:text-7xl font-black text-white leading-tight tracking-tighter">
-                                    Статистика <br />
-                                    <span className="bg-gradient-to-r from-indigo-400 via-white to-purple-400 bg-clip-text text-transparent italic">Успеха</span>
-                                </h1>
+                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
+                        <div className="space-y-6">
+                            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full">
+                                <Activity className="w-3.5 h-3.5 text-indigo-400" />
+                                <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Ваш путь к успеху</span>
                             </div>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between text-white/40">
-                                    <span className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                                        <Target className="w-4 h-4" /> Global Completion
-                                    </span>
-                                    <span className="text-2xl font-black text-white italic">
-                                        <AnimatedCounter end={overallProgress} suffix="%" />
-                                    </span>
-                                </div>
-                                <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden p-1 border border-white/10">
-                                    <div
-                                        className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-1000 ease-out relative overflow-hidden"
-                                        style={{ width: `${overallProgress}%` }}
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
-                                    </div>
-                                </div>
-                                <p className="text-sm font-medium text-white/30 italic">Выполнил {completedTasks} из {totalTasks} поставленных целей за этот период.</p>
-                            </div>
+                            <h1 className="text-5xl lg:text-7xl font-black text-white tracking-tighter leading-none">
+                                Трекер <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-300">Прогресса</span>
+                            </h1>
+                            <p className="text-white/40 text-lg font-medium max-w-md">
+                                Здесь собраны все твои достижения и статистика. Продолжай в том же духе!
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-6">
-                            {[
-                                { count: completedProjects, label: 'Masters Accomplished', icon: <Trophy />, color: 'text-yellow-500', bg: 'bg-yellow-500/5' },
-                                { count: totalTasks, label: 'Task Throughput', icon: <CheckCircle2 />, color: 'text-indigo-400', bg: 'bg-indigo-400/5' },
-                                { count: overdueTasks.length, label: 'System Alerts', icon: <Clock />, color: 'text-red-500', bg: 'bg-red-500/5' },
-                                { count: upcomingTasks.length, label: 'Peak Deadlines', icon: <Flame />, color: 'text-orange-500', bg: 'bg-orange-500/5' },
-                            ].map((stat, idx) => (
-                                <div key={idx} className={`${stat.bg} p-8 rounded-[2.5rem] border border-white/5 hover:border-white/10 transition-all group cursor-default`}>
-                                    <div className={`${stat.color} mb-4 transform group-hover:scale-110 transition-transform`}>{stat.icon}</div>
-                                    <div className="text-4xl font-black text-white mb-1">
-                                        <AnimatedCounter end={stat.count} />
-                                    </div>
-                                    <div className="text-[9px] font-black uppercase tracking-widest text-white/20 leading-tight">{stat.label}</div>
+                        {/* Global Progress Circle */}
+                        <div className="flex items-center gap-8 bg-white/5 border border-white/10 p-8 rounded-[2.5rem] backdrop-blur-xl">
+                            <div className="relative w-24 h-24">
+                                <svg className="rotate-[-90deg] w-24 h-24" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                                    <motion.circle
+                                        cx="50" cy="50" r="45" fill="none"
+                                        stroke="url(#grad)" strokeWidth="8"
+                                        strokeLinecap="round"
+                                        initial={{ strokeDasharray: "0 283" }}
+                                        animate={{ strokeDasharray: `${2.83 * courseStats.progress} 283` }}
+                                        transition={{ duration: 1.5, ease: "easeOut" }}
+                                    />
+                                    <defs>
+                                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stopColor="#818cf8" />
+                                            <stop offset="100%" stopColor="#22d3ee" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-2xl font-black text-white">{courseStats.progress}%</span>
                                 </div>
-                            ))}
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Общий прогресс</p>
+                                <p className="text-3xl font-black text-white">
+                                    {courseStats.completedCount} <span className="text-white/20 text-lg">/ {courseStats.totalCount}</span>
+                                </p>
+                                <p className="text-[11px] text-white/40 font-medium mt-1">уроков завершено</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </ScrollReveal>
 
-            {/* SKILLS ARCHITECTURE */}
-            <div className="space-y-8">
-                <ScrollReveal animation="slide-up">
-                    <div className="flex items-center justify-between px-4">
-                        <h2 className="text-3xl font-black text-indigo-950 flex items-center gap-4">
-                            <Award className="w-8 h-8 text-indigo-600" />
-                            Архитектура Навыков
-                        </h2>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                                <Activity className="w-4 h-4 text-emerald-600" />
+            {/* ── KEY METRICS ── */}
+            <ScrollReveal animation="slide-up">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                        { label: 'Мой уровень', value: Math.floor(courseStats.completedCount / 5) + 1, icon: Star, color: 'text-amber-500', bg: 'bg-amber-50' },
+                        { label: 'Опыт (XP)', value: courseStats.completedCount * 150, icon: Zap, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                        { label: 'Проектов', value: projects.length, icon: Trophy, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                        { label: 'Дней в обучении', value: 12, icon: Calendar, color: 'text-rose-600', bg: 'bg-rose-50' },
+                    ].map((m, i) => (
+                        <div key={i} className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm flex items-center gap-5">
+                            <div className={`w-12 h-12 rounded-2xl ${m.bg} ${m.color} flex items-center justify-center shrink-0`}>
+                                <m.icon className="w-6 h-6" />
                             </div>
-                            <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Sync Active</span>
+                            <div>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.label}</p>
+                                <p className="text-2xl font-black text-slate-900 leading-none mt-1">
+                                    <AnimatedCounter end={m.value} />
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </ScrollReveal>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {skills.map((skill, idx) => {
-                        const levelInfo = getSkillLevel(skill.level)
-                        return (
-                            <ScrollReveal key={skill.name} animation="scale" delay={idx * 150}>
-                                <div className="glass-premium p-10 rounded-[3rem] border border-white/60 shadow-xl group hover:scale-[1.05] transition-all duration-700 relative overflow-hidden">
-                                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${skill.color} opacity-[0.03] rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000`}></div>
-
-                                    <div className="flex items-start justify-between mb-8">
-                                        <div className="p-5 bg-white shadow-xl rounded-3xl border border-indigo-50 text-3xl group-hover:scale-110 transition-transform group-hover:rotate-6">
-                                            {skill.icon}
-                                        </div>
-                                        <div className="text-right">
-                                            <div className={`text-[10px] font-black uppercase tracking-widest ${levelInfo.color}`}>{levelInfo.text}</div>
-                                            <div className="text-2xl font-black text-indigo-950 italic">Rank #{idx + 1}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        <h3 className="text-xl font-black text-indigo-900 uppercase tracking-tight">{skill.name}</h3>
-
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-black uppercase text-indigo-400 tracking-widest">Mastery Level</span>
-                                                <span className="text-lg font-black text-indigo-950">{skill.level}%</span>
-                                            </div>
-                                            <div className="h-3 w-full bg-indigo-50 rounded-full overflow-hidden p-[2px] border border-indigo-100/50">
-                                                <div
-                                                    className={`h-full rounded-full bg-gradient-to-r ${skill.color} transition-all duration-1000 ease-out`}
-                                                    style={{ width: `${skill.level}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-6 border-t border-indigo-50/50 flex items-center justify-between">
-                                            <div className="flex flex-col">
-                                                <span className="text-[9px] font-black uppercase text-indigo-300">Experience Points</span>
-                                                <span className="text-sm font-black text-indigo-600">
-                                                    <AnimatedCounter end={skill.xp} suffix=" XP" />
-                                                </span>
-                                            </div>
-                                            <div className="p-2 bg-indigo-50 rounded-xl text-indigo-400 opacity-20 group-hover:opacity-100 transition-opacity">
-                                                <TrendingUp className="w-5 h-5" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </ScrollReveal>
-                        )
-                    })}
+                    ))}
                 </div>
-            </div>
+            </ScrollReveal>
 
-            {/* CRITICAL ALERTS & SCHEDULE */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Upcoming */}
-                <ScrollReveal animation="slide-left" delay={400}>
-                    <div className="glass-premium p-12 rounded-[3.5rem] border border-white/60 shadow-2xl relative overflow-hidden h-full">
-                        <div className="flex items-center justify-between mb-10">
-                            <h2 className="text-3xl font-black text-indigo-950 flex items-center gap-4">
-                                <Sparkles className="w-8 h-8 text-yellow-500" />
-                                Приоритетные
-                            </h2>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300">Next 72 Hours</span>
-                        </div>
-
-                        {upcomingTasks.length > 0 ? (
-                            <div className="space-y-6">
-                                {upcomingTasks.map((task) => (
-                                    <div key={task.id} className="group bg-white/40 hover:bg-white p-8 rounded-[2rem] transition-all duration-500 border border-transparent hover:border-indigo-100 hover:shadow-xl flex items-center gap-8">
-                                        <div className="w-16 h-16 bg-orange-50 rounded-[1.5rem] flex items-center justify-center text-orange-500 border border-orange-100 group-hover:scale-110 transition-transform">
-                                            <Calendar className="w-8 h-8" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="font-black text-indigo-950 uppercase text-xs tracking-tight">{task.category}</h4>
-                                            <p className="text-lg font-black text-indigo-900 truncate">{task.title}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="px-5 py-2 bg-gradient-to-r from-orange-400 to-amber-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-glow">
-                                                {formatDeadline(task.deadline!)}
-                                            </div>
-                                        </div>
+            {/* ── MAIN GRID ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8" id="progress-main-grid">
+                {/* Left: Modules Progress */}
+                <div className="lg:col-span-2 space-y-6">
+                    <ScrollReveal animation="slide-up">
+                        <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-lg overflow-hidden">
+                            <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center">
+                                        <TrendingUp className="w-5 h-5 text-indigo-600" />
                                     </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="py-20 text-center opacity-30">
-                                <div className="text-6xl mb-4">✨</div>
-                                <p className="font-bold text-indigo-900">Все чисто! Нет срочных задач.</p>
-                            </div>
-                        )}
-                    </div>
-                </ScrollReveal>
-
-                {/* Overdue */}
-                <ScrollReveal animation="slide-right" delay={600}>
-                    <div className="glass-premium p-12 rounded-[3.5rem] border border-white/60 shadow-2xl relative overflow-hidden h-full">
-                        <div className="flex items-center justify-between mb-10">
-                            <h2 className="text-3xl font-black text-red-600 flex items-center gap-4">
-                                <Zap className="w-8 h-8 fill-current" />
-                                Системные Сбои
-                            </h2>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-red-300">Overdue Protocol</span>
-                        </div>
-
-                        {overdueTasks.length > 0 ? (
-                            <div className="space-y-6">
-                                {overdueTasks.map((task) => (
-                                    <div key={task.id} className="group bg-red-50/20 hover:bg-red-50/40 p-8 rounded-[2rem] transition-all duration-500 border border-red-100 shadow-xl flex items-center gap-8 animate-pulse-subtle">
-                                        <div className="w-16 h-16 bg-red-100 rounded-[1.5rem] flex items-center justify-center text-red-600 border border-red-200 group-hover:scale-110 transition-transform">
-                                            <Zap className="w-8 h-8" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="font-black text-red-950 uppercase text-xs tracking-tight">{task.category}</h4>
-                                            <p className="text-lg font-black text-red-900 truncate">{task.title}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="text-[10px] font-black text-red-500 uppercase tracking-widest border border-red-200 px-3 py-1 rounded-lg">Critical Delay</span>
-                                        </div>
-                                    </div>
-                                ))}
-                                <button className="w-full py-5 bg-red-600 text-white rounded-3xl font-black uppercase tracking-widest text-[10px] shadow-glow hover:bg-red-700 transition-all">
-                                    Исправить все ошибки →
+                                    <h2 className="text-2xl font-black text-slate-900 tracking-tight">Прогресс по модулям</h2>
+                                </div>
+                                <button onClick={() => navigate('/tasks')} className="text-xs font-black text-indigo-500 uppercase tracking-widest flex items-center gap-1 hover:text-indigo-700 transition-colors">
+                                    Все уроки <ChevronRight className="w-4 h-4" />
                                 </button>
                             </div>
-                        ) : (
-                            <div className="py-20 text-center opacity-30 text-emerald-600">
-                                <div className="text-6xl mb-4">🛡️</div>
-                                <p className="font-bold">Все системы работают в штатном режиме.</p>
+                            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {courseStats.modulesProgress.map((mod) => (
+                                    <div key={mod.id} className="p-6 rounded-3xl bg-slate-50 border border-slate-100/50 hover:bg-indigo-50/30 transition-colors group">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-2xl font-black text-slate-200">#{mod.index}</span>
+                                                <h4 className="font-black text-slate-800 tracking-tight truncate max-w-[140px]">{mod.title}</h4>
+                                            </div>
+                                            <span className="text-xs font-black text-indigo-600">{mod.pct}%</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${mod.pct}%` }}
+                                                className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-between mt-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            <span>Модуль {mod.index}</span>
+                                            <span>{mod.completed} / {mod.total}</span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        )}
-                    </div>
-                </ScrollReveal>
-            </div>
+                        </div>
+                    </ScrollReveal>
 
-            <style>{`
-                .glass-premium {
-                    background: rgba(255, 255, 255, 0.4);
-                    backdrop-filter: blur(20px) saturate(180%);
-                }
-                .shadow-glow {
-                    box-shadow: 0 10px 40px -10px rgba(79, 70, 229, 0.4);
-                }
-                .shadow-3xl {
-                    box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.5);
-                }
-                @keyframes shimmer {
-                    0% { transform: translateX(-100%); }
-                    100% { transform: translateX(100%); }
-                }
-                .animate-shimmer {
-                    animation: shimmer 2s infinite;
-                }
-                @keyframes pulse-subtle {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.8; }
-                }
-                .animate-pulse-subtle {
-                    animation: pulse-subtle 3s infinite;
-                }
-            `}</style>
+                    {/* Tip of the day */}
+                    <ScrollReveal animation="slide-up">
+                        <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 flex items-center gap-8 relative overflow-hidden shadow-xl shadow-indigo-100">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
+                            <div className="w-16 h-16 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center shrink-0 border border-white/20">
+                                <Sparkles className="w-8 h-8 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-white mb-1">Совет дня</h3>
+                                <p className="text-white/60 text-sm font-medium italic">
+                                    "Ваш текущий прогресс ({courseStats.progress}%) впечатляет! Попробуйте сегодня закрепить пройденный материал в разделе практики."
+                                </p>
+                            </div>
+                        </div>
+                    </ScrollReveal>
+                </div>
+
+                {/* Right: Skills & Goals */}
+                <div className="space-y-6">
+                    <ScrollReveal animation="slide-left">
+                        <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-lg p-8 space-y-8">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center">
+                                    <Target className="w-4 h-4 text-emerald-600" />
+                                </div>
+                                <h3 className="font-black text-slate-900 text-lg tracking-tight">Навыки</h3>
+                            </div>
+
+                            <div className="space-y-6">
+                                {categories.map((cat, i) => (
+                                    <div key={i} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-xl">{cat.icon}</span>
+                                                <span className="text-sm font-black text-slate-700 uppercase tracking-tight">{cat.name}</span>
+                                            </div>
+                                            <span className="text-xs font-black text-indigo-600">{cat.level}%</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${cat.level}%` }}
+                                                className={`h-full bg-gradient-to-r ${cat.color}`}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="pt-6 border-t border-slate-50 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Trophy className="w-4 h-4 text-amber-500" />
+                                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Звание: Эксперт</span>
+                                </div>
+                                <span className="text-[9px] font-black bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full uppercase tracking-tighter">
+                                    Профессиональный рост
+                                </span>
+                            </div>
+                        </div>
+                    </ScrollReveal>
+
+                    {/* Achievement Card */}
+                    <ScrollReveal animation="slide-left" delay={200}>
+                        <div className="bg-slate-900 rounded-[2.5rem] p-8 relative overflow-hidden group border border-white/5 shadow-2xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="relative z-10 flex flex-col items-center text-center space-y-4">
+                                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                    <Award className="w-10 h-10 text-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]" />
+                                </div>
+                                <h4 className="text-xl font-black text-white italic tracking-tighter">На пути к сертификату</h4>
+                                <p className="text-white/40 text-[11px] font-medium leading-relaxed">
+                                    Заверши курс на 100%, чтобы получить официальное подтверждение своих знаний от EliteEdu.
+                                </p>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => navigate('/tasks')}
+                                    className="w-full bg-white text-slate-900 font-black text-[10px] uppercase tracking-[0.2em] py-4 rounded-2xl transition-all shadow-xl shadow-white/5"
+                                >
+                                    Продолжить путь
+                                </motion.button>
+                            </div>
+                        </div>
+                    </ScrollReveal>
+                </div>
+            </div>
         </div>
     )
 }

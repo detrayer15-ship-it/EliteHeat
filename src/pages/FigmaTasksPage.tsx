@@ -18,7 +18,7 @@ import {
     Box,
     Layers,
     Lock,
-    BrainCircuit
+    Award
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 
@@ -255,7 +255,7 @@ export const FigmaTasksPage = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-amber-500"></div>
                         <div className="relative z-10 flex items-center gap-8">
                             <div className="w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <BrainCircuit className="w-12 h-12 text-purple-400" />
+                                <Award className="w-12 h-12 text-purple-400" />
                             </div>
                             <div>
                                 <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-2">Designer Certification</div>

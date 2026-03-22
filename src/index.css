@@ -2,6 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   BASE STYLES — PREMIUM LIGHT THEME DEFAULT
+   ============================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #f8faff 0%, #ffffff 50%, #f0f4ff 100%);
+    color: #1e293b;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Smooth selection color */
+  ::selection {
+    background: rgba(99, 102, 241, 0.15);
+    color: #3730a3;
+  }
+
+  /* Premium focus styles */
+  *:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.4);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* Smooth image rendering */
+  img {
+    image-rendering: crisp-edges;
+  }
+}
 
 @layer utilities {
   .bg-noise {

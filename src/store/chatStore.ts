@@ -126,7 +126,7 @@ function generateMockAIResponse(userMessage: string): string {
     }
 
     if (lowerMessage.includes('помощь') || lowerMessage.includes('как')) {
-        return 'Я AI-помощник EliteHeat! Могу помочь с:\n\n• Программированием (Python, JavaScript, и др.)\n• Объяснением концепций\n• Проверкой кода\n• Советами по обучению\n\nЗадайте мне любой вопрос!'
+        return 'Я AI-помощник EliteEdu! Могу помочь с:\n\n• Программированием (Python, JavaScript, и др.)\n• Объяснением концепций\n• Проверкой кода\n• Советами по обучению\n\nЗадайте мне любой вопрос!'
     }
 
     if (lowerMessage.includes('спасибо')) {

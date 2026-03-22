@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { collection, addDoc, query, onSnapshot, serverTimestamp, where, doc, deleteDoc, getDocs, writeBatch } from 'firebase/firestore'
 import { db, isFirestoreBroken, markFirestoreAsBroken } from '@/config/firebase'
 import { useAuthStore } from '@/store/authStore'
-import { Send, HelpCircle, ShieldCheck, CheckCheck, Paperclip, Smile, Trash2 } from 'lucide-react'
+import { Send, HelpCircle, ShieldCheck, CheckCheck, Paperclip, Smile, Trash2, Sparkles, Terminal, MessageCircle, Calendar, Users, MessageSquare, TrendingUp, BookOpen, LayoutDashboard, Settings, Terminal as DeveloperIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Message {
@@ -26,6 +26,12 @@ export const SupportPage = () => {
     const [isOffline, setIsOffline] = useState(false)
     const [streamError, setStreamError] = useState<string | null>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
+
+    const quickActions = [
+        { id: 'payment', text: 'Проблема с оплатой', icon: <Sparkles className="w-4 h-4 text-amber-400" /> },
+        { id: 'access', text: 'Нет доступа к курсу', icon: <ShieldCheck className="w-4 h-4 text-emerald-400" /> },
+        { id: 'tech', text: 'Техническая ошибка', icon: <Terminal className="w-4 h-4 text-indigo-400" /> },
+    ]
 
     // Listen to messages in real-time
     useEffect(() => {
@@ -84,16 +90,12 @@ export const SupportPage = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [messages, optimisticMessages])
 
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!message.trim() || !user || loading || isFirestoreBroken()) return
-
-        const textToSend = message.trim();
-        setMessage('');
+    const handleSend = async (text: string) => {
+        if (!text.trim() || !user || loading || isFirestoreBroken()) return
 
         const optimisticMsg: Message = {
             id: `temp-${Date.now()}`,
-            text: textToSend,
+            text: text,
             senderId: user.id,
             senderName: user.name || user.email,
             senderRole: 'student',
@@ -106,7 +108,7 @@ export const SupportPage = () => {
         setLoading(true)
         try {
             await addDoc(collection(db, 'support_chats'), {
-                text: textToSend,
+                text: text,
                 senderId: user.id,
                 senderName: user.name || user.email,
                 senderRole: 'student',
@@ -117,7 +119,6 @@ export const SupportPage = () => {
             console.error('Error sending message:', error)
             setStreamError("Ошибка отправки сообщения. Попробуйте снова.");
             setOptimisticMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
-            setMessage(textToSend);
 
             if (error?.message?.includes('INTERNAL ASSERTION FAILED')) {
                 markFirestoreAsBroken(error);
@@ -127,7 +128,7 @@ export const SupportPage = () => {
         setLoading(false)
     }
 
-    const handleDeleteChat = async () => {
+    const deleteHistory = async () => {
         if (!user?.id || isFirestoreBroken() || !window.confirm('Вы уверены, что хотите удалить всю историю переписки?')) return;
 
         setIsDeleting(true);
@@ -160,148 +161,195 @@ export const SupportPage = () => {
     });
 
     return (
-        <div className="h-[calc(100vh-80px)] flex flex-col bg-[#0e1621] relative overflow-hidden font-sans">
-            {/* Telegram Header */}
-            <div className="h-[60px] px-4 flex items-center gap-3 bg-[#17212b] border-b border-black/20 z-20 shadow-sm relative">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#40a7e3] to-[#48b2eb] flex items-center justify-center text-white font-bold text-lg shadow-inner">
-                    <HelpCircle className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <h1 className="text-[15px] font-bold text-white leading-tight">Служба поддержки</h1>
-                    <div className="flex items-center gap-1">
-                        <span className={`text-[12px] ${isOffline || streamError ? 'text-red-400' : 'text-[#48b2eb]'}`}>
-                            {isOffline ? 'БД отключена' : streamError ? 'Ошибка связи' : 'онлайн'}
-                        </span>
+        <div className="h-[calc(100vh-80px)] flex flex-col bg-slate-50 relative overflow-hidden font-sans">
+            {/* Background Decorations */}
+            <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-indigo-50/50 rounded-full blur-[100px] pointer-events-none -z-10" />
+            <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-blue-50/50 rounded-full blur-[80px] pointer-events-none -z-10" />
+
+            {/* Header */}
+            <div className="h-[72px] px-6 flex items-center justify-between bg-white/80 backdrop-blur-xl border-b border-slate-100 z-20 shadow-sm relative">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100">
+                        <HelpCircle className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-black text-slate-800 tracking-tight leading-none mb-1">Центр поддержки</h1>
+                        <div className="flex items-center gap-2">
+                            <span className={`w-1.5 h-1.5 rounded-full ${isOffline || streamError ? 'bg-red-500' : 'bg-emerald-500 animate-pulse'}`} />
+                            <span className={`text-xs font-bold uppercase tracking-widest ${isOffline || streamError ? 'text-red-400' : 'text-slate-400'}`}>
+                                {isOffline ? 'Offline' : streamError ? 'Connection Error' : 'Online'}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <button
-                    onClick={handleDeleteChat}
-                    disabled={isDeleting || messages.length === 0}
-                    className="p-2 text-white/20 hover:text-red-400 transition-colors disabled:opacity-0"
-                    title="Удалить всю историю"
-                >
-                    <Trash2 className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={deleteHistory}
+                        disabled={isDeleting || messages.length === 0}
+                        className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all disabled:opacity-0"
+                        title="Очистить историю"
+                    >
+                        <Trash2 className="w-5 h-5" />
+                    </button>
+                    <div className="hidden sm:flex items-center gap-1 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">
+                        <ShieldCheck className="w-4 h-4 text-indigo-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Elite Support</span>
+                    </div>
+                </div>
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar relative z-10 bg-[#0e1621]">
-                <AnimatePresence initial={false}>
+            <div className="flex-1 overflow-y-auto px-4 py-8 space-y-6 custom-scrollbar relative z-10 scroll-smooth">
+                <div className="max-w-4xl mx-auto space-y-6">
                     {allMessages.length === 0 && !isOffline && !streamError && (
-                        <div className="h-full flex flex-col items-center justify-center">
-                            <span className="bg-[#182533]/80 px-4 py-1.5 rounded-full text-[13px] text-white/60 font-medium tracking-tight">
-                                Напишите сообщение, чтобы начать
-                            </span>
-                        </div>
-                    )}
-
-                    {streamError && (
-                        <div className="flex justify-center p-2">
-                            <span className="bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full text-[11px] text-red-400">
-                                {streamError}
-                            </span>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex flex-col items-center justify-center p-12 text-center"
+                        >
+                            <div className="w-20 h-20 bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 flex items-center justify-center mb-6">
+                                <MessageCircle className="w-10 h-10 text-indigo-500" />
+                            </div>
+                            <h2 className="text-xl font-black text-slate-800 mb-2">Добро пожаловать!</h2>
+                            <p className="text-slate-400 max-w-[280px] text-sm font-medium leading-relaxed">
+                                Мы всегда на связи. Опишите вашу проблему или воспользуйтесь быстрыми ответами ниже.
+                            </p>
+                        </motion.div>
                     )}
 
                     {isOffline && (
-                        <div className="flex justify-center p-4">
-                            <span className="bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-2xl text-[12px] text-red-400 text-center max-w-xs">
-                                <b>FireShield Active:</b> Система перешла в оффлайн-режим из-за ошибки SDK.
-                            </span>
+                        <div className="flex justify-center">
+                            <div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 max-w-sm">
+                                <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                                    <ShieldCheck className="w-5 h-5 text-red-600" />
+                                </div>
+                                <p className="text-xs text-red-600 leading-relaxed font-medium">
+                                    <b>FireShield Active:</b> Система перешла в оффлайн-режим. Сообщения не будут отправлены.
+                                </p>
+                            </div>
                         </div>
                     )}
 
-                    {allMessages.map((msg) => {
-                        const isMine = msg.senderRole === 'student';
-                        return (
-                            <motion.div
-                                key={msg.id}
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className={`flex items-end gap-2 mb-1 ${isMine ? 'justify-end' : 'justify-start'}`}
-                            >
-                                {!isMine && (
-                                    <div className="w-8 h-8 rounded-full bg-[#2b5278] flex items-center justify-center text-[10px] text-white font-bold mb-1 shadow-sm">
-                                        {msg.senderName?.charAt(0).toUpperCase() || 'П'}
-                                    </div>
-                                )}
+                    <AnimatePresence initial={false}>
+                        {allMessages.map((msg, idx) => {
+                            const isMine = msg.senderRole === 'student';
+                            const showAvatar = idx === 0 || allMessages[idx - 1].senderId !== msg.senderId;
 
-                                <div className={`relative max-w-[85%] px-3 py-1.5 rounded-2xl shadow-sm text-[14px] leading-relaxed
-                                    ${isMine
-                                        ? 'bg-[#2b5278] text-white rounded-br-sm'
-                                        : 'bg-[#182533] text-white rounded-bl-sm border border-white/[0.03]'
-                                    } ${msg.isOptimistic ? 'opacity-70' : ''}`}
+                            return (
+                                <motion.div
+                                    key={msg.id}
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    className={`flex items-end gap-3 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}
                                 >
-                                    {!isMine && (
-                                        <p className="text-[11px] font-bold text-[#48b2eb] mb-0.5">Администратор</p>
+                                    {!isMine && showAvatar && (
+                                        <div className="w-8 h-8 rounded-xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-[10px] text-indigo-600 font-black flex-shrink-0 mb-1">
+                                            {msg.senderName?.charAt(0).toUpperCase() || 'P'}
+                                        </div>
                                     )}
-                                    <div className="flex items-end gap-3 flex-wrap">
-                                        <p className="pb-1 text-white/90 whitespace-pre-wrap break-words">{msg.text}</p>
-                                        <div className="flex items-center gap-1 text-[10px] text-white/40 mb-[-2px] ml-auto">
-                                            {msg.createdAt?.toDate?.()?.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })
-                                                || (msg.createdAt instanceof Date ? msg.createdAt.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' }) : '..:..')}
+                                    {!isMine && !showAvatar && <div className="w-8 flex-shrink-0" />}
+
+                                    <div className={`relative max-w-[80%] group ${isMine ? 'items-end' : 'items-start'}`}>
+                                        <div className={`px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed
+                                            ${isMine
+                                                ? 'bg-gradient-to-br from-indigo-600 to-blue-600 text-white rounded-br-none shadow-indigo-100'
+                                                : 'bg-white text-slate-700 rounded-bl-none border border-slate-100'
+                                            } ${msg.isOptimistic ? 'opacity-70 grayscale-[0.3]' : ''}`}
+                                        >
+                                            {!isMine && showAvatar && (
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-1">Поддержка</p>
+                                            )}
+                                            <p className="whitespace-pre-wrap break-words font-medium">{msg.text}</p>
+                                        </div>
+
+                                        <div className={`flex items-center gap-1.5 mt-1.5 px-1 ${isMine ? 'justify-end' : 'justify-start'}`}>
+                                            <span className="text-[10px] font-bold text-slate-300">
+                                                {msg.createdAt?.toDate?.()?.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })
+                                                    || (msg.createdAt instanceof Date ? msg.createdAt.toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' }) : '..:..')}
+                                            </span>
                                             {isMine && (
-                                                <div className="flex items-center ml-0.5">
+                                                <div className="flex items-center">
                                                     {msg.isOptimistic ? (
-                                                        <div className="w-2 h-2 border border-white/20 border-t-white/60 rounded-full animate-spin" />
+                                                        <div className="w-2.5 h-2.5 border-2 border-slate-200 border-t-indigo-500 rounded-full animate-spin" />
                                                     ) : (
-                                                        <CheckCheck className="w-3.5 h-3.5 text-[#48b2eb]" />
+                                                        <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />
                                                     )}
                                                 </div>
                                             )}
                                         </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
-                </AnimatePresence>
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
+                </div>
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Telegram Input Bar */}
-            <div className="px-4 py-3 bg-[#17212b] border-t border-black/10 z-20">
-                <form
-                    onSubmit={handleSend}
-                    className="max-w-4xl mx-auto flex items-end gap-3"
-                >
-                    <div className="flex-1 flex items-center bg-[#0e1621] rounded-2xl border border-white/[0.05] p-2 focus-within:border-[#2b5278] transition-all">
-                        <button type="button" className="p-2 text-gray-500 hover:text-[#48b2eb] transition-colors">
-                            <Smile className="w-6 h-6" />
-                        </button>
-                        <textarea
-                            rows={1}
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSend(e as any);
-                                }
-                            }}
-                            placeholder="Сообщение..."
-                            className="flex-1 bg-transparent border-none px-2 py-2 text-white placeholder-gray-500 text-[14px] focus:ring-0 resize-none min-h-[40px] max-h-[120px]"
-                        />
-                        <button type="button" className="p-2 text-gray-500 hover:text-[#48b2eb] transition-colors">
-                            <Paperclip className="w-6 h-6" />
-                        </button>
+            {/* Quick Actions & Input Area */}
+            <div className="px-6 pb-8 pt-4 bg-white/80 backdrop-blur-xl border-t border-slate-100 z-20">
+                <div className="max-w-4xl mx-auto space-y-4">
+                    {/* Quick Actions */}
+                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                        {quickActions.map((action) => (
+                            <button
+                                key={action.id}
+                                onClick={() => handleSend(action.text)}
+                                disabled={loading || isOffline}
+                                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-indigo-200 hover:shadow-indigo-50 transition-all text-xs font-black text-slate-600 whitespace-nowrap active:scale-95 disabled:opacity-50"
+                            >
+                                {action.icon}
+                                {action.text}
+                            </button>
+                        ))}
                     </div>
-                    <button
-                        type="submit"
-                        disabled={!message.trim() || isOffline}
-                        className="w-[50px] h-[50px] bg-[#2b5278] hover:bg-[#34618a] text-white rounded-full flex items-center justify-center transition-all disabled:opacity-20 active:scale-90 shadow-lg flex-shrink-0"
+
+                    {/* Input Bar */}
+                    <form
+                        onSubmit={(e) => { e.preventDefault(); handleSend(message); setMessage(''); }}
+                        className="flex items-end gap-3"
                     >
-                        <Send className="w-5 h-5 translate-x-[2px] -translate-y-[1px]" />
-                    </button>
-                </form>
+                        <div className="flex-1 flex items-center bg-white rounded-2xl border border-slate-100 p-2 focus-within:ring-2 ring-indigo-500/10 focus-within:border-indigo-300 transition-all shadow-sm">
+                            <button type="button" className="p-2 text-slate-300 hover:text-indigo-500 hover:bg-indigo-50 rounded-xl transition-all">
+                                <Smile className="w-5 h-5" />
+                            </button>
+                            <textarea
+                                rows={1}
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSend(message);
+                                        setMessage('');
+                                    }
+                                }}
+                                placeholder="Опишите вашу проблему..."
+                                className="flex-1 bg-transparent border-none px-3 py-2 text-slate-700 placeholder-slate-400 text-sm focus:ring-0 resize-none min-h-[44px] max-h-[140px] font-medium"
+                            />
+                            <button type="button" className="p-2 text-slate-300 hover:text-indigo-500 hover:bg-indigo-50 rounded-xl transition-all">
+                                <Paperclip className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={!message.trim() || loading || isOffline}
+                            className="w-[52px] h-[52px] bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-[1.25rem] flex items-center justify-center transition-all disabled:opacity-20 active:scale-95 shadow-lg shadow-indigo-100 flex-shrink-0"
+                        >
+                            <Send className="w-5 h-5" />
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <style>{`
-                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar { width: 5px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.1); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.2); }
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
         </div>
     )

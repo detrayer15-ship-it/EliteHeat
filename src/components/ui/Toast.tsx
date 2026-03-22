@@ -40,7 +40,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 
     const addToast = (toast: Omit<Toast, 'id'>) => {
         const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        const newToast = { ...toast, id, duration: toast.duration || 5000 }
+        const newToast = { ...toast, id, duration: toast.duration || 3000 }
         setToasts(prev => [...prev, newToast])
     }
 

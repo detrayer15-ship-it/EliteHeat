@@ -11,6 +11,7 @@ import {
     calculateProgress,
     type SubscriptionType
 } from '@/utils/subscription'
+import { Settings, User, LogOut, ChevronDown, Crown, Shield, Code2 } from 'lucide-react'
 
 export const Header = () => {
     const navigate = useNavigate()
@@ -76,14 +77,27 @@ export const Header = () => {
         navigate('/')
     }
 
+    const getRoleInfo = () => {
+        switch (user?.role) {
+            case 'student': return { label: '👨‍🎓 Ученик', icon: User, color: 'text-indigo-600', bg: 'bg-indigo-50' }
+            case 'admin': return { label: '👨‍🏫 Учитель', icon: Shield, color: 'text-blue-600', bg: 'bg-blue-50' }
+            case 'developer': return { label: '👨‍💻 Разработчик', icon: Code2, color: 'text-emerald-600', bg: 'bg-emerald-50' }
+            default: return { label: '📚 Студент', icon: User, color: 'text-slate-600', bg: 'bg-slate-50' }
+        }
+    }
+
+    const roleInfo = getRoleInfo()
+
     return (
-        <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30">
+        <header className="bg-white/70 backdrop-blur-xl border-b border-slate-100/80 px-4 sm:px-6 py-3 sticky top-0 z-30 transition-all duration-300">
             <div className="flex items-center justify-between max-w-7xl mx-auto">
                 <div className="lg:hidden">
-                    <h1 className="text-xl font-bold text-primary">EliteHeat</h1>
+                    <h1 className="text-xl font-black tracking-tight">
+                        <span className="text-slate-900">Elite</span><span className="text-indigo-500">Edu</span>
+                    </h1>
                 </div>
 
-                <div className="ml-auto flex items-center gap-3">
+                <div className="ml-auto flex items-center gap-2 sm:gap-3">
                     {user ? (
                         <>
                             <NotificationBell />
@@ -91,150 +105,124 @@ export const Header = () => {
                             <div className="relative" ref={dropdownRef}>
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
-                                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-smooth"
+                                    className="flex items-center gap-2.5 px-3 py-2 rounded-2xl hover:bg-slate-50 active:scale-[0.98] transition-all duration-200 border border-transparent hover:border-slate-100"
                                 >
-                                    <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg">
+                                    <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-200/50">
                                         {(user.name || user.email || 'U').charAt(0).toUpperCase()}
                                     </div>
                                     <div className="hidden md:block text-left">
-                                        <div className="font-semibold text-text text-sm">{user.name || 'User'}</div>
-                                        <div className="text-xs text-gray-600">{user.email}</div>
+                                        <div className="font-semibold text-slate-800 text-sm leading-tight">{user.name || 'User'}</div>
+                                        <div className="text-[11px] text-slate-400 leading-tight">{user.email}</div>
                                     </div>
-                                    <svg
-                                        className={`w-4 h-4 text-gray-600 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
+                                    <ChevronDown
+                                        className={`w-4 h-4 text-slate-300 transition-transform duration-300 ${showDropdown ? 'rotate-180' : ''}`}
+                                    />
                                 </button>
 
                                 {showDropdown && (
-                                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                                        <div className="px-4 py-3 border-b border-gray-200">
-                                            <div className="font-semibold text-text">{user.name}</div>
-                                            <div className="text-sm text-gray-600">{user.email}</div>
-                                            <div className="text-xs text-purple-600 font-medium mt-1">
-                                                {user.role === 'student' && '👨‍🎓 Ученик'}
-                                                {user.role === 'admin' && '👨‍🏫 Учитель'}
-                                                {user.role === 'developer' && '👨‍💻 Разработчик'}
+                                    <div className="absolute right-0 mt-2 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 py-2 animate-scale-in origin-top-right">
+                                        {/* User Profile Section */}
+                                        <div className="px-4 py-3 border-b border-slate-50">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg shadow-indigo-200/50">
+                                                    {(user.name || user.email || 'U').charAt(0).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <div className="font-bold text-slate-900">{user.name}</div>
+                                                    <div className="text-xs text-slate-400">{user.email}</div>
+                                                    <div className={`inline-flex items-center gap-1 text-[10px] font-bold mt-1 px-2 py-0.5 rounded-full ${roleInfo.bg} ${roleInfo.color}`}>
+                                                        {roleInfo.label}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <button
-                                            onClick={() => {
-                                                navigate('/settings')
-                                                setShowDropdown(false)
-                                            }}
-                                            className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-smooth flex items-center gap-2"
-                                        >
-                                            <span>⚙️</span>
-                                            <span>Настройки</span>
-                                        </button>
-
-                                        {/* Subscription Info - Role-based */}
-                                        {user.role === 'student' && (
-                                            <div className="border-t border-b border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                                                <div className="px-4 py-3">
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <span className="text-lg">💎</span>
-                                                        <p className="text-sm font-bold text-purple-700">Ваша подписка</p>
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <div className="bg-white/60 rounded-lg p-3">
-                                                            <p className="text-xs text-gray-600 mb-1">Тип подписки</p>
-                                                            <p className="text-sm font-bold text-purple-700">{getSubscriptionTypeLabel(subscriptionInfo.type)}</p>
-                                                        </div>
-
-                                                        <div className="bg-white/60 rounded-lg p-3">
-                                                            <p className="text-xs text-gray-600 mb-1">Действует до</p>
-                                                            <p className="text-sm font-bold text-purple-700">{formatExpiryDate(subscriptionInfo.expiryDate)}</p>
-                                                        </div>
-
-                                                        {/* Real-time Countdown Timer */}
-                                                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-200">
-                                                            <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
-                                                                <span>⏰</span>
-                                                                <span>Осталось времени (обновляется каждую секунду)</span>
-                                                            </p>
-                                                            <p className="text-2xl font-black text-green-600 animate-pulse">
-                                                                {formatDaysRemaining(subscriptionInfo.daysRemaining)}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Progress bar */}
-                                                    <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-                                                        <div
-                                                            className="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full transition-all duration-1000"
-                                                            style={{ width: `${progress}%` }}
-                                                        ></div>
-                                                    </div>
-                                                    <p className="text-xs text-gray-600 mt-1 text-center">
-                                                        Осталось {Math.round(progress)}% времени
-                                                    </p>
+                                        <div className="py-1">
+                                            <button
+                                                onClick={() => {
+                                                    navigate('/settings')
+                                                    setShowDropdown(false)
+                                                }}
+                                                className="w-full text-left px-4 py-2.5 hover:bg-slate-50 transition-colors flex items-center gap-3 text-sm group"
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-slate-50 group-hover:bg-indigo-50 flex items-center justify-center transition-colors">
+                                                    <Settings className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
                                                 </div>
-                                            </div>
-                                        )}
+                                                <span className="text-slate-700 font-medium">Настройки</span>
+                                            </button>
 
-                                        {user.role === 'admin' && (
-                                            <div className="border-t border-b border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50">
-                                                <div className="px-4 py-3">
-                                                    <div className="flex items-center gap-2 mb-2">
-                                                        <span className="text-lg">👨‍🏫</span>
-                                                        <p className="text-sm font-bold text-blue-700">Управление учениками</p>
+                                            {/* Subscription Info - Role-based */}
+                                            {user.role === 'student' && (
+                                                <div className="mx-3 my-2 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100/50 overflow-hidden">
+                                                    <div className="p-4">
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <Crown className="w-4 h-4 text-indigo-500" />
+                                                            <p className="text-xs font-bold text-indigo-700">Ваша подписка</p>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <div className="flex justify-between text-xs">
+                                                                <span className="text-slate-500">Тип</span>
+                                                                <span className="font-bold text-indigo-600">{getSubscriptionTypeLabel(subscriptionInfo.type)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between text-xs">
+                                                                <span className="text-slate-500">До</span>
+                                                                <span className="font-semibold text-slate-700">{formatExpiryDate(subscriptionInfo.expiryDate)}</span>
+                                                            </div>
+                                                            <div className="flex justify-between items-center text-xs">
+                                                                <span className="text-slate-500">Осталось</span>
+                                                                <span className="font-black text-emerald-600">
+                                                                    {formatDaysRemaining(subscriptionInfo.daysRemaining)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Progress bar */}
+                                                        <div className="mt-3 w-full bg-white/70 rounded-full h-1.5">
+                                                            <div
+                                                                className="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full transition-all duration-1000"
+                                                                style={{ width: `${progress}%` }}
+                                                            ></div>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-xs text-gray-600">
-                                                        Вы можете просматривать и управлять подписками ваших учеников в разделе администратора.
+                                                </div>
+                                            )}
+
+                                            {user.role === 'admin' && (
+                                                <div className="mx-3 my-2 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100/50 p-4">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <Shield className="w-4 h-4 text-blue-500" />
+                                                        <p className="text-xs font-bold text-blue-700">Управление учениками</p>
+                                                    </div>
+                                                    <p className="text-[11px] text-slate-500 mb-2">
+                                                        Просматривайте и управляйте подписками учеников.
                                                     </p>
                                                     <button
                                                         onClick={() => {
                                                             navigate('/admin')
                                                             setShowDropdown(false)
                                                         }}
-                                                        className="mt-2 w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
+                                                        className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition-all active:scale-[0.98]"
                                                     >
                                                         Центр Мониторинга
                                                     </button>
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
 
-                                        {/* Developers don't see subscription section */}
 
-                                        <button
-                                            onClick={() => {
-                                                navigate('/portfolio')
-                                                setShowDropdown(false)
-                                            }}
-                                            className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-smooth flex items-center gap-2"
-                                        >
-                                            <span>📁</span>
-                                            <span>Моё портфолио</span>
-                                        </button>
+                                        </div>
 
-                                        <button
-                                            onClick={() => {
-                                                navigate('/about')
-                                                setShowDropdown(false)
-                                            }}
-                                            className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-smooth flex items-center gap-2"
-                                        >
-                                            <span>ℹ️</span>
-                                            <span>О нас</span>
-                                        </button>
-
-                                        <div className="border-t border-gray-200 my-2"></div>
-
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full text-left px-4 py-2 hover:bg-error/10 text-error transition-smooth flex items-center gap-2"
-                                        >
-                                            <span>🚪</span>
-                                            <span>Выйти</span>
-                                        </button>
+                                        <div className="border-t border-slate-50 pt-1 mt-1">
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full text-left px-4 py-2.5 hover:bg-red-50 transition-colors flex items-center gap-3 text-sm group"
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-slate-50 group-hover:bg-red-50 flex items-center justify-center transition-colors">
+                                                    <LogOut className="w-4 h-4 text-slate-400 group-hover:text-red-500 transition-colors" />
+                                                </div>
+                                                <span className="text-slate-700 group-hover:text-red-600 font-medium">Выйти</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>

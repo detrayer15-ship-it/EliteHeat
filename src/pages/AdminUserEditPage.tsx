@@ -19,8 +19,15 @@ export const AdminUserEditPage = () => {
         city: '',
         level: 1,
         points: 0,
-        adminPoints: 0
+        adminPoints: 0,
+        subscriptionPlan: 'free',
+        subscriptionStatus: 'inactive',
+        subscriptionEndDate: ''
     })
+
+    useEffect(() => {
+        loadUser()
+    }, [userId])
 
     // Проверка доступа - только developer
     if (currentUser?.role !== 'developer') {
@@ -34,10 +41,6 @@ export const AdminUserEditPage = () => {
             </div>
         )
     }
-
-    useEffect(() => {
-        loadUser()
-    }, [userId])
 
     const loadUser = async () => {
         if (!userId) return
@@ -54,7 +57,10 @@ export const AdminUserEditPage = () => {
                     city: userData.city || '',
                     level: userData.level || 1,
                     points: userData.points || 0,
-                    adminPoints: userData.adminPoints || 0
+                    adminPoints: userData.adminPoints || 0,
+                    subscriptionPlan: userData.subscriptionPlan || 'free',
+                    subscriptionStatus: userData.subscriptionStatus || 'inactive',
+                    subscriptionEndDate: userData.subscriptionEndDate?.toDate?.()?.toISOString()?.split('T')[0] || userData.subscriptionEndDate || ''
                 })
             }
         } catch (error) {
@@ -169,6 +175,45 @@ export const AdminUserEditPage = () => {
                             type="number"
                             value={formData.adminPoints}
                             onChange={(e) => setFormData({ ...formData, adminPoints: parseInt(e.target.value) || 0 })}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-2">План подписки</label>
+                        <select
+                            value={formData.subscriptionPlan}
+                            onChange={(e) => setFormData({ ...formData, subscriptionPlan: e.target.value })}
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                        >
+                            <option value="free">FREE</option>
+                            <option value="monthly">MONTHLY</option>
+                            <option value="yearly">YEARLY</option>
+                            <option value="lifetime">LIFETIME</option>
+                            <option value="family">FAMILY</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Статус</label>
+                        <select
+                            value={formData.subscriptionStatus}
+                            onChange={(e) => setFormData({ ...formData, subscriptionStatus: e.target.value as any })}
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary"
+                        >
+                            <option value="active">✅ Active</option>
+                            <option value="inactive">❌ Inactive</option>
+                            <option value="trial">⏳ Trial</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Дата окончания</label>
+                        <Input
+                            type="date"
+                            value={formData.subscriptionEndDate}
+                            onChange={(e) => setFormData({ ...formData, subscriptionEndDate: e.target.value })}
                         />
                     </div>
                 </div>

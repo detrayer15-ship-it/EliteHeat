@@ -3,7 +3,10 @@ export interface User {
     email: string
     name: string
     city: string
-    role: 'student' | 'teacher' | 'admin'
+    role: 'student' | 'teacher' | 'admin' | 'developer'
+    teacherApplicationStatus?: 'pending' | 'approved' | 'rejected'
+    teacherApplicationSubject?: string
+    teacherApplicationDate?: Date
     level?: number
     points?: number
     tasksReviewed?: number

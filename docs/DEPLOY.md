@@ -17,10 +17,10 @@ git init
 git add .
 
 # Первый коммит
-git commit -m "Initial commit: EliteHeat with Mita AI"
+git commit -m "Initial commit: EliteEdu with Mita AI"
 
 # Привязка к GitHub (замените на вашу ссылку)
-git remote add origin https://github.com/ВАШ_ЛОГИН/EliteHeat.git
+git remote add origin https://github.com/ВАШ_ЛОГИН/EliteEdu.git
 
 # Отправка кода
 git push -u origin main
@@ -61,4 +61,4 @@ firebase deploy --only hosting
 3. **CORS**: Убедитесь, что бэкенд разрешает запросы с вашего адреса `.web.app`.
 
 ---
-*Инструкция подготовлена для проекта EliteHeat.*
+*Инструкция подготовлена для проекта EliteEdu.*

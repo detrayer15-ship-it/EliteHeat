@@ -1,6 +1,5 @@
 import {
     Code2,
-    Globe,
     TrendingUp,
     Zap,
     ArrowUpRight,
@@ -18,37 +17,28 @@ export const CommandCenter = () => {
     const actions = [
         {
             id: 'analyzer',
-            title: t('analyzer'),
-            desc: 'Лаборатория Миты', // Maybe needs a key
+            title: 'Анализ',
+            desc: 'Статистика обучения',
             icon: <Search className="w-8 h-8" />,
-            path: '/analyzer',
+            path: '/progress',
             color: 'from-blue-500 to-indigo-600',
             bg: 'bg-blue-50/50'
         },
         {
             id: 'skill-tree',
             title: t('skillTree'),
-            desc: 'Карта развития', // Maybe needs a key
+            desc: 'Карта развития',
             icon: <TrendingUp className="w-8 h-8" />,
-            path: '/skill-tree',
+            path: '/progress',
             color: 'from-emerald-500 to-teal-600',
             bg: 'bg-emerald-50/50'
         },
         {
-            id: 'portfolio',
-            title: t('portfolio'),
-            desc: 'Публичный статус', // Needs key
-            icon: <Globe className="w-8 h-8" />,
-            path: '/portfolio',
-            color: 'from-purple-500 to-pink-600',
-            bg: 'bg-purple-50/50'
-        },
-        {
             id: 'learning',
             title: t('tasks'),
-            desc: 'Текущий проект', // Needs key
+            desc: 'Мои уроки',
             icon: <BookOpen className="w-8 h-8" />,
-            path: '/projects',
+            path: '/tasks',
             color: 'from-amber-500 to-orange-600',
             bg: 'bg-amber-50/50'
         }
@@ -64,8 +54,8 @@ export const CommandCenter = () => {
                     transition={{ delay: idx * 0.1 }}
                     onClick={() => navigate(action.path)}
                     className={`group relative p-8 rounded-[2.5rem] border cursor-pointer transition-all duration-500 hover:-translate-y-2 overflow-hidden ${action.id === 'analyzer'
-                            ? 'bg-[#0f1014] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-white col-span-1'
-                            : 'bg-white border-slate-100 shadow-sm hover:shadow-[0_25px_60px_rgba(79,70,229,0.1)] text-slate-900'
+                        ? 'bg-[#0f1014] border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-white col-span-1'
+                        : 'bg-white border-slate-100 shadow-sm hover:shadow-[0_25px_60px_rgba(79,70,229,0.1)] text-slate-900'
                         }`}
                 >
                     <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${action.color} opacity-[0.03] group-hover:opacity-[0.15] transition-opacity rounded-bl-[4rem]`}></div>

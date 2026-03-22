@@ -24,7 +24,7 @@ const ACTIONS = {
     rank: 'достиг ранга "Architect"',
     project: 'завершил проект "AI Analyzer"',
     module: 'освоил модуль "Python Advanced"',
-    user: 'присоединился к EliteHeat!'
+    user: 'присоединился к EliteEdu!'
 }
 
 export const SocialPulseFeed = () => {

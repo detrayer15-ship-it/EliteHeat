@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { FileExplorer } from './FileExplorer'
 import { CodeEditor } from './CodeEditor'
-import { AIAssistantPanel } from './AIAssistantPanel'
 import { Terminal } from './Terminal'
 import type { Project } from '@/types/project'
 
@@ -151,17 +150,6 @@ export const IDELayout = ({ project, updateProject }: IDELayoutProps) => {
                         </div>
                     )}
                 </div>
-
-                {/* Right Sidebar - AI Assistant */}
-                {!isFullscreen && (
-                    <div className="w-80 bg-[#252526] border-l border-[#3e3e42] overflow-y-auto">
-                        <AIAssistantPanel
-                            project={project}
-                            currentFile={selectedFile}
-                            currentCode={currentContent}
-                        />
-                    </div>
-                )}
             </div>
 
             {/* Status Bar */}

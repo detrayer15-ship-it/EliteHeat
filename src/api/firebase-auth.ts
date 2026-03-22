@@ -5,8 +5,20 @@ import {
     onAuthStateChanged,
     User as FirebaseUser
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, Timestamp, collection, addDoc } from 'firebase/firestore'
 import { auth, db, isFirestoreBroken, markFirestoreAsBroken } from '@/config/firebase'
+
+export interface TeacherApplication {
+    name: string
+    email: string
+    telegram: string
+    specialization: string
+    experience: string
+    portfolio: string
+    whyMe: string
+    status: 'pending' | 'approved' | 'rejected'
+    createdAt: Date
+}
 
 export interface UserData {
     id: string
@@ -31,6 +43,11 @@ export interface UserData {
     subscriptionEndDate?: Date | null
     subscriptionDaysRemaining?: number
     subscriptionStatus?: 'active' | 'expired' | 'cancelled'
+    selectedDirection?: string
+    // Teacher application moderation
+    teacherApplicationStatus?: 'pending' | 'approved' | 'rejected'
+    teacherApplicationSubject?: string
+    teacherApplicationDate?: Date
     createdAt: Date
     lastActiveAt?: Date
 }
@@ -43,7 +60,9 @@ export const firebaseAuthAPI = {
         name: string,
         city: string,
         role: 'student' | 'teacher' | 'admin' = 'student',
-        subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family'
+        subscriptionPlan?: 'monthly' | 'yearly' | 'lifetime' | 'family',
+        selectedDirection?: string,
+        teacherApplicationSubject?: string
     ) => {
         try {
             // Create auth user
@@ -52,15 +71,29 @@ export const firebaseAuthAPI = {
 
             const now = Timestamp.now()
 
+            // Teacher application flow:
+            // The user gets role='student' until an admin approves them.
+            // A separate teacherApplications document is written for moderation.
+            const isTeacherApplicant = role === 'teacher'
+            const effectiveRole = isTeacherApplicant ? 'student' : role
+
             // Create user document in Firestore
             const userData: any = {
                 id: user.uid,
                 email: user.email!,
                 name,
                 city,
-                role,
+                role: effectiveRole,
+                selectedDirection: selectedDirection || '',
                 createdAt: now,
                 lastActiveAt: now
+            }
+
+            // Mark teacher application status on user document
+            if (isTeacherApplicant) {
+                userData.teacherApplicationStatus = 'pending'
+                userData.teacherApplicationSubject = teacherApplicationSubject || ''
+                userData.teacherApplicationDate = now
             }
 
             // Add subscription fields if plan is selected
@@ -87,6 +120,18 @@ export const firebaseAuthAPI = {
             } else {
                 try {
                     await setDoc(doc(db, 'users', user.uid), userData)
+
+                    // Write teacher application document for admin review
+                    if (isTeacherApplicant) {
+                        await setDoc(doc(db, 'teacherApplications', user.uid), {
+                            userId: user.uid,
+                            name,
+                            email: user.email!,
+                            subject: teacherApplicationSubject || '',
+                            status: 'pending',
+                            createdAt: now,
+                        })
+                    }
                 } catch (firestoreError: any) {
                     if (firestoreError?.message?.includes('INTERNAL ASSERTION FAILED')) {
                         markFirestoreAsBroken(firestoreError);
@@ -384,5 +429,26 @@ export const firebaseAuthAPI = {
     // Listen to auth state changes
     onAuthChange: (callback: (user: FirebaseUser | null) => void) => {
         return onAuthStateChanged(auth, callback)
+    },
+
+    // Submit Teacher Application
+    submitTeacherApplication: async (data: any) => {
+        try {
+            if (isFirestoreBroken()) throw new Error('Firestore is broken')
+            const now = Timestamp.now()
+            await addDoc(collection(db, 'teacherApplications'), {
+                ...data,
+                status: 'pending',
+                createdAt: now,
+                lastStep: true
+            })
+            return { success: true }
+        } catch (error: any) {
+            console.error('Teacher Application Submit Error:', error)
+            return {
+                success: false,
+                message: error.message
+            }
+        }
     }
 }

@@ -15,7 +15,8 @@ import {
     Play,
     Sparkles,
     ChevronRight,
-    Trophy
+    Trophy,
+    Layers
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { AnimatedCounter } from '@/components/AnimatedCounter'
@@ -96,18 +97,6 @@ const courses: Course[] = [
         level: 'Продвинутый',
         students: 789,
         rating: 4.8
-    },
-    {
-        id: 'ai',
-        title: 'Искусственный интеллект',
-        description: 'Машинное обучение и нейронные сети',
-        icon: Star,
-        color: 'amber',
-        lessons: 25,
-        duration: '12 недель',
-        level: 'Продвинутый',
-        students: 543,
-        rating: 5.0
     }
 ]
 
@@ -149,25 +138,25 @@ export const CoursesPage = () => {
 
                     <div className="relative z-10 grid grid-cols-1 lg:grid-cols-5 gap-16 items-center">
                         <div className="lg:col-span-3 space-y-8">
-                            <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10">
+                            <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/10">
                                 <Trophy className="w-4 h-4 text-yellow-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Academy V4.0 • Level Up</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Elite Education • Level Up</span>
                             </div>
                             <h1 className="text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
                                 Твой путь к <br />
                                 <span className="bg-gradient-to-r from-yellow-200 via-white to-cyan-200 bg-clip-text text-transparent italic">Мастерству</span>
                             </h1>
                             <p className="text-xl text-white/40 font-medium max-w-lg leading-relaxed">
-                                Лучшие курсы для тех, кто хочет создавать будущее. От основ Python до архитектуры ИИ.
+                                Лучшие курсы для тех, кто хочет создавать будущее. От основ Python до архитектуры сложных систем.
                             </p>
                         </div>
 
                         <div className="lg:col-span-2 grid grid-cols-2 gap-4">
                             {[
-                                { count: 32, label: 'Curriculums', icon: <BookOpen />, color: 'text-indigo-400' },
-                                { count: 4663, label: 'Alumni', icon: <Users />, color: 'text-cyan-400' },
-                                { count: 4.8, label: 'Rating', icon: <Star />, color: 'text-amber-400' },
-                                { count: 12, label: 'Expert Mentors', icon: <Award />, color: 'text-emerald-400' },
+                                { count: 3, label: 'Directions', icon: <Globe />, color: 'text-indigo-400' },
+                                { count: 466, label: 'Students', icon: <Users />, color: 'text-cyan-400' },
+                                { count: 4.9, label: 'Rating', icon: <Star />, color: 'text-amber-400' },
+                                { count: 240, label: 'Certificates', icon: <Award />, color: 'text-emerald-400' },
                             ].map((stat, idx) => (
                                 <div key={idx} className="glass-card-dark p-6 rounded-3xl border border-white/5 hover:border-white/10 transition-colors">
                                     <div className={`${stat.color} mb-3`}>{stat.icon}</div>
@@ -206,7 +195,7 @@ export const CoursesPage = () => {
                     <div className="h-0.5 flex-1 mx-8 bg-indigo-50 hidden md:block"></div>
 
                     <div className="flex items-center gap-4">
-                        <span className="text-xs font-black uppercase tracking-widest text-indigo-950/20 italic">Curated by Mita AI</span>
+                        <span className="text-xs font-black uppercase tracking-widest text-indigo-950/20 italic">Elite Education Academy</span>
                         <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping"></div>
                     </div>
                 </div>
@@ -225,7 +214,7 @@ export const CoursesPage = () => {
                                 onClick={() => handleCourseClick(course.id)}
                                 className="group cursor-pointer perspective-1000"
                             >
-                                <div className="glass-premium rounded-[3rem] p-4 border border-white/60 shadow-xl overflow-hidden transition-all duration-700 group-hover:shadow-2xl group-hover:shadow-indigo-500/10 transform-3d group-hover:rotate-y-[-5deg] group-hover:rotate-x-2">
+                                <div className="glass-premium rounded-[3rem] p-4 border border-white/60 shadow-xl overflow-hidden transition-all duration-700 group-hover:shadow-2xl group-hover:shadow-indigo-50/10 transform-3d group-hover:rotate-y-[-5deg] group-hover:rotate-x-2">
                                     {/* Cover / Header */}
                                     <div className={`aspect-[4/3] rounded-[2.5rem] bg-gradient-to-br ${themeFrom} ${themeTo} relative overflow-hidden p-10 flex flex-col justify-between`}>
                                         <div className="absolute inset-0 opacity-20">
@@ -300,7 +289,7 @@ export const CoursesPage = () => {
                 })}
             </div>
 
-            {/* CURATED INFO BANNER */}
+            {/* INFO BANNER */}
             <ScrollReveal animation="fade" delay={500}>
                 <div className="glass-premium rounded-[3rem] p-12 lg:p-16 border border-white/60 shadow-2xl relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.03] to-purple-500/[0.03] -z-10"></div>
@@ -313,8 +302,8 @@ export const CoursesPage = () => {
                             </h2>
                             <div className="space-y-6">
                                 {[
-                                    { title: 'AI Personalized', desc: 'Мита адаптирует задания под твой темп и текущие знания.', icon: <Sparkles className="text-yellow-500" /> },
                                     { title: 'Project-First', desc: 'Ты не просто смотришь видео, ты строишь реальные продукты.', icon: <Zap className="text-indigo-600" /> },
+                                    { title: 'Expert Content', desc: 'Программа разработана профессионалами из индустрии.', icon: <Trophy className="text-yellow-500" /> },
                                 ].map((feat, idx) => (
                                     <div key={idx} className="flex gap-6 items-start">
                                         <div className="p-4 bg-white rounded-2xl shadow-sm border border-indigo-50 transition-all hover:scale-110">
@@ -337,7 +326,7 @@ export const CoursesPage = () => {
                                         <div className="w-24 h-24 bg-white/5 rounded-full mx-auto flex items-center justify-center border border-white/10 animate-bounce-subtle">
                                             <Trophy className="w-10 h-10 text-yellow-500" />
                                         </div>
-                                        <h3 className="text-3xl font-black text-white">Стань Pro с EliteHeat</h3>
+                                        <h3 className="text-3xl font-black text-white">Стань Pro с EliteEdu</h3>
                                         <p className="text-white/40 font-medium">Получай сертификаты, которые ценятся в топовых IT компаниях.</p>
                                     </div>
                                 </div>

@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { TaskComments } from '@/components/TaskComments'
-import { ArrowLeft, Video, CheckCircle, Clock, Sparkles } from 'lucide-react'
+import { ArrowLeft, Video, CheckCircle, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 
@@ -161,7 +161,7 @@ export const FigmaLessonPage = () => {
                     )}
                 </div>
 
-                {/* Progress Bar & Mita */}
+                {/* Progress Bar */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <Card className="md:col-span-3 p-8 bg-white/80 backdrop-blur-xl border-2 border-purple-100 shadow-xl relative overflow-hidden">
                         <div className="flex justify-between items-end mb-4">
@@ -187,13 +187,11 @@ export const FigmaLessonPage = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="mt-6 flex items-center justify-center gap-2 p-3 bg-green-50 text-green-700 rounded-xl border border-green-200 font-bold"
                             >
-                                <Sparkles className="w-5 h-5 animate-pulse" />
+                                <CheckCircle className="w-5 h-5 text-green-600" />
                                 Задание полностью готово к отправке!
                             </motion.div>
                         )}
                     </Card>
-
-
                 </div>
 
                 {/* Основная карточка */}

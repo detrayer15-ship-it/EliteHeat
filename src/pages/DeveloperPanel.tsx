@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useNavigate } from 'react-router-dom'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 export const DeveloperPanel = () => {
     const currentUser = useAuthStore((state) => state.user)
@@ -31,7 +32,7 @@ export const DeveloperPanel = () => {
         const newLogs = [
             `[${new Date().toLocaleTimeString()}] System started`,
             `[${new Date().toLocaleTimeString()}] Users online: 15`,
-            `[${new Date().toLocaleTimeString()}] Active projects: 42`,
+            `[${new Date().toLocaleTimeString()}] Courses active: 2`,
         ]
         setLogs(newLogs)
     }
@@ -51,7 +52,7 @@ export const DeveloperPanel = () => {
         <div className="p-4 md:p-6 max-w-7xl mx-auto">
             <div className="mb-6">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">🛠️ Developer Panel</h1>
-                <p className="text-gray-600 mt-2">Полный контроль над платформой EliteHeat</p>
+                <p className="text-gray-600 mt-2">Полный контроль над платформой EliteEdu</p>
             </div>
 
             {/* Управление пользователями */}
@@ -128,57 +129,6 @@ export const DeveloperPanel = () => {
                         <button
                             onClick={() => navigate('/developer/live-activity')}
                             className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                        >
-                            Открыть
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* AI и система */}
-            <div className="mb-8">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">🧠 AI и система</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* AI Control Center */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-cyan-200">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="text-3xl">🤖</span>
-                            <h2 className="text-xl font-bold">AI Control Center</h2>
-                        </div>
-                        <p className="text-gray-600 mb-4">Лимиты, логи, управление</p>
-                        <button
-                            onClick={() => navigate('/developer/ai-control')}
-                            className="w-full px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
-                        >
-                            Открыть
-                        </button>
-                    </div>
-
-                    {/* AI Usage Stats */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-teal-200">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="text-3xl">📈</span>
-                            <h2 className="text-xl font-bold">AI Статистика</h2>
-                        </div>
-                        <p className="text-gray-600 mb-4">Запросы по дням и пользователям</p>
-                        <button
-                            onClick={() => navigate('/developer/ai-stats')}
-                            className="w-full px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
-                        >
-                            Открыть
-                        </button>
-                    </div>
-
-                    {/* Feature Flags */}
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-blue-200">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="text-3xl">🔑</span>
-                            <h2 className="text-xl font-bold">Feature Flags</h2>
-                        </div>
-                        <p className="text-gray-600 mb-4">Вкл/выкл функций без деплоя</p>
-                        <button
-                            onClick={() => navigate('/developer/feature-flags')}
-                            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                         >
                             Открыть
                         </button>
@@ -295,7 +245,7 @@ export const DeveloperPanel = () => {
                             <span className="text-3xl">📤</span>
                             <h2 className="text-xl font-bold">Экспорт данных</h2>
                         </div>
-                        <p className="text-gray-600 mb-4">Пользователи / проекты (CSV/JSON)</p>
+                        <p className="text-gray-600 mb-4">Пользователи / статистика (CSV/JSON)</p>
                         <button
                             onClick={() => navigate('/developer/export')}
                             className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
@@ -372,31 +322,28 @@ export const DeveloperPanel = () => {
                 </div>
             </div>
 
-            {/* Статистика */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-indigo-200">
-                <div className="flex items-center gap-3 mb-4">
-                    <span className="text-3xl">📊</span>
-                    <h2 className="text-xl font-bold">Статистика платформы</h2>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <p className="text-3xl font-bold text-blue-600">243</p>
-                        <p className="text-sm text-gray-600 mt-1">Пользователей</p>
+            <ScrollReveal animation="fade">
+                <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-indigo-200">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="text-3xl">📊</span>
+                        <h2 className="text-xl font-bold">Статистика платформы</h2>
                     </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <p className="text-3xl font-bold text-green-600">127</p>
-                        <p className="text-sm text-gray-600 mt-1">Проектов</p>
-                    </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <p className="text-3xl font-bold text-purple-600">2</p>
-                        <p className="text-sm text-gray-600 mt-1">Курсов</p>
-                    </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <p className="text-3xl font-bold text-orange-600">15</p>
-                        <p className="text-sm text-gray-600 mt-1">Онлайн</p>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="text-center p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                            <p className="text-5xl font-black text-indigo-600">243</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Пользователей</p>
+                        </div>
+                        <div className="text-center p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                            <p className="text-5xl font-black text-purple-600">2</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Курсов</p>
+                        </div>
+                        <div className="text-center p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                            <p className="text-5xl font-black text-emerald-600">15</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Онлайн</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </ScrollReveal>
 
             {/* Логи */}
             {logs.length > 0 && (

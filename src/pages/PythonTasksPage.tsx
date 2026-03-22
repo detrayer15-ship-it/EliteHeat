@@ -229,7 +229,7 @@ export const PythonTasksPage = () => {
                     <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-red-500 via-indigo-500 to-purple-500"></div>
                     <div className="relative z-10 flex items-center gap-6">
                         <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <BrainCircuit className="w-10 h-10 text-indigo-400" />
+                            <Award className="w-10 h-10 text-indigo-400" />
                         </div>
                         <div>
                             <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-1">Graduation Phase</div>

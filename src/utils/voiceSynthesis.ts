@@ -1,5 +1,5 @@
-// Voice Synthesis Utility for Mita AI Assistant
-// Using real audio files from Miside game
+// Voice Synthesis Utility for Assistant
+// Using standard TTS and audio sequences
 
 export interface VoiceConfig {
     lang: string
@@ -8,19 +8,19 @@ export interface VoiceConfig {
     volume: number
 }
 
-// Mita voice configuration (for fallback TTS)
-export const MITA_VOICE_CONFIG: VoiceConfig = {
+// Assistant voice configuration (for fallback TTS)
+export const ASSISTANT_VOICE_CONFIG: VoiceConfig = {
     lang: 'ru-RU',
     rate: 0.85,
     pitch: 1.05,
     volume: 0.8
 }
 
-// Audio file paths for Mita's voice from Miside game
-const MITA_AUDIO_FILES = {
-    greeting: '/audio/mita/greeting.mp3',
-    askName: '/audio/mita/ask_name.mp3',
-    niceToMeet: '/audio/mita/nice_to_meet.mp3'
+// Audio file paths for generic assistant voice
+const ASSISTANT_AUDIO_FILES = {
+    greeting: '/audio/assistant/greeting.mp3',
+    askName: '/audio/assistant/ask_name.mp3',
+    niceToMeet: '/audio/assistant/nice_to_meet.mp3'
 }
 
 class VoiceSynthesisService {
@@ -28,7 +28,7 @@ class VoiceSynthesisService {
     private currentAudio: HTMLAudioElement | null = null
     private currentUtterance: SpeechSynthesisUtterance | null = null
     private voices: SpeechSynthesisVoice[] = []
-    private useAudioFiles: boolean = true // Prefer real audio files
+    private useAudioFiles: boolean = false // Standard TTS by default
 
     constructor() {
         this.synth = window.speechSynthesis
@@ -66,26 +66,20 @@ class VoiceSynthesisService {
         return femaleVoice || russianVoices[0] || this.voices[0] || null
     }
 
-    // Play audio file from Miside game
     private async playAudioFile(audioPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             try {
-                // Stop any current audio
                 this.stopAudio()
-
                 const audio = new Audio(audioPath)
                 this.currentAudio = audio
-
                 audio.onended = () => {
                     this.currentAudio = null
                     resolve()
                 }
-
                 audio.onerror = (error) => {
                     this.currentAudio = null
                     reject(error)
                 }
-
                 audio.play().catch(reject)
             } catch (error) {
                 reject(error)
@@ -93,26 +87,15 @@ class VoiceSynthesisService {
         })
     }
 
-    // Check if we have audio file for this phrase
     private getAudioFileForPhrase(text: string): string | null {
         const lowerText = text.toLowerCase().trim()
-
-        if (lowerText.includes('привет') && lowerText.includes('мита')) {
-            return MITA_AUDIO_FILES.greeting
-        }
-        if (lowerText.includes('как тебя зовут')) {
-            return MITA_AUDIO_FILES.askName
-        }
-        if (lowerText.includes('рада знакомству')) {
-            return MITA_AUDIO_FILES.niceToMeet
-        }
-
+        if (lowerText.includes('привет')) return ASSISTANT_AUDIO_FILES.greeting
+        if (lowerText.includes('как тебя зовут')) return ASSISTANT_AUDIO_FILES.askName
+        if (lowerText.includes('рада знакомству')) return ASSISTANT_AUDIO_FILES.niceToMeet
         return null
     }
 
-    // Main speak function - tries audio file first, falls back to TTS
-    async speak(text: string, config: VoiceConfig = MITA_VOICE_CONFIG): Promise<void> {
-        // Try to use real audio file first
+    async speak(text: string, config: VoiceConfig = ASSISTANT_VOICE_CONFIG): Promise<void> {
         if (this.useAudioFiles) {
             const audioFile = this.getAudioFileForPhrase(text)
             if (audioFile) {
@@ -120,44 +103,33 @@ class VoiceSynthesisService {
                     await this.playAudioFile(audioFile)
                     return
                 } catch (error) {
-                    console.warn('Failed to play audio file, falling back to TTS:', error)
-                    // Fall through to TTS
+                    console.warn('Fallback to TTS:', error)
                 }
             }
         }
 
-        // Fallback to Web Speech API TTS
         return new Promise((resolve, reject) => {
             this.stop()
-
             const utterance = new SpeechSynthesisUtterance(text)
             const voice = this.getBestRussianVoice()
-
-            if (voice) {
-                utterance.voice = voice
-            }
-
+            if (voice) utterance.voice = voice
             utterance.lang = config.lang
             utterance.rate = config.rate
             utterance.pitch = config.pitch
             utterance.volume = config.volume
-
             utterance.onend = () => {
                 this.currentUtterance = null
                 resolve()
             }
-
             utterance.onerror = (event) => {
                 this.currentUtterance = null
                 reject(event)
             }
-
             this.currentUtterance = utterance
             this.synth.speak(utterance)
         })
     }
 
-    // Stop audio playback
     private stopAudio() {
         if (this.currentAudio) {
             this.currentAudio.pause()
@@ -166,32 +138,20 @@ class VoiceSynthesisService {
         }
     }
 
-    // Stop all speech (both audio and TTS)
     stop() {
         this.stopAudio()
-
-        if (this.synth.speaking) {
-            this.synth.cancel()
-        }
+        if (this.synth.speaking) this.synth.cancel()
         this.currentUtterance = null
     }
 
     pause() {
-        if (this.currentAudio) {
-            this.currentAudio.pause()
-        }
-        if (this.synth.speaking) {
-            this.synth.pause()
-        }
+        if (this.currentAudio) this.currentAudio.pause()
+        if (this.synth.speaking) this.synth.pause()
     }
 
     resume() {
-        if (this.currentAudio && this.currentAudio.paused) {
-            this.currentAudio.play()
-        }
-        if (this.synth.paused) {
-            this.synth.resume()
-        }
+        if (this.currentAudio && this.currentAudio.paused) this.currentAudio.play()
+        if (this.synth.paused) this.synth.resume()
     }
 
     isSpeaking(): boolean {
@@ -202,63 +162,36 @@ class VoiceSynthesisService {
         return this.voices
     }
 
-    // Toggle between audio files and TTS
     setUseAudioFiles(use: boolean) {
         this.useAudioFiles = use
     }
 
-    // Play greeting audio only (first phrase)
     async playGreeting(): Promise<void> {
-        try {
-            await this.playAudioFile(MITA_AUDIO_FILES.greeting)
-        } catch (error) {
-            console.error('Error playing greeting:', error)
-            throw error
-        }
+        await this.playAudioFile(ASSISTANT_AUDIO_FILES.greeting)
     }
 
-    // Play ask name audio (second phrase)
     async playAskName(): Promise<void> {
-        try {
-            await this.playAudioFile(MITA_AUDIO_FILES.askName)
-        } catch (error) {
-            console.error('Error playing ask name:', error)
-            throw error
-        }
+        await this.playAudioFile(ASSISTANT_AUDIO_FILES.askName)
     }
 
-    // Play greeting sequence (both phrases together)
     async playGreetingSequence(): Promise<void> {
-        try {
-            await this.playAudioFile(MITA_AUDIO_FILES.greeting)
-            await new Promise(resolve => setTimeout(resolve, 500))
-            await this.playAudioFile(MITA_AUDIO_FILES.askName)
-        } catch (error) {
-            console.error('Error playing greeting sequence:', error)
-            throw error
-        }
+        await this.playAudioFile(ASSISTANT_AUDIO_FILES.greeting)
+        await new Promise(resolve => setTimeout(resolve, 500))
+        await this.playAudioFile(ASSISTANT_AUDIO_FILES.askName)
     }
 
-    // Play nice to meet audio
     async playNiceToMeet(): Promise<void> {
-        try {
-            await this.playAudioFile(MITA_AUDIO_FILES.niceToMeet)
-        } catch (error) {
-            console.error('Error playing nice to meet audio:', error)
-            throw error
-        }
+        await this.playAudioFile(ASSISTANT_AUDIO_FILES.niceToMeet)
     }
 }
 
-// Export singleton instance
 export const voiceService = new VoiceSynthesisService()
 
-// Predefined Mita phrases (matching audio files)
-export const MITA_PHRASES = {
-    greeting: 'Привет, Мита',
+export const ASSISTANT_PHRASES = {
+    greeting: 'Привет',
     askName: 'Как тебя зовут?',
     niceToMeet: 'Рада знакомству',
     letsStart: 'Давай начнем работу!',
-    thinking: 'Думаю...',
+    thinking: 'Загрузка...',
     ready: 'Готова помочь!'
 }

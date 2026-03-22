@@ -1,56 +1,87 @@
 import { useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/Button'
-import { Send } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Send, MessageCircle, MessageSquare } from 'lucide-react'
 
 export const Header = () => {
     const navigate = useNavigate()
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
-            <div className="container mx-auto px-6 py-5">
+        <motion.header
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="fixed top-0 left-0 right-0 z-50 border-b border-white/60 bg-white/70 backdrop-blur-xl"
+        >
+            <div className="container mx-auto px-6 py-4">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 group cursor-pointer" onClick={() => navigate('/')}>
-                        <div className="text-2xl font-black tracking-tighter flex items-center">
-                            <span className="text-orange-500">ELITE</span>
-                            <span className="text-blue-500 ml-1">HEAT</span>
+                    {/* Logo */}
+                    <div
+                        className="flex items-center gap-3 cursor-pointer group"
+                        onClick={() => navigate('/')}
+                    >
+                        <img
+                            src="/images/logo.png"
+                            alt="EliteEdu Logo"
+                            className="w-10 h-10 object-contain rounded-xl"
+                        />
+                        <div className="text-2xl font-black tracking-tight flex items-center">
+                            <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Elite</span><span className="bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">Edu</span>
+                        </div>
+                        <div className="hidden sm:flex items-center gap-1 ml-1 bg-indigo-50 text-indigo-600 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-indigo-100">
+                            Beta
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6">
-                        {/* Социальные сети */}
-                        <div className="hidden md:flex items-center gap-5 mr-2">
+
+                    {/* Right side */}
+                    <div className="flex items-center gap-3">
+                        {/* Social Links */}
+                        <div className="hidden md:flex items-center gap-2 mr-2">
                             <a
-                                href="https://t.me/eliteheat"
+                                href="https://wa.me/77755921255"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-gray-400 hover:text-[#229ED9] transition-all duration-300 hover:scale-110"
-                                title="Telegram"
+                                className="w-9 h-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-[#25D366]/10 hover:text-[#25D366] border border-slate-100 transition-all flex"
+                                title="WhatsApp"
                             >
-                                <Send className="w-5 h-5" />
+                                <MessageCircle className="w-4 h-4" />
                             </a>
                             <a
-                                href="https://vk.com/eliteheat"
+                                href="https://discord.gg/DvcbNVrb"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-gray-400 hover:text-[#4C75A3] transition-all duration-300 hover:scale-110"
-                                title="ВКонтакте"
+                                className="w-9 h-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-[#5865F2]/10 hover:text-[#5865F2] border border-slate-100 transition-all flex"
+                                title="Discord"
                             >
-                                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M13.162 18.994c-6.028 0-9.441-4.133-9.588-11.012h3.01c.105 5.05 2.327 7.185 4.088 7.625v-7.625h2.841v4.357c1.741-.188 3.568-2.147 4.183-4.357h2.841a10.05 10.05 0 01-3.834 6.06c1.116.516 2.54 2.246 3.01 4.952h-3.15c-.371-2.585-1.89-4.577-3.251-4.717v4.717h-2.14z" />
-                                </svg>
+                                <MessageSquare className="w-4 h-4" />
+                            </a>
+                            <a
+                                href="https://t.me/eliteeduprogramming"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-9 h-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-[#229ED9]/10 hover:text-[#229ED9] border border-slate-100 transition-all flex"
+                                title="Telegram"
+                            >
+                                <Send className="w-4 h-4" />
                             </a>
                         </div>
 
-                        <Button
-                            variant="ghost"
+                        <button
                             onClick={() => navigate('/login')}
-                            className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 border border-gray-200 px-6 rounded-xl"
+                            className="hidden sm:block text-sm font-bold text-slate-500 hover:text-slate-900 px-4 py-2 rounded-xl transition-all"
                         >
                             Войти
-                        </Button>
+                        </button>
+
+                        <button
+                            onClick={() => navigate('/select-role')}
+                            className="text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 px-5 py-2.5 rounded-xl transition-all shadow-md shadow-indigo-200/50 hover:shadow-lg hover:shadow-indigo-200/60 active:scale-[0.98]"
+                        >
+                            Начать обучение
+                        </button>
                     </div>
                 </div>
             </div>
-        </header>
+        </motion.header>
     )
 }

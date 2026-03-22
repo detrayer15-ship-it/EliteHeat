@@ -67,7 +67,7 @@ export const AdminOpsChat = () => {
         { id: 'ideas', name: '💡 Ideas', description: 'Улучшения платформы' }
     ]
 
-    const availableTags = ['бан', 'проверка', 'баг', 'ai', 'важно']
+    const availableTags = ['бан', 'проверка', 'баг', 'важно']
     const mentions = ['@все_админы', '@учителя', '@архитектор']
 
     if (!user || (user.role !== 'admin' && user.role !== 'developer')) {
@@ -142,8 +142,8 @@ export const AdminOpsChat = () => {
                                     key={channel.id}
                                     onClick={() => setSelectedChannel(channel.id)}
                                     className={`w-full text-left p-3 rounded-lg transition-all ${selectedChannel === channel.id
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-100 hover:bg-gray-200'
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-100 hover:bg-gray-200'
                                         }`}
                                 >
                                     <div className="font-bold text-sm">{channel.name}</div>
@@ -203,8 +203,8 @@ export const AdminOpsChat = () => {
                                             <div>
                                                 <span className="font-bold">{msg.author}</span>
                                                 <span className={`ml-2 text-xs px-2 py-0.5 rounded ${msg.role === 'architect' ? 'bg-red-100 text-red-700' :
-                                                        msg.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                                                            'bg-blue-100 text-blue-700'
+                                                    msg.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                                                        'bg-blue-100 text-blue-700'
                                                     }`}>
                                                     {msg.role === 'architect' ? 'Архитектор' :
                                                         msg.role === 'admin' ? 'Админ' : 'Учитель'}
@@ -286,8 +286,8 @@ export const AdminOpsChat = () => {
                                             }
                                         }}
                                         className={`px-3 py-1 rounded-lg text-sm transition-all ${selectedTags.includes(tag)
-                                                ? 'bg-blue-500 text-white'
-                                                : 'bg-gray-100 hover:bg-gray-200'
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-gray-100 hover:bg-gray-200'
                                             }`}
                                     >
                                         #{tag}
