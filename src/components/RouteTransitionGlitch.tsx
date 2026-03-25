@@ -4,11 +4,11 @@ import { useAudioStore } from '@/store/audioStore'
 
 export const RouteTransitionGlitch = () => {
     const location = useLocation()
-    const { triggerGlitch, isMitaMode } = useAudioStore()
+    const { triggerGlitch } = useAudioStore()
 
     useEffect(() => {
-        // Trigger a glitch on every route change, more frequently in Mita Mode
-        if (isMitaMode || Math.random() > 0.7) {
+        // Trigger a glitch on every route change with 30% probability
+        if (Math.random() > 0.7) {
             triggerGlitch()
         }
     }, [location.pathname])

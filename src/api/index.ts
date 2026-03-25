@@ -40,3 +40,5 @@ export type {
   Assignment,
   CourseResponse,
 } from './courses';
+// Mita API
+export * from './mita';

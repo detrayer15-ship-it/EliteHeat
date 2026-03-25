@@ -255,12 +255,12 @@ export const DirectionLessonPage = () => {
                                             </div>
                                             <div className="p-8 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm">
                                                 <div className="flex flex-wrap items-center justify-center gap-4 text-white/80">
-                                                    {lesson.flowchart.split('->').map((item, i) => (
+                                                    {lesson.flowchart.split('->').map((item, i, array) => (
                                                         <div key={i} className="flex items-center gap-4">
                                                             <div className={`px-5 py-3 rounded-xl font-bold text-sm tracking-tight ${item.trim().startsWith('[') ? 'bg-indigo-600 text-white' : 'bg-white/10 text-white border border-white/10'}`}>
                                                                 {item.trim().replace('[', '').replace(']', '')}
                                                             </div>
-                                                            {i < lesson.flowchart.split('->').length - 1 && (
+                                                            {i < array.length - 1 && (
                                                                 <ChevronRight className="w-5 h-5 text-indigo-400/50" />
                                                             )}
                                                         </div>
