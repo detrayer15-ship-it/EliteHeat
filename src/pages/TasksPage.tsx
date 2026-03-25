@@ -327,7 +327,7 @@ export const TasksPage = () => {
                         </div>
                         <div className="space-y-2 relative z-10">
                             <h3 className="text-2xl font-black text-white italic tracking-tighter">Карьера в IT</h3>
-                            <p className="text-white/60 text-sm font-medium leading-relaxed max-w-sm">Завершите все модули направления «{selectedDirection}», чтобы получить элитный сертификат EliteEdu.</p>
+                            <p className="text-white/60 text-sm font-medium leading-relaxed max-w-sm">Завершите все модули направления «{selectedDirection}», чтобы получить элитный сертификат EliteHeat.</p>
                         </div>
                     </div>
                     <div className="bg-slate-900 rounded-[2.5rem] p-10 flex items-center gap-8 shadow-2xl group overflow-hidden relative">

@@ -82,7 +82,7 @@ export const AdminDashboardPage = () => {
                         <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-white">
                             Центр <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">Мониторинга</span>
                         </h1>
-                        <p className="text-white/40 text-sm font-medium">Контроль и управление образовательной экосистемой EliteEdu</p>
+                        <p className="text-white/40 text-sm font-medium">Контроль и управление образовательной экосистемой EliteHeat</p>
                     </div>
 
                     <div className="flex items-center gap-3">

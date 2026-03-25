@@ -14,7 +14,7 @@ export const DashboardRightSidebar = () => {
 
     const notifications = [
         { id: 1, text: 'Проверьте ваши уроки на сегодня', time: '10 мин назад', type: 'system' },
-        { id: 2, text: 'Добро пожаловать в EliteEdu!', time: '1 час назад', type: 'system' },
+        { id: 2, text: 'Добро пожаловать в EliteHeat!', time: '1 час назад', type: 'system' },
     ]
 
     return (

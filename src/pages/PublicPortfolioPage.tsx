@@ -99,7 +99,7 @@ export const PublicPortfolioPage = () => {
                             </h1>
                         </div>
                         <p className="text-2xl text-slate-500 font-medium max-w-2xl leading-relaxed italic">
-                            {user?.bio || "Студент платформы EliteEdu. Проектирую будущее, код за кодом."}
+                            {user?.bio || "Студент платформы EliteHeat. Проектирую будущее, код за кодом."}
                         </p>
                         <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4">
                             <button className="bg-slate-900 text-white px-12 py-6 rounded-[2rem] flex items-center gap-4 hover:bg-indigo-600 transition-all hover:scale-105 shadow-2xl group">
@@ -189,7 +189,7 @@ export const PublicPortfolioPage = () => {
 
                 {/* FOOTER */}
                 <div className="text-center py-24 border-t border-slate-100">
-                    <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300">Платформа EliteEdu • 2028</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300">Платформа EliteHeat • 2028</p>
                 </div>
             </div>
 

@@ -14,7 +14,7 @@ export const Footer = () => {
                             className="text-3xl font-black tracking-tight flex items-center cursor-pointer"
                             onClick={() => navigate('/')}
                         >
-                            <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Elite</span><span className="bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">Edu</span>
+                            <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Elite</span><span className="bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">Heat</span>
                         </div>
                         <p className="text-slate-500 font-medium max-w-sm leading-relaxed mb-6">
                             Инновационная образовательная платформа, меняющая подход к обучению программированию и дизайну.
@@ -59,7 +59,7 @@ export const Footer = () => {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                        © 2028 EliteEdu. Все права защищены.
+                        © 2028 EliteHeat. Все права защищены.
                     </p>
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>

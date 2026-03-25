@@ -250,7 +250,7 @@ export const RegisterPage = () => {
 
                 <div className="mt-10 text-center">
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">
-                        Безопасность данных гарантирована • 2028 EliteEdu
+                        Безопасность данных гарантирована • 2028 EliteHeat
                     </p>
                 </div>
             </motion.div>

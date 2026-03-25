@@ -140,7 +140,7 @@ export const CoursesPage = () => {
                         <div className="lg:col-span-3 space-y-8">
                             <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-xl px-4 py-1.5 rounded-full border border-white/10">
                                 <Trophy className="w-4 h-4 text-yellow-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Elite Education • Level Up</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">EliteHeat • Level Up</span>
                             </div>
                             <h1 className="text-6xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter">
                                 Твой путь к <br />
@@ -195,7 +195,7 @@ export const CoursesPage = () => {
                     <div className="h-0.5 flex-1 mx-8 bg-indigo-50 hidden md:block"></div>
 
                     <div className="flex items-center gap-4">
-                        <span className="text-xs font-black uppercase tracking-widest text-indigo-950/20 italic">Elite Education Academy</span>
+                        <span className="text-xs font-black uppercase tracking-widest text-indigo-950/20 italic">EliteHeat Academy</span>
                         <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping"></div>
                     </div>
                 </div>
@@ -326,7 +326,7 @@ export const CoursesPage = () => {
                                         <div className="w-24 h-24 bg-white/5 rounded-full mx-auto flex items-center justify-center border border-white/10 animate-bounce-subtle">
                                             <Trophy className="w-10 h-10 text-yellow-500" />
                                         </div>
-                                        <h3 className="text-3xl font-black text-white">Стань Pro с EliteEdu</h3>
+                                        <h3 className="text-3xl font-black text-white">Стань Pro с EliteHeat</h3>
                                         <p className="text-white/40 font-medium">Получай сертификаты, которые ценятся в топовых IT компаниях.</p>
                                     </div>
                                 </div>

@@ -106,7 +106,7 @@ export const Dashboard = () => {
                                 {/* Online badge */}
                                 <div className="inline-flex items-center gap-2.5 bg-white/5 border border-white/10 backdrop-blur-xl px-4 py-1.5 rounded-full">
                                     <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_2px_rgba(52,211,153,0.6)]" />
-                                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em]">EliteEdu · Система активна</span>
+                                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em]">EliteHeat · Система активна</span>
                                 </div>
 
                                 <div>
@@ -347,7 +347,7 @@ export const Dashboard = () => {
                             </div>
                             <div className="flex-1 text-center sm:text-left">
                                 <h3 className="font-black text-white text-lg mb-1">Получи сертификат</h3>
-                                <p className="text-slate-400 text-sm font-medium">Завершите все {totalCount} уроков направления «{selectedDirection}» и получите профессиональный сертификат EliteEdu.</p>
+                                <p className="text-slate-400 text-sm font-medium">Завершите все {totalCount} уроков направления «{selectedDirection}» и получите профессиональный сертификат EliteHeat.</p>
                             </div>
                             <div className="flex flex-col items-center gap-1 shrink-0">
                                 <Star className="w-5 h-5 text-yellow-400" />
@@ -410,7 +410,7 @@ export const Dashboard = () => {
                             <div className="p-4 space-y-3">
                                 {[
                                     { text: 'Проверьте уроки на сегодня', time: '10 мин назад', color: 'bg-indigo-50 text-indigo-600' },
-                                    { text: 'Добро пожаловать в EliteEdu!', time: '1 час назад', color: 'bg-emerald-50 text-emerald-600' },
+                                    { text: 'Добро пожаловать в EliteHeat!', time: '1 час назад', color: 'bg-emerald-50 text-emerald-600' },
                                 ].map((n, i) => (
                                     <div key={i} className="flex gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer group">
                                         <div className={`w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center ${n.color}`}>

@@ -21,7 +21,7 @@ const DEFAULT_ACHIEVEMENTS: UserAchievement[] = [
     {
         id: 'first-login',
         title: 'Первое касание',
-        description: 'Ваш первый вход в систему EliteEdu',
+        description: 'Ваш первый вход в систему EliteHeat',
         icon: '⚡',
         isUnlocked: false,
         progress: 0,

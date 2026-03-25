@@ -3,13 +3,13 @@ export const AboutPage = () => {
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-12">
             <div className="max-w-4xl mx-auto px-4">
                 <h1 className="text-5xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    О EliteEdu
+                    О EliteHeat
                 </h1>
 
                 <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8">
                     <h2 className="text-3xl font-bold mb-4 text-gray-800">🎓 Наша миссия</h2>
                     <p className="text-lg text-gray-700 leading-relaxed">
-                        EliteEdu - это современная образовательная платформа, которая помогает ученикам
+                        EliteHeat - это современная образовательная платформа, которая помогает ученикам
                         по всему миру изучать программирование, дизайн и другие IT-навыки. Мы объединяем
                         качественное обучение с передовыми технологиями искусственного интеллекта.
                     </p>

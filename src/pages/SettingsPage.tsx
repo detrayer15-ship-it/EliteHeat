@@ -155,7 +155,7 @@ export const SettingsPage = () => {
                             <div className="space-y-12 animate-fade-in">
                                 <div className="space-y-2">
                                     <h2 className="text-4xl font-black text-indigo-950 tracking-tighter">Профиль</h2>
-                                    <p className="text-indigo-900/40 text-lg font-medium italic">Ваши данные в системе EliteEdu.</p>
+                                    <p className="text-indigo-900/40 text-lg font-medium italic">Ваши данные в системе EliteHeat.</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-10">

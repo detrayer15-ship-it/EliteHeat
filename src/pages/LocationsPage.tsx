@@ -16,7 +16,7 @@ interface Office {
 const offices: Office[] = [
     {
         id: '1',
-        name: 'EliteEdu - Алматы (Центр)',
+        name: 'EliteHeat - Алматы (Центр)',
         address: 'ул. Абая, 150/230',
         city: 'Алматы',
         phone: '+7 771 693 3595',
@@ -26,7 +26,7 @@ const offices: Office[] = [
     },
     {
         id: '2',
-        name: 'EliteEdu - Астана',
+        name: 'EliteHeat - Астана',
         address: 'пр. Кабанбай батыра, 53',
         city: 'Астана',
         phone: '+7 707 554 9835',
@@ -36,7 +36,7 @@ const offices: Office[] = [
     },
     {
         id: '3',
-        name: 'EliteEdu - Шымкент',
+        name: 'EliteHeat - Шымкент',
         address: 'пр. Тауке хана, 25',
         city: 'Шымкент',
         phone: '+7 705 986 9303',
@@ -74,7 +74,7 @@ export const LocationsPage = () => {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2">
                     🗺️ Наши офисы
                 </h1>
-                <p className="text-gray-600">Найдите ближайший офис EliteEdu на карте</p>
+                <p className="text-gray-600">Найдите ближайший офис EliteHeat на карте</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

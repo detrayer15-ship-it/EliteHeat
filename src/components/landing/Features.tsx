@@ -37,7 +37,7 @@ export const Features = () => {
                         className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-6"
                     >
                         <Sparkles className="w-3 h-3" />
-                        Технологии EliteEdu
+                        Технологии EliteHeat
                     </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}

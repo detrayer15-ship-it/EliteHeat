@@ -101,7 +101,7 @@ export const BecomeTeacherPage = () => {
                             className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-amber-50 border border-amber-100 text-[10px] font-black uppercase tracking-[0.2em] text-amber-600 shadow-sm mb-2"
                         >
                             <Award className="w-3.5 h-3.5" />
-                            EliteEdu Recruitment 2024
+                            EliteHeat Recruitment 2024
                         </motion.div>
                         <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter">
                             Заявка на <span className="text-indigo-600">наставничество</span>
@@ -266,7 +266,7 @@ export const BecomeTeacherPage = () => {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Почему вы хотите преподавать в EliteEdu?</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Почему вы хотите преподавать в EliteHeat?</label>
                                         <textarea
                                             required
                                             rows={4}

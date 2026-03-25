@@ -1,5 +1,5 @@
 /**
- * EliteEdu Design System Tokens
+ * EliteHeat Design System Tokens
  * Централизованная система дизайн-токенов для консистентного UI
  */
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useTranslation } from '@/hooks/useTranslation'
-import { EliteEduLogo } from '@/components/ui/EliteEduLogo'
+import { EliteHeatLogo } from '@/components/ui/EliteHeatLogo'
 import {
     Home,
     BookOpen,
@@ -127,11 +127,11 @@ export const Sidebar = () => {
                         <div className="flex items-center gap-3 group cursor-pointer" onClick={() => (window.location.href = '/')}>
                             <div className="relative">
                                 <div className="absolute inset-0 bg-indigo-400 blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500 scale-150"></div>
-                                <EliteEduLogo className="w-9 h-9 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                                <EliteHeatLogo className="w-9 h-9 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                             </div>
                             <div>
                                 <h1 className="text-lg font-black tracking-tight flex items-center">
-                                    <span className="text-slate-900">Elite</span><span className="text-indigo-500">Edu</span>
+                                    <span className="text-slate-900">Elite</span><span className="text-indigo-500">Heat</span>
                                 </h1>
                                 <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-slate-300">{t('platform')}</p>
                             </div>

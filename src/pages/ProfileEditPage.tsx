@@ -163,7 +163,7 @@ export const ProfileEditPage = () => {
                                 <span className="bg-gradient-to-r from-indigo-400 via-white to-purple-400 bg-clip-text text-transparent italic">Личности</span>
                             </h1>
                             <p className="text-xl text-white/40 font-medium max-w-lg leading-relaxed italic">
-                                Обновите свои идентификационные данные. Ваш профиль — это ваше лицо в экосистеме EliteEdu.
+                                Обновите свои идентификационные данные. Ваш профиль — это ваше лицо в экосистеме EliteHeat.
                             </p>
                         </div>
 

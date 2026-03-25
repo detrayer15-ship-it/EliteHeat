@@ -21,11 +21,11 @@ export const Header = () => {
                     >
                         <img
                             src="/images/logo.png"
-                            alt="EliteEdu Logo"
+                            alt="EliteHeat Logo"
                             className="w-10 h-10 object-contain rounded-xl"
                         />
                         <div className="text-2xl font-black tracking-tight flex items-center">
-                            <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Elite</span><span className="bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">Edu</span>
+                            <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Elite</span><span className="bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">Heat</span>
                         </div>
                         <div className="hidden sm:flex items-center gap-1 ml-1 bg-indigo-50 text-indigo-600 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-indigo-100">
                             Beta
@@ -56,7 +56,7 @@ export const Header = () => {
                                 <MessageSquare className="w-4 h-4" />
                             </a>
                             <a
-                                href="https://t.me/eliteeduprogramming"
+                                href="https://t.me/eliteheatprogramming"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="w-9 h-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-[#229ED9]/10 hover:text-[#229ED9] border border-slate-100 transition-all flex"

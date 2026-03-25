@@ -49,7 +49,7 @@ export const Benefits = () => {
                             className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 shadow-sm"
                         >
                             <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                            EliteEdu Experience
+                            EliteHeat Experience
                         </motion.div>
 
                         <motion.h2

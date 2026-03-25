@@ -275,7 +275,7 @@ export const ProgressTrackerPage = () => {
                                 </div>
                                 <h4 className="text-xl font-black text-white italic tracking-tighter">На пути к сертификату</h4>
                                 <p className="text-white/40 text-[11px] font-medium leading-relaxed">
-                                    Заверши курс на 100%, чтобы получить официальное подтверждение своих знаний от EliteEdu.
+                                    Заверши курс на 100%, чтобы получить официальное подтверждение своих знаний от EliteHeat.
                                 </p>
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}

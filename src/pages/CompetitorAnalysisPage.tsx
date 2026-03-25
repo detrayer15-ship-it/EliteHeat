@@ -2,7 +2,7 @@ import { Card } from '@/components/ui/Card'
 
 const competitors = [
     {
-        name: 'EliteEdu',
+        name: 'EliteHeat',
         logo: '🔥',
         price: 'От 12,000₸/мес',
         aiAssistant: true,
@@ -65,7 +65,7 @@ export const CompetitorAnalysisPage = () => {
         <div className="space-y-8">
             <div className="text-center">
                 <h1 className="text-4xl font-bold text-text mb-4">Анализ конкурентов</h1>
-                <p className="text-xl text-gray-600">Почему EliteEdu лучше других платформ</p>
+                <p className="text-xl text-gray-600">Почему EliteHeat лучше других платформ</p>
             </div>
 
             <Card className="bg-gradient-to-r from-primary/10 to-ai-blue/10">
@@ -155,7 +155,7 @@ export const CompetitorAnalysisPage = () => {
             </Card>
 
             <Card className="bg-gradient-to-r from-success/10 to-primary/10">
-                <h2 className="text-2xl font-bold text-text mb-4">Почему выбирают EliteEdu</h2>
+                <h2 className="text-2xl font-bold text-text mb-4">Почему выбирают EliteHeat</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h3 className="font-semibold text-text mb-2">✅ Для новичков</h3>

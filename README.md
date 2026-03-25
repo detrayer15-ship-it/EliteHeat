@@ -1,4 +1,4 @@
-# EliteHeat (Elite Education) — Образовательная платформа с ИИ-ассистентом
+# EliteHeat — Образовательная платформа с ИИ-ассистентом
 
 ![EliteHeat Banner](https://img.shields.io/badge/Status-Hackathon--Finalist-brightgreen)
 ![Tech Stack](https://img.shields.io/badge/Stack-React%20%7C%20Node.js%20%7C%20Firebase-blue)

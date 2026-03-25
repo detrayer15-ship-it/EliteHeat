@@ -3,7 +3,7 @@ import { Terminal as TerminalIcon } from 'lucide-react'
 
 export const Terminal = () => {
     const [history, setHistory] = useState<string[]>([
-        '$ Welcome to EliteEdu Terminal',
+        '$ Welcome to EliteHeat Terminal',
         '$ Type "help" for available commands',
     ])
     const [input, setInput] = useState('')

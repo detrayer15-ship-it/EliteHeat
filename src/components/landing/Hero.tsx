@@ -47,7 +47,7 @@ export const Hero = () => {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className="text-[5.5rem] sm:text-[7rem] md:text-[9rem] font-black tracking-tight leading-[0.85] mb-6"
                 >
-                    <span className="bg-gradient-to-b from-orange-400 to-orange-600 bg-clip-text text-transparent">Elite</span><span className="bg-gradient-to-b from-indigo-500 to-indigo-700 bg-clip-text text-transparent">Edu</span>
+                    <span className="bg-gradient-to-b from-orange-400 to-orange-600 bg-clip-text text-transparent">Elite</span><span className="bg-gradient-to-b from-indigo-500 to-indigo-700 bg-clip-text text-transparent">Heat</span>
                 </motion.h1>
 
                 {/* Typewriter */}
@@ -75,7 +75,7 @@ export const Hero = () => {
                     transition={{ duration: 0.7, delay: 0.45 }}
                     className="text-lg md:text-xl text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed"
                 >
-                    EliteEdu — это современная экосистема для будущих специалистов. Освойте востребованную профессию, создавайте реальные проекты и заберите свой сертификат.
+                    EliteHeat — это современная экосистема для будущих специалистов. Освойте востребованную профессию, создавайте реальные проекты и заберите свой сертификат.
                 </motion.p>
 
                 {/* CTA Buttons */}
