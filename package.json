@@ -9,10 +9,10 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:back\"",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && firebase deploy",
-    "deploy:hosting": "npm run build && firebase deploy --only hosting",
-    "firebase:login": "firebase login",
-    "firebase:init": "firebase init"
+    "deploy": "npm run build && npx firebase deploy",
+    "deploy:hosting": "npm run build && npx firebase deploy --only hosting",
+    "firebase:login": "npx firebase login",
+    "firebase:init": "npx firebase init"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
