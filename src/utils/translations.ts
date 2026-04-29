@@ -47,6 +47,8 @@ export const translations = {
         schedule: 'Расписание',
         myCourse: 'Мой курс',
         settings: 'Настройки',
+        assistantSection: 'ИИ помощник',
+        aiAssistant: 'Elly помощник',
 
         studentDatabase: 'База учеников',
         learning: 'Обучение',
@@ -106,6 +108,8 @@ export const translations = {
         schedule: 'Schedule',
         myCourse: 'My Course',
         settings: 'Settings',
+        assistantSection: 'AI Assistant',
+        aiAssistant: 'Elly Assistant',
 
         studentDatabase: 'Student Database',
         learning: 'Learning',
@@ -165,6 +169,8 @@ export const translations = {
         roleTeacher: 'Мұғалім',
         schedule: 'Кесте',
         myCourse: 'Менің курсым',
+        assistantSection: 'ИИ көмекші',
+        aiAssistant: 'Elly көмекші',
 
         studentDatabase: 'Оқушылар базасы',
         learning: 'Оқыту',

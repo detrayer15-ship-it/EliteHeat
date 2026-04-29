@@ -4,8 +4,12 @@ import { persist } from 'zustand/middleware'
 interface SettingsState {
     theme: 'light' | 'dark'
     language: 'ru' | 'en' | 'kz'
+    uiScale: 0.9 | 1 | 1.1 | 1.2
+    fontFamily: 'inter' | 'system' | 'mono'
     setTheme: (theme: 'light' | 'dark') => void
     setLanguage: (language: 'ru' | 'en' | 'kz') => void
+    setUiScale: (uiScale: SettingsState['uiScale']) => void
+    setFontFamily: (fontFamily: SettingsState['fontFamily']) => void
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -13,6 +17,8 @@ export const useSettingsStore = create<SettingsState>()(
         (set) => ({
             theme: 'light',
             language: 'ru',
+            uiScale: 1,
+            fontFamily: 'inter',
             setTheme: (theme) => {
                 set({ theme })
                 // Apply theme to document
@@ -23,6 +29,8 @@ export const useSettingsStore = create<SettingsState>()(
                 }
             },
             setLanguage: (language) => set({ language }),
+            setUiScale: (uiScale) => set({ uiScale }),
+            setFontFamily: (fontFamily) => set({ fontFamily }),
         }),
         {
             name: 'settings-storage',

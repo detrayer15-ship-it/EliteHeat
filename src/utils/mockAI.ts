@@ -1,35 +1,39 @@
-/**
- * Мок-сервис для имитации ответов ИИ
- */
+export type MockAiTab = 'roadmap' | 'prompts' | 'storyboard'
 
-interface AIResponse {
-    message: string;
-    suggestions?: string[];
+/**
+ * Lightweight local mock used by project sidebars.
+ * Keeps the UI functional even when real AI is unavailable.
+ */
+export async function mockAIResponse(message: string, tab: MockAiTab) {
+    const text = message.toLowerCase()
+
+    const canned = {
+        roadmap: [
+            'Давай разобьём задачу на 3–5 шагов и выберем следующий конкретный шаг.',
+            'Опиши, что уже сделано, и я предложу короткий roadmap на неделю.'
+        ],
+        prompts: [
+            'Скажи стек (frontend/backend/db) — и я соберу тебе хороший промпт под эту часть.',
+            'Могу оптимизировать промпт: цель → входные данные → ограничения → формат ответа.'
+        ],
+        storyboard: [
+            'Для защиты проекта: проблема → решение → демо → метрики → планы. Хочешь структуру на 6–8 слайдов?',
+            'Скажи, что на слайде, и я предложу, как усилить смысл и подачу.'
+        ]
+    } as const
+
+    const pick = (arr: readonly string[]) => arr[Math.floor(Math.random() * arr.length)]
+
+    if (text.includes('roadmap') || text.includes('план') || text.includes('шаг')) {
+        return { message: canned.roadmap[0] }
+    }
+    if (text.includes('промпт') || text.includes('prompt') || text.includes('стек')) {
+        return { message: canned.prompts[0] }
+    }
+    if (text.includes('презентац') || text.includes('защит') || text.includes('слайд')) {
+        return { message: canned.storyboard[0] }
+    }
+
+    return { message: pick(canned[tab]) }
 }
 
-export const mockAIResponse = async (userMessage: string, tab: string = 'general'): Promise<AIResponse> => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            let message = '';
-            let suggestions: string[] = [];
-
-            const text = userMessage.toLowerCase();
-
-            if (tab === 'roadmap') {
-                message = 'Отличный план! Для этого этапа я рекомендую сначала проработать архитектуру данных, а затем приступать к реализации логики.';
-                suggestions = ['Как проработать архитектуру?', 'Давай перейдем к следующему шагу', 'Создать roadmap для БД'];
-            } else if (tab === 'prompts') {
-                message = 'Для вашего стека промпты должны быть максимально конкретными. Я подготовил шаблон, который поможет вам получить более качественный код.';
-                suggestions = ['Дай шаблон для Python', 'Как оптимизировать запрос?', 'Сгенерируй код для API'];
-            } else if (tab === 'storyboard') {
-                message = 'Ваша презентация выглядит убедительно. Обратите внимание на 3-й слайд — там можно добавить больше инфографики.';
-                suggestions = ['Как улучшить слайд 1?', 'Симуляция защиты', 'Структура презентации'];
-            } else {
-                message = 'Я помогу вам с проектом! Задайте любой вопрос по разработке или дизайну.';
-                suggestions = ['Как начать?', 'Какой стек выбрать?', 'Анализ проекта'];
-            }
-
-            resolve({ message, suggestions });
-        }, 1000);
-    });
-};

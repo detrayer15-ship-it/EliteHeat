@@ -3,8 +3,8 @@ import { Bot, Sparkles, Zap, Shield, Target, Rocket } from 'lucide-react'
 
 const presentationItems = [
     {
-        title: "ИИ-Ментор Мита",
-        description: "Персональный ассистент на базе Google Gemini, который сопровождает вас на каждом этапе, объясняет сложные темы и проверяет код в реальном времени.",
+        title: "Поддержка менторов",
+        description: "Опытные наставники, которые сопровождают вас на каждом этапе, объясняют сложные темы и проверяют код.",
         icon: Bot,
         color: "text-indigo-600",
         bg: "bg-indigo-50",

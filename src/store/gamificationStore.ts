@@ -28,16 +28,7 @@ const DEFAULT_ACHIEVEMENTS: UserAchievement[] = [
         maxProgress: 1,
         rarity: 'common'
     },
-    {
-        id: 'chat-explorer',
-        title: 'Собеседник ИИ',
-        description: 'Задайте 5 вопросов ИИ-наставнику',
-        icon: '💬',
-        isUnlocked: false,
-        progress: 0,
-        maxProgress: 5,
-        rarity: 'common'
-    },
+
     {
         id: 'project-creator',
         title: 'Архитектор будущего',

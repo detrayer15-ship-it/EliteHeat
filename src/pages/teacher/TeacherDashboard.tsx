@@ -435,16 +435,12 @@ export const TeacherDashboard = () => {
                         <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-8">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Сегодня</h2>
-                                <button onClick={() => navigate('/teacher/schedule')}
-                                    className="text-xs font-bold text-indigo-600 uppercase tracking-widest">→</button>
                             </div>
                             <div className="space-y-2.5">
                                 {todayLessons.length === 0 ? (
                                     <div className="flex flex-col items-center py-6 gap-2 text-center">
                                         <Calendar className="w-8 h-8 text-slate-200" />
                                         <p className="text-xs text-slate-400 font-medium">Сегодня занятий нет</p>
-                                        <button onClick={() => navigate('/teacher/schedule')}
-                                            className="text-xs text-indigo-600 font-bold underline">Добавить в расписании</button>
                                     </div>
                                 ) : todayLessons.map((lesson) => {
                                     const nowMin = today.getHours() * 60 + today.getMinutes()

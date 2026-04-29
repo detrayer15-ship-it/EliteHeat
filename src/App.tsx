@@ -33,6 +33,8 @@ const ProtectedPage = ({ children, allowedRoles }: { children: React.ReactNode, 
 function App() {
     const loadUser = useAuthStore((state) => state.loadUser)
     const theme = useSettingsStore((state) => state.theme)
+    const uiScale = useSettingsStore((state) => state.uiScale)
+    const fontFamily = useSettingsStore((state) => state.fontFamily)
 
     useEffect(() => {
         loadUser()
@@ -43,6 +45,21 @@ function App() {
             document.documentElement.classList.remove('dark')
         }
     }, [loadUser, theme])
+
+    useEffect(() => {
+        // Global UI scaling: affects all rem-based sizing.
+        const base = 16
+        document.documentElement.style.fontSize = `${Math.round(base * uiScale)}px`
+
+        const family =
+            fontFamily === 'inter'
+                ? `'Inter', system-ui, -apple-system, sans-serif`
+                : fontFamily === 'mono'
+                    ? `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace`
+                    : `system-ui, -apple-system, sans-serif`
+
+        document.body.style.fontFamily = family
+    }, [uiScale, fontFamily])
 
     return (
         <ErrorBoundary>
@@ -56,13 +73,16 @@ function App() {
                             <Route path="/select-role" element={<P.SelectRolePage />} />
                             <Route path="/choose-direction" element={<P.ChooseDirectionPage />} />
                             <Route path="/register" element={<P.RegisterPage />} />
-                            <Route path="/become-teacher" element={<P.BecomeTeacherPage />} />
+
                             <Route path="/dev-setup" element={<P.DeveloperSetupPage />} />
                             <Route path="/subscription" element={<P.SubscriptionPage />} />
 
                             {/* Protected routes */}
                             <Route path="/dashboard" element={<ProtectedPage><P.Dashboard /></ProtectedPage>} />
                             <Route path="/tasks" element={<ProtectedPage><P.TasksPage /></ProtectedPage>} />
+                            <Route path="/projects" element={<ProtectedPage><P.ProjectsPage /></ProtectedPage>} />
+                            <Route path="/projects/create" element={<ProtectedPage><P.CreateProjectPage /></ProtectedPage>} />
+                            <Route path="/projects/:id" element={<ProtectedPage><P.ProjectWorkspacePage /></ProtectedPage>} />
 
                             <Route path="/progress" element={<ProtectedPage><P.ProgressTrackerPage /></ProtectedPage>} />
 
@@ -108,17 +128,16 @@ function App() {
                             <Route path="/admin/review" element={<ProtectedPage><P.ReviewAssignmentsPage /></ProtectedPage>} />
                             <Route path="/admin/users" element={<ProtectedPage><P.AdminUsersPage /></ProtectedPage>} />
                             <Route path="/admin/support-chats" element={<ProtectedPage><P.SupportChatsPage /></ProtectedPage>} />
-                            <Route path="/admin/teacher-applications" element={<ProtectedPage><P.AdminTeacherApplicationsPage /></ProtectedPage>} />
+
 
                             {/* Student routes */}
-                            <Route path="/student/schedule" element={<ProtectedPage allowedRoles={['student', 'admin', 'developer']}><P.StudentSchedulePage /></ProtectedPage>} />
+                            <Route path="/student/ai-chat" element={<ProtectedPage allowedRoles={['student', 'teacher', 'admin', 'developer']}><P.AIChatPage /></ProtectedPage>} />
                             <Route path="/support" element={<ProtectedPage><P.SupportPage /></ProtectedPage>} />
 
                             {/* Teacher routes */}
                             <Route path="/teacher/dashboard" element={<ProtectedPage allowedRoles={['teacher', 'admin', 'developer']}><P.TeacherDashboard /></ProtectedPage>} />
                             <Route path="/teacher/monitoring" element={<ProtectedPage allowedRoles={['teacher', 'admin', 'developer']}><P.MonitoringCenterPage /></ProtectedPage>} />
                             <Route path="/teacher/groups" element={<ProtectedPage allowedRoles={['teacher', 'admin', 'developer']}><P.GroupsManagementPage /></ProtectedPage>} />
-                            <Route path="/teacher/schedule" element={<ProtectedPage allowedRoles={['teacher', 'admin', 'developer']}><P.TeacherSchedulePage /></ProtectedPage>} />
 
                             {/* 404 Route */}
                             <Route path="*" element={<P.NotFoundPage />} />

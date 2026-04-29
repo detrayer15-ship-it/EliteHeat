@@ -291,7 +291,7 @@ export const DirectionLessonPage = () => {
                                         <div className="h-[200px] relative">
                                             <Editor
                                                 height="100%"
-                                                defaultLanguage="python"
+                                                defaultLanguage={lesson.codeLanguage || 'javascript'}
                                                 theme="vs-light"
                                                 value={lesson.codeExample}
                                                 options={{

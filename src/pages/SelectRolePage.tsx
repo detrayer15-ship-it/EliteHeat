@@ -15,8 +15,7 @@ export const SelectRolePage = () => {
         if (role === 'student') {
             navigate('/choose-direction')
         } else {
-            // Teacher goes to special recruitment application page
-            navigate('/become-teacher')
+            navigate('/register', { state: { role: 'teacher' } })
         }
     }
 
@@ -108,7 +107,7 @@ export const SelectRolePage = () => {
                         </ul>
                         <div className="flex flex-col gap-4 mt-auto">
                             <div className="flex items-center gap-2 text-amber-600 group-hover:text-amber-400 font-black text-sm uppercase tracking-widest">
-                                Подать заявку
+                                Продолжить
                                 <ShieldCheck className="w-5 h-5 group-hover:scale-110 transition-transform" />
                             </div>
                             <div

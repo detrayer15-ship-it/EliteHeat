@@ -27,9 +27,9 @@ export const Risks = () => {
                                 </div>
                             </div>
                             <div className="flex-1">
-                                <h3 className="text-2xl font-bold text-red-600 mb-2">Риск: ИИ делает за ученика</h3>
+                                <h3 className="text-2xl font-bold text-red-600 mb-2">Риск: Списывание и плагиат</h3>
                                 <p className="text-gray-600 mb-4">
-                                    Ученик может попросить AI сделать всю работу вместо него
+                                    Ученик может попытаться сдать чужую работу
                                 </p>
                                 <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
                                     <h4 className="font-bold text-green-700 mb-2">✅ Решение:</h4>
@@ -40,7 +40,7 @@ export const Risks = () => {
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <span className="text-green-500 font-bold">•</span>
-                                            <span><strong>Экзаменационный режим</strong> — AI ограничен, только подсказки</span>
+                                            <span><strong>Проверка кода</strong> — ручная проверка ментором</span>
                                         </li>
                                         <li className="flex items-start gap-2">
                                             <span className="text-green-500 font-bold">•</span>

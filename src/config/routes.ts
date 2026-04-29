@@ -3,6 +3,9 @@ import { lazy } from 'react';
 // Lazy load all pages for better performance
 export const LandingPage = lazy(() => import('../pages/LandingPage').then(m => ({ default: m.LandingPage })));
 export const Dashboard = lazy(() => import('../pages/Dashboard').then(m => ({ default: m.Dashboard })));
+export const ProjectsPage = lazy(() => import('../pages/student/ProjectsPage').then(m => ({ default: m.ProjectsPage })));
+export const CreateProjectPage = lazy(() => import('../pages/student/CreateProjectPage').then(m => ({ default: m.CreateProjectPage })));
+export const ProjectWorkspacePage = lazy(() => import('../pages/student/ProjectWorkspacePage').then(m => ({ default: m.ProjectWorkspacePage })));
 
 export const TasksPage = lazy(() => import('../pages/TasksPage').then(m => ({ default: m.TasksPage })));
 export const ProgressTrackerPage = lazy(() => import('../pages/ProgressTrackerPage').then(m => ({ default: m.ProgressTrackerPage })));
@@ -11,7 +14,7 @@ export const LoginPage = lazy(() => import('../pages/LoginPage').then(m => ({ de
 export const RegisterPage = lazy(() => import('../pages/RegisterPage').then(m => ({ default: m.RegisterPage })));
 export const ChooseDirectionPage = lazy(() => import('../pages/ChooseDirectionPage').then(m => ({ default: m.ChooseDirectionPage })));
 export const SelectRolePage = lazy(() => import('../pages/SelectRolePage').then(m => ({ default: m.SelectRolePage })));
-export const BecomeTeacherPage = lazy(() => import('../pages/BecomeTeacherPage').then(m => ({ default: m.BecomeTeacherPage })));
+
 export const SettingsPage = lazy(() => import('../pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 export const ProfileEditPage = lazy(() => import('../pages/ProfileEditPage').then(m => ({ default: m.ProfileEditPage })));
 export const SubscriptionPage = lazy(() => import('../pages/SubscriptionPage').then(m => ({ default: m.SubscriptionPage })));
@@ -59,13 +62,13 @@ export const AdminOpsChat = lazy(() => import('../pages/admin/AdminOpsChat').the
 
 export const AppealsPage = lazy(() => import('../pages/admin/AppealsPage').then(m => ({ default: m.AppealsPage })));
 export const SupportChatsPage = lazy(() => import('../pages/admin/SupportChatsPage').then(m => ({ default: m.SupportChatsPage })));
-export const AdminTeacherApplicationsPage = lazy(() => import('../pages/admin/AdminTeacherApplicationsPage').then(m => ({ default: m.AdminTeacherApplicationsPage })));
+
 
 // Student & Teacher pages
+export const AIChatPage = lazy(() => import('../pages/student/AIChatPage').then(m => ({ default: m.AIChatPage })));
 export const SupportPage = lazy(() => import('../pages/student/SupportPage').then(m => ({ default: m.SupportPage })));
 export const TeacherDashboard = lazy(() => import('../pages/teacher/TeacherDashboard').then(m => ({ default: m.TeacherDashboard })));
 export const MonitoringCenterPage = lazy(() => import('../pages/teacher/MonitoringCenterPage').then(m => ({ default: m.MonitoringCenterPage })));
 export const GroupsManagementPage = lazy(() => import('../pages/teacher/GroupsManagementPage').then(m => ({ default: m.GroupsManagementPage })));
 
-export const StudentSchedulePage = lazy(() => import('../pages/StudentSchedulePage').then(m => ({ default: m.StudentSchedulePage })));
-export const TeacherSchedulePage = lazy(() => import('../pages/TeacherSchedulePage').then(m => ({ default: m.TeacherSchedulePage })));
+// Schedule pages removed from product

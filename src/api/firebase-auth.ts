@@ -44,10 +44,6 @@ export interface UserData {
     subscriptionDaysRemaining?: number
     subscriptionStatus?: 'active' | 'expired' | 'cancelled'
     selectedDirection?: string
-    // Teacher application moderation
-    teacherApplicationStatus?: 'pending' | 'approved' | 'rejected'
-    teacherApplicationSubject?: string
-    teacherApplicationDate?: Date
     createdAt: Date
     lastActiveAt?: Date
 }
@@ -71,11 +67,7 @@ export const firebaseAuthAPI = {
 
             const now = Timestamp.now()
 
-            // Teacher application flow:
-            // The user gets role='student' until an admin approves them.
-            // A separate teacherApplications document is written for moderation.
-            const isTeacherApplicant = role === 'teacher'
-            const effectiveRole = isTeacherApplicant ? 'student' : role
+            const effectiveRole = role
 
             // Create user document in Firestore
             const userData: any = {
@@ -89,12 +81,7 @@ export const firebaseAuthAPI = {
                 lastActiveAt: now
             }
 
-            // Mark teacher application status on user document
-            if (isTeacherApplicant) {
-                userData.teacherApplicationStatus = 'pending'
-                userData.teacherApplicationSubject = teacherApplicationSubject || ''
-                userData.teacherApplicationDate = now
-            }
+
 
             // Add subscription fields if plan is selected
             if (subscriptionPlan) {
@@ -121,17 +108,7 @@ export const firebaseAuthAPI = {
                 try {
                     await setDoc(doc(db, 'users', user.uid), userData)
 
-                    // Write teacher application document for admin review
-                    if (isTeacherApplicant) {
-                        await setDoc(doc(db, 'teacherApplications', user.uid), {
-                            userId: user.uid,
-                            name,
-                            email: user.email!,
-                            subject: teacherApplicationSubject || '',
-                            status: 'pending',
-                            createdAt: now,
-                        })
-                    }
+
                 } catch (firestoreError: any) {
                     if (firestoreError?.message?.includes('INTERNAL ASSERTION FAILED')) {
                         markFirestoreAsBroken(firestoreError);
@@ -431,24 +408,4 @@ export const firebaseAuthAPI = {
         return onAuthStateChanged(auth, callback)
     },
 
-    // Submit Teacher Application
-    submitTeacherApplication: async (data: any) => {
-        try {
-            if (isFirestoreBroken()) throw new Error('Firestore is broken')
-            const now = Timestamp.now()
-            await addDoc(collection(db, 'teacherApplications'), {
-                ...data,
-                status: 'pending',
-                createdAt: now,
-                lastStep: true
-            })
-            return { success: true }
-        } catch (error: any) {
-            console.error('Teacher Application Submit Error:', error)
-            return {
-                success: false,
-                message: error.message
-            }
-        }
-    }
 }

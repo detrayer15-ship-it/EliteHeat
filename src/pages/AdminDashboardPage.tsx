@@ -181,7 +181,7 @@ export const AdminDashboardPage = () => {
                             <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] px-2 mb-2">Операционные модули</h3>
                             <ActionLink icon={<TrendingUp className="w-4 h-4" />} title="Мониторинг риска" onClick={() => navigate('/admin/student-monitoring')} />
 
-                            <ActionLink icon={<UserCheck className="w-4 h-4" />} title="Заявки учителей" onClick={() => navigate('/admin/teacher-applications')} />
+
                             <ActionLink icon={<MessageCircle className="w-4 h-4" />} title="Чат админов" onClick={() => navigate('/admin/group-chat')} />
                         </Card>
 

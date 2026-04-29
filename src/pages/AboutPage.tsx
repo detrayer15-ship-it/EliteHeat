@@ -11,7 +11,7 @@ export const AboutPage = () => {
                     <p className="text-lg text-gray-700 leading-relaxed">
                         EliteHeat - это современная образовательная платформа, которая помогает ученикам
                         по всему миру изучать программирование, дизайн и другие IT-навыки. Мы объединяем
-                        качественное обучение с передовыми технологиями искусственного интеллекта.
+                        качественное обучение с индивидуальным подходом к каждому ученику.
                     </p>
                 </div>
 
@@ -25,11 +25,11 @@ export const AboutPage = () => {
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-xl p-6">
-                        <div className="text-4xl mb-4">🤖</div>
-                        <h3 className="text-2xl font-bold mb-3 text-gray-800">AI-помощник Мита</h3>
+                        <div className="text-4xl mb-4">👨‍🏫</div>
+                        <h3 className="text-2xl font-bold mb-3 text-gray-800">Опытные наставники</h3>
                         <p className="text-gray-700">
-                            Наш умный ассистент Мита помогает ученикам 24/7, отвечает на вопросы
-                            и объясняет сложные темы простым языком
+                            Наши менторы помогают ученикам 24/7, отвечают на вопросы
+                            и объясняют сложные темы простым языком
                         </p>
                     </div>
 

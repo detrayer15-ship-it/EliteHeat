@@ -7,6 +7,7 @@ export interface Task {
     deadline?: string
     category?: string
     projectId: string
+    stage?: ProjectStage // New project tracker stage; older tasks may not have it yet.
     // AI-generated task fields
     aiGenerated?: boolean
     difficulty?: 'beginner' | 'intermediate' | 'advanced'
@@ -37,6 +38,7 @@ export interface Project {
     problem: string
     solution: string
     audience: string
+    valueProposition?: string // Added
     goal?: string
     stage: ProjectStage
     status?: 'active' | 'completed' | 'archived'
@@ -90,7 +92,24 @@ export interface ProjectAnalysis {
     title: string
     type: 'app' | 'site' | 'mvp' | 'other'
     description: string
+    problem: string
+    solution: string
+    audience: string
+    valueProposition: string
     goal: string
     needsClarification: boolean
     clarificationQuestion?: string
+}
+
+export interface PresentationAnalysis {
+    structure: {
+        score: number
+        recommendations: string[]
+    }
+    clarity: {
+        score: number
+        recommendations: string[]
+    }
+    errors: string[]
+    generalAdvice: string
 }

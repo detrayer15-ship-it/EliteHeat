@@ -16,9 +16,10 @@ import {
     MessageCircle,
     Terminal,
     HelpCircle,
-    Calendar,
     X,
-    ShieldCheck
+    ShieldCheck,
+    Bot,
+    FolderKanban
 } from 'lucide-react'
 
 interface NavItem {
@@ -40,16 +41,16 @@ const navGroups: NavGroup[] = [
         items: [
             { path: '/dashboard', labelKey: 'dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['student', 'admin', 'developer'] },
             { path: '/teacher/dashboard', labelKey: 'dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['teacher'] },
+            { path: '/projects', labelKey: 'projects', icon: <FolderKanban className="w-5 h-5" />, roles: ['student', 'developer'] },
             { path: '/tasks', labelKey: 'tasks', icon: <BookOpen className="w-5 h-5" />, roles: ['student', 'developer'] },
 
             { path: '/progress', labelKey: 'progressTracker', icon: <TrendingUp className="w-5 h-5" />, roles: ['student', 'developer'] },
         ]
     },
     {
-        title: 'schedule',
+        title: 'assistantSection',
         items: [
-            { path: '/student/schedule', labelKey: 'schedule', icon: <Calendar className="w-5 h-5" />, roles: ['student'] },
-            { path: '/teacher/schedule', labelKey: 'schedule', icon: <Calendar className="w-5 h-5" />, roles: ['teacher', 'admin', 'developer'] },
+            { path: '/student/ai-chat', labelKey: 'aiAssistant', icon: <Bot className="w-5 h-5" />, roles: ['student', 'teacher', 'admin', 'developer'] },
         ]
     },
     {

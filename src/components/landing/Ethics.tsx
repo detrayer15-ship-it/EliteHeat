@@ -19,12 +19,12 @@ export const Ethics = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 <Card className="p-8 bg-gradient-to-br from-slate-50 to-gray-50 border-2 border-slate-300 hover:shadow-xl transition-all">
-                    <div className="text-6xl mb-6 text-center">🤖</div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">ИИ — помощник, не автор</h3>
+                    <div className="text-6xl mb-6 text-center">🧠</div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Самостоятельность</h3>
                     <ul className="space-y-3 text-gray-700">
                         <li className="flex items-start gap-2">
                             <span className="text-blue-500">✓</span>
-                            <span>AI помогает, но не делает за ученика</span>
+                            <span>Развитие критического мышления</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-blue-500">✓</span>
@@ -32,26 +32,26 @@ export const Ethics = () => {
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-blue-500">✓</span>
-                            <span>История взаимодействия с AI сохраняется</span>
+                            <span>Поощрение собственных идей</span>
                         </li>
                     </ul>
                 </Card>
 
                 <Card className="p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 hover:shadow-xl transition-all">
                     <div className="text-6xl mb-6 text-center">👁️</div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Прозрачность использования ИИ</h3>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Прозрачность обучения</h3>
                     <ul className="space-y-3 text-gray-700">
                         <li className="flex items-start gap-2">
                             <span className="text-indigo-500">✓</span>
-                            <span>Учитель видит все запросы к AI</span>
+                            <span>Родители видят прогресс ученика</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-indigo-500">✓</span>
-                            <span>Отчёты об использовании помощника</span>
+                            <span>Отчёты об успеваемости</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-indigo-500">✓</span>
-                            <span>Маркировка AI-сгенерированного контента</span>
+                            <span>Открытая система оценок</span>
                         </li>
                     </ul>
                 </Card>
@@ -62,11 +62,11 @@ export const Ethics = () => {
                     <ul className="space-y-3 text-gray-700">
                         <li className="flex items-start gap-2">
                             <span className="text-green-500">✓</span>
-                            <span>Учитель может ограничить AI</span>
+                            <span>Учитель направляет процесс</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-green-500">✓</span>
-                            <span>Настройка уровня помощи</span>
+                            <span>Индивидуальный подход к ученику</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-green-500">✓</span>

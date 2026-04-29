@@ -9,6 +9,7 @@ export interface Lesson {
     // Rich content fields
     fullExplanation?: string
     codeExample?: string
+    codeLanguage?: string
     steps?: string[]
     flowchart?: string // Mermaid diagram definition
     practiceTask?: string
@@ -35,6 +36,7 @@ interface LessonData {
     description?: string
     fullExplanation?: string
     codeExample?: string
+    codeLanguage?: string
     steps?: string[]
     flowchart?: string
     practiceTask?: string
@@ -61,6 +63,7 @@ const lesson = (
         type,
         fullExplanation: payload.fullExplanation,
         codeExample: payload.codeExample,
+        codeLanguage: payload.codeLanguage,
         steps: payload.steps,
         flowchart: payload.flowchart,
         practiceTask: payload.practiceTask,
@@ -427,10 +430,225 @@ const pythonModules: Module[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 // Direction map (title -> curriculum)
 // ─────────────────────────────────────────────────────────────────────────────
+const directionLabel: Record<string, string> = {
+    web: 'веб-разработке',
+    game: 'Roblox-разработке',
+    python: 'Python',
+}
+
+const includesAny = (text: string, words: string[]) => {
+    const normalized = text.toLowerCase()
+    return words.some(word => normalized.includes(word.toLowerCase()))
+}
+
+const buildTheory = (directionId: string, moduleTitle: string, currentLesson: Lesson) => {
+    const area = directionLabel[directionId] || 'проектной работе'
+    const resultName = currentLesson.type === 'project' ? 'мини-проект' : currentLesson.type === 'practice' ? 'практическую работу' : 'понятный пример'
+
+    return `В этом уроке ты изучаешь тему «${currentLesson.title}» в направлении ${area}. Сначала разберись, какую проблему решает эта тема, потом повтори пример и только после этого сделай свое задание. Урок относится к модулю «${moduleTitle}», поэтому в конце у тебя должен получиться ${resultName}, который можно добавить в портфолио или использовать в финальном проекте.`
+}
+
+const buildSteps = (currentLesson: Lesson) => [
+    `Прочитай объяснение темы «${currentLesson.title}» и выпиши 2-3 главные идеи.`,
+    'Повтори пример кода без копирования: набери его сам и проверь результат.',
+    'Измени в примере минимум 3 детали: текст, цвет, число, условие или название.',
+    'Сделай практическое задание и проверь, что оно работает без ошибок.',
+    'Коротко напиши, что получилось, что было сложным и что можно улучшить.',
+]
+
+const buildPracticeTask = (moduleTitle: string, currentLesson: Lesson) => {
+    if (currentLesson.type === 'project') {
+        return `Собери мини-проект по теме «${currentLesson.title}»: сделай рабочий результат, добавь понятное название, 3 основные функции и короткое описание, как им пользоваться.`
+    }
+
+    if (currentLesson.type === 'practice') {
+        return `Выполни практику по теме «${currentLesson.title}»: повтори пример, измени его под свою идею и добавь один дополнительный элемент сверх примера.`
+    }
+
+    return `Сделай задание по модулю «${moduleTitle}»: объясни тему «${currentLesson.title}» своими словами и создай маленький пример, который показывает, как это работает.`
+}
+
+const buildFlowchart = () => 'Старт -> Изучить тему -> Повторить пример -> Сделать свою версию -> Проверить ошибки -> Готово'
+
+const webCodeExample = (title: string) => {
+    if (includesAny(title, ['css', 'style', 'grid', 'flex', 'адаптив', 'стил'])) {
+        return {
+            codeLanguage: 'css',
+            codeExample: `.project-card {
+  max-width: 420px;
+  padding: 24px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.project-card h2 {
+  color: #2563eb;
+  margin-bottom: 8px;
+}`,
+        }
+    }
+
+    if (includesAny(title, ['javascript', 'dom', 'событ', 'цикл', 'массив', 'api', 'fetch', 'json'])) {
+        return {
+            codeLanguage: 'javascript',
+            codeExample: `const ideas = ['AI помощник', 'трекер задач', 'презентация'];
+
+ideas.forEach((idea, index) => {
+  console.log(\`\${index + 1}. \${idea}\`);
+});
+
+function showProgress(done, total) {
+  return Math.round((done / total) * 100);
+}`,
+        }
+    }
+
+    if (includesAny(title, ['node', 'express', 'backend', 'сервер'])) {
+        return {
+            codeLanguage: 'javascript',
+            codeExample: `import express from 'express';
+
+const app = express();
+
+app.get('/api/projects', (req, res) => {
+  res.json({ title: 'Мой проект', status: 'in-progress' });
+});
+
+app.listen(3000, () => console.log('Server started'));`,
+        }
+    }
+
+    return {
+        codeLanguage: 'html',
+        codeExample: `<section class="project-card">
+  <h2>Моя идея</h2>
+  <p>Опиши проблему, решение и пользу для людей.</p>
+  <button>Начать проект</button>
+</section>`,
+    }
+}
+
+const gameCodeExample = (title: string) => {
+    if (includesAny(title, ['leaderstats', 'балл', 'очки', 'score'])) {
+        return {
+            codeLanguage: 'lua',
+            codeExample: `game.Players.PlayerAdded:Connect(function(player)
+  local leaderstats = Instance.new("Folder")
+  leaderstats.Name = "leaderstats"
+  leaderstats.Parent = player
+
+  local coins = Instance.new("IntValue")
+  coins.Name = "Coins"
+  coins.Value = 0
+  coins.Parent = leaderstats
+end)`,
+        }
+    }
+
+    return {
+        codeLanguage: 'lua',
+        codeExample: `local part = script.Parent
+
+part.Touched:Connect(function(hit)
+  local player = game.Players:GetPlayerFromCharacter(hit.Parent)
+  if player then
+    print(player.Name .. " дошел до точки!")
+  end
+end)`,
+    }
+}
+
+const pythonCodeExample = (title: string) => {
+    if (includesAny(title, ['django', 'api', 'views', 'crud'])) {
+        return {
+            codeLanguage: 'python',
+            codeExample: `from django.http import JsonResponse
+
+def project_status(request):
+    return JsonResponse({
+        "title": "Мой проект",
+        "status": "in-progress"
+    })`,
+        }
+    }
+
+    if (includesAny(title, ['pygame', 'игр', 'коллиз', 'анимац'])) {
+        return {
+            codeLanguage: 'python',
+            codeExample: `import pygame
+
+pygame.init()
+screen = pygame.display.set_mode((600, 400))
+running = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    screen.fill((37, 99, 235))
+    pygame.display.flip()`,
+        }
+    }
+
+    if (includesAny(title, ['функ', 'ооп', 'класс', 'архитект'])) {
+        return {
+            codeLanguage: 'python',
+            codeExample: `class Project:
+    def __init__(self, title, tasks_done, total_tasks):
+        self.title = title
+        self.tasks_done = tasks_done
+        self.total_tasks = total_tasks
+
+    def progress(self):
+        return round(self.tasks_done / self.total_tasks * 100)
+
+project = Project("AI помощник", 3, 5)
+print(project.progress())`,
+        }
+    }
+
+    return {
+        codeLanguage: 'python',
+        codeExample: `idea = input("Напиши идею проекта: ")
+problem = input("Какую проблему решает идея? ")
+
+print("Проект:")
+print(f"Идея: {idea}")
+print(f"Проблема: {problem}")`,
+    }
+}
+
+const buildCodeExample = (directionId: string, title: string) => {
+    if (directionId === 'web') return webCodeExample(title)
+    if (directionId === 'game') return gameCodeExample(title)
+    return pythonCodeExample(title)
+}
+
+const enrichLesson = (directionId: string, moduleTitle: string, currentLesson: Lesson): Lesson => {
+    const code = buildCodeExample(directionId, currentLesson.title)
+
+    return {
+        ...currentLesson,
+        fullExplanation: currentLesson.fullExplanation || buildTheory(directionId, moduleTitle, currentLesson),
+        steps: currentLesson.steps || buildSteps(currentLesson),
+        flowchart: currentLesson.flowchart || buildFlowchart(),
+        practiceTask: currentLesson.practiceTask || buildPracticeTask(moduleTitle, currentLesson),
+        codeExample: currentLesson.codeExample || code.codeExample,
+        codeLanguage: currentLesson.codeLanguage || code.codeLanguage,
+    }
+}
+
+const enrichModules = (directionId: string, modules: Module[]) => modules.map(module => ({
+    ...module,
+    lessons: module.lessons.map(currentLesson => enrichLesson(directionId, module.title, currentLesson)),
+}))
+
 export const CURRICULA: DirectionCurriculum[] = [
-    { id: 'web', title: 'Веб разработчик', modules: webModules },
-    { id: 'game', title: 'Roblox', modules: gameModules },
-    { id: 'python', title: 'Python', modules: pythonModules },
+    { id: 'web', title: 'Веб разработчик', modules: enrichModules('web', webModules) },
+    { id: 'game', title: 'Roblox', modules: enrichModules('game', gameModules) },
+    { id: 'python', title: 'Python', modules: enrichModules('python', pythonModules) },
 ]
 
 export const getCurriculumByDirection = (direction: string): DirectionCurriculum | null => {

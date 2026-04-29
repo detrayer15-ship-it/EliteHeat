@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useLanguageStore, Language } from '@/store/languageStore'
+import { useSettingsStore } from '@/store/settingsStore'
 import {
     ArrowLeft,
     User,
@@ -29,6 +30,10 @@ export const SettingsPage = () => {
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
     const { language, setLanguage } = useLanguageStore()
+    const uiScale = useSettingsStore(s => s.uiScale)
+    const fontFamily = useSettingsStore(s => s.fontFamily)
+    const setUiScale = useSettingsStore(s => s.setUiScale)
+    const setFontFamily = useSettingsStore(s => s.setFontFamily)
     const [activeTab, setActiveTab] = useState('account')
     const [saved, setSaved] = useState(false)
     const [settings, setSettings] = useState({
@@ -204,6 +209,67 @@ export const SettingsPage = () => {
                                                     {language === lang.id && <CheckCircle className="w-5 h-5 text-white/80" />}
                                                 </button>
                                             ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-8 pt-8 border-t border-indigo-50">
+                                        <div className="flex items-center gap-4">
+                                            <Settings className="w-6 h-6 text-indigo-400" />
+                                            <h3 className="text-xl font-black text-indigo-950 tracking-tight">Дизайн интерфейса</h3>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="p-8 bg-white border border-indigo-50 rounded-[2.5rem] space-y-4 hover:border-indigo-200 transition-all">
+                                                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-950/30">Масштаб</div>
+                                                <div className="grid grid-cols-4 gap-3">
+                                                    {([
+                                                        { v: 0.9 as const, label: '90%' },
+                                                        { v: 1 as const, label: '100%' },
+                                                        { v: 1.1 as const, label: '110%' },
+                                                        { v: 1.2 as const, label: '120%' },
+                                                    ]).map(opt => (
+                                                        <button
+                                                            key={opt.v}
+                                                            onClick={() => setUiScale(opt.v)}
+                                                            className={`py-4 rounded-2xl border-2 font-black uppercase tracking-widest text-[10px] transition-all ${uiScale === opt.v
+                                                                ? 'bg-indigo-600 border-indigo-400 text-white shadow-glow'
+                                                                : 'bg-indigo-50 border-indigo-100 text-indigo-950/50 hover:border-indigo-300'
+                                                            }`}
+                                                        >
+                                                            {opt.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <p className="text-sm text-indigo-950/40 font-medium">
+                                                    Увеличивает/уменьшает интерфейс под разные устройства и зрение.
+                                                </p>
+                                            </div>
+
+                                            <div className="p-8 bg-white border border-indigo-50 rounded-[2.5rem] space-y-4 hover:border-indigo-200 transition-all">
+                                                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-950/30">Шрифт</div>
+                                                <div className="space-y-3">
+                                                    {([
+                                                        { v: 'inter' as const, label: 'Inter (рекомендуется)' },
+                                                        { v: 'system' as const, label: 'System' },
+                                                        { v: 'mono' as const, label: 'Mono' },
+                                                    ]).map(opt => (
+                                                        <button
+                                                            key={opt.v}
+                                                            onClick={() => setFontFamily(opt.v)}
+                                                            className={`w-full p-5 rounded-3xl border-2 transition-all flex items-center justify-between ${fontFamily === opt.v
+                                                                ? 'bg-indigo-600 border-indigo-400 text-white shadow-glow'
+                                                                : 'bg-indigo-50 border-indigo-100 text-indigo-950/50 hover:border-indigo-300'
+                                                            }`}
+                                                        >
+                                                            <span className="font-black uppercase tracking-widest text-[10px]">{opt.label}</span>
+                                                            {fontFamily === opt.v && <CheckCircle className="w-5 h-5 text-white/80" />}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <p className="text-sm text-indigo-950/40 font-medium">
+                                                    Меняет ощущение “строго/мягко” и удобство чтения.
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

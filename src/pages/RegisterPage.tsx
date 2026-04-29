@@ -24,7 +24,7 @@ const ROLES: { id: RoleChoice; title: string; desc: string; icon: typeof Graduat
     {
         id: 'teacher',
         title: 'Учитель',
-        desc: 'Провожу уроки, проверяю работы студентов. Заявка рассматривается администратором.',
+        desc: 'Провожу уроки, проверяю работы студентов.',
         icon: BookOpen,
         color: 'text-amber-600',
         bg: 'bg-amber-50 hover:bg-amber-100',
@@ -74,14 +74,7 @@ export const RegisterPage = () => {
         setIsLoading(false)
 
         if (result.success) {
-            if (selectedRole === 'teacher') {
-                showSuccess(
-                    'Заявка отправлена!',
-                    'Администратор рассмотрит вашу заявку на роль учителя. Пока вы можете пользоваться платформой как ученик.'
-                )
-            } else {
-                showSuccess('Успешная регистрация', 'Ваш аккаунт создан')
-            }
+            showSuccess('Успешная регистрация', 'Ваш аккаунт создан')
             navigate('/dashboard')
         } else {
             showError('Ошибка', result.message)
@@ -130,7 +123,7 @@ export const RegisterPage = () => {
                             {selectedRole === 'teacher' && (
                                 <div className="flex items-center justify-center gap-2 pt-1 text-amber-500 font-bold text-xs uppercase tracking-widest">
                                     <BookOpen className="w-3 h-3" />
-                                    Заявка на преподавание
+                                    Регистрация учителя
                                 </div>
                             )}
                         </div>
@@ -148,7 +141,7 @@ export const RegisterPage = () => {
                                     : <GraduationCap className="w-4 h-4 text-indigo-500 shrink-0" />
                                 }
                                 <span className={`text-xs font-black ${selectedRole === 'teacher' ? 'text-amber-700' : 'text-indigo-700'}`}>
-                                    Регистрация как: <strong>{selectedRole === 'teacher' ? 'Учитель (заявка)' : 'Ученик'}</strong>
+                                    Регистрация как: <strong>{selectedRole === 'teacher' ? 'Учитель' : 'Ученик'}</strong>
                                 </span>
                             </div>
 
@@ -238,7 +231,7 @@ export const RegisterPage = () => {
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 ) : (
                                     <>
-                                        {selectedRole === 'teacher' ? 'Отправить заявку' : 'Завершить регистрацию'}
+                                        Завершить регистрацию
                                         <ArrowRight className="w-5 h-5" />
                                     </>
                                 )}
